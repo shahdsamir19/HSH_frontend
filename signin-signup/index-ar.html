@@ -4,32 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول وإنشاء حساب - أبطال حماية الاختراق</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha512-9BwLAVqqt6oFdXohPLuNHxhx36BVj5uGSGmizkmGkgl3uMSgNalKc/smum+GJU/TTP0jy0+ruwC3xNAk3F759A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- <style>
-        body, input, button, h2, h3, p, .btn {
-            font-family: 'Cairo', sans-serif !important;
+    <style>
+        /* Global font override to Baloo Bhaijaan 2 */
+        body, input, button, h2, h3, p, .btn, .title, .social-text {
+            font-family: 'Baloo Bhaijaan 2', cursive !important;
+            font-weight: 400 !important;
         }
-        /* Swap floating panels direction for RTL */
-        .container:before {
-            right: auto;
-            left: 30%; /* Shifted appropriately */
-            transform: translate(-50%, -50%);
+
+        /* Desktop RTL Layout Overrides (Mirroring LTR layout) */
+        @media (min-width: 871px) {
+            /* 1. Position of circle background */
+            .container::before {
+                left: 48% !important;
+                right: auto !important;
+                transform: translateY(-50%) !important;
+            }
+            .container.sign-up-mode::before {
+                transform: translate(-100%, -50%) !important;
+                left: 52% !important;
+                right: auto !important;
+            }
+
+            /* 2. Position of forms container */
+            .signin-signup {
+                left: 25% !important;
+            }
+            .container.sign-up-mode .signin-signup {
+                left: 75% !important;
+            }
+
+            /* 3. Panel Padding and Alignment Adjustments for RTL (Centered in section) */
+            .left-panel {
+                padding: 3rem 10% 2rem 10% !important;
+                align-items: center !important;
+            }
+            .right-panel {
+                padding: 3rem 10% 2rem 10% !important;
+                align-items: center !important;
+            }
+
+            /* 4. Panel content animations (mirrored X-translation) */
+            .right-panel .content, 
+            .right-panel .image {
+                transform: translateX(-2000px) !important;
+            }
+            .container.sign-up-mode .left-panel .image1,
+            .container.sign-up-mode .left-panel .content {
+                transform: translateX(2000px) !important;
+                pointer-events: none !important;
+            }
+            .container.sign-up-mode .right-panel .image,
+            .container.sign-up-mode .right-panel .content {
+                transform: translateX(0%) !important;
+            }
         }
-        .container.sign-up-mode:before {
-            transform: translate(50%, 100%);
-            right: auto;
-            left: 30%;
+
+        /* Mobile RTL Layout Overrides */
+        @media (max-width: 870px) {
+            .container::before {
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-50%) !important;
+                bottom: 68% !important;
+                top: auto !important;
+            }
+            .container.sign-up-mode::before {
+                transform: translate(-50%, 100%) !important;
+                bottom: 32% !important;
+                left: 50% !important;
+                right: auto !important;
+            }
+            .container.sign-up-mode .left-panel .image1,
+            .container.sign-up-mode .left-panel .content {
+                transform: translateY(-300px) !important;
+            }
+            .container.sign-up-mode .right-panel .image,
+            .container.sign-up-mode .right-panel .content {
+                transform: translateY(0px) !important;
+            }
+            .right-panel .image,
+            .right-panel .content {
+                transform: translateY(300px) !important;
+            }
+            .container.sign-up-mode .signin-signup {
+                top: 5% !important;
+                transform: translate(-50%, 0) !important;
+            }
         }
-        [dir="rtl"] .left-panel {
-            padding: 3rem 12% 2rem 17%;
-        }
-        [dir="rtl"] .right-panel {
-            padding: 3rem 17% 2rem 12%;
-        }
-    </style> -->
+    </style>
 </head>
 <body>
     <div class="container">

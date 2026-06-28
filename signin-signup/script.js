@@ -11,6 +11,7 @@ sign_in_btn.addEventListener('click', () => {
     container.classList.remove("sign-up-mode");
 });
 
+
 document.addEventListener('DOMContentLoaded', () => {
   const signinForm = document.getElementById('signin-form');
   const signupForm = document.getElementById('signup-form');

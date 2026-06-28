@@ -212,7 +212,7 @@ input:focus {
     padding: 0.7rem 0;
 }
 
-.btn.transparent{
+.btn.tranparent{
     margin: 0;
     background: none;
     border: 2px solid #fff;
@@ -327,7 +327,7 @@ input:focus {
       grid-row: 1 / 2;
     }
   
-    .image, .image1 {
+    .image {
       width: 200px;
       transition: transform 0.9s ease-in-out;
       transition-delay: 0.6s;
@@ -372,7 +372,6 @@ input:focus {
     }
   
     .container.sign-up-mode .left-panel .image,
-    .container.sign-up-mode .left-panel .image1,
     .container.sign-up-mode .left-panel .content {
       transform: translateY(-300px);
     }
@@ -397,7 +396,7 @@ input:focus {
       padding: 0 1.5rem;
     }
   
-    .image, .image1 {
+    .image {
       display: none;
     }
     .panel .content {
