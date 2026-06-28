@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول وإنشاء حساب - أبطال حماية الاختراق</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha512-9BwLAVqqt6oFdXohPLuNHxhx36BVj5uGSGmizkmGkgl3uMSgNalKc/smum+GJU/TTP0jy0+ruwC3xNAk3F759A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <style>
+        body, input, button, h2, h3, p, .btn {
+            font-family: 'Cairo', sans-serif !important;
+        }
+        /* Swap floating panels direction for RTL */
+        .container:before {
+            right: auto;
+            left: 30%; /* Shifted appropriately */
+            transform: translate(-50%, -50%);
+        }
+        .container.sign-up-mode:before {
+            transform: translate(50%, 100%);
+            right: auto;
+            left: 30%;
+        }
+        [dir="rtl"] .left-panel {
+            padding: 3rem 12% 2rem 17%;
+        }
+        [dir="rtl"] .right-panel {
+            padding: 3rem 17% 2rem 12%;
+        }
+    </style> -->
+</head>
+<body>
+    <div class="container">
+        <div class="forms-container">
+            <div class="signin-signup">
+                <form action="" class="sign-in-form" id="signin-form" onsubmit="return false;">
+                    <h2 class="title">تسجيل الدخول</h2>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="البريد الإلكتروني" id="signin-email" required>
+                    </div>
+                    
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="كلمة المرور" id="signin-password" required>
+                    </div>
+                    <input type="submit" value="دخول" class="btn btn-solid" id="signin-btn-submit">
+                    <p class="social-text">أو سجل الدخول عبر منصات التواصل الاجتماعي</p>
+                    <div class="social-media">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-google"></i>
+                        </a>
+                    </div>
+                </form>
+                <form action="" class="sign-up-form" id="signup-form" onsubmit="return false;">
+                    <h2 class="title">إنشاء حساب</h2>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" placeholder="الاسم الكامل" id="signup-username" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" placeholder="البريد الإلكتروني" id="signup-email" required>
+                    </div>
+                    
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" placeholder="كلمة المرور" id="signup-password" required>
+                    </div>
+                    <input type="submit" value="تسجيل" class="btn btn-solid" id="signup-btn-submit">
+
+                    <p class="social-text">أو أنشئ حسابك عبر منصات التواصل الاجتماعي</p>
+                    <div class="social-media">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-google"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="panels-container">
+            <div class="panel left-panel">
+                <div class="content">
+                    <h3>جديد هنا؟</h3>
+                    <p>انضم إلى سايبرفيل وتعلّم كيف تكون بطلاً رقمياً ذكياً وآمناً!</p>
+                    <button class="btn transparent" id="sign-up-btn">إنشاء حساب</button>
+                </div>
+                <img src="../imgs/leo-lila.png" class="image1" alt="">
+            </div>
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>عضو في فريقنا؟</h3>
+                    <p>مرحباً بعودتك يا بطل سايبرفيل! دعنا نحافظ على أمان مدينتنا معاً.</p>
+                    <button class="btn transparent" id="sign-in-btn">تسجيل الدخول</button>
+                </div>
+                <img src="../imgs/undraw_online-community_3o0l.svg" class="image" alt="">
+            </div>
+        </div>
+    </div>
+
+    <script src="../components/navbar.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>

@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" style="height: auto; min-height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSH Adventure Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Global UI -->
+    <link rel="stylesheet" href="components/cyber-background.css">
+    <link rel="stylesheet" href="chatbot.css">
+    
+    <style>
+       body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a56;
+    color: white;
+    overflow-x: hidden;
+    padding-top: 80px;
+}
+
+
+        
+        h1, h2, h3, .font-display {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .map-scroll-container::-webkit-scrollbar {
+            height: 12px;
+        }
+        .map-scroll-container::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .map-scroll-container::-webkit-scrollbar-thumb {
+            background: #4f46e5; 
+            border-radius: 10px;
+            border: 3px solid #1e293b;
+        }
+        
+        :root {
+            --main-color-o: #7483D4;
+            --main-color-p: #f95156;
+        }
+
+        .main-font {
+            font-family: "p-font";
+        }
+
+        a {
+            text-decoration: none;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        img {
+            user-select: none;
+        }
+
+        .main-btn {
+            padding: 10px;
+            border-radius: 100px;
+            background-image: linear-gradient(60deg, var(--main-color-p), var(--main-color-o));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            transition: .3s;
+            color: white;
+        }
+
+        .main-btn:hover {
+            background-color: white;
+            transform: scale(1.03);
+            box-shadow: 1px 1px 10px var(--main-color-o);
+        }
+
+     .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    padding: 0 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #12214C;
+    z-index: 999;
+}
+
+        
+
+        .page-content {
+            padding-top: 80px;
+        }
+
+        .nav-img {
+            width: 100px;
+            margin-left: 100px;
+        }
+
+        .nav-menu {
+            display: flex !important;
+            align-items: center;
+        }
+
+        .nav-list {
+            display: flex !important;
+            flex-direction: row;
+            list-style: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin: 10px;
+            padding: 5px;
+            transition: all .3s;
+            position: relative;
+        }
+
+        .nav-list li::after {
+            content: "";
+            width: 90%;
+            height: 3px;
+            background-color: #fd696f;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            transition: .3s;
+        }
+
+        .nav-list li:hover::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        .nav-list li:hover a {
+            color: var(--main-color-p);
+        }
+
+        .main-p {
+            font-family: "p-font";
+            color: #5B4F76;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .nav-icon ul {
+            display: flex !important;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-icon ul li {
+             display: flex !important;
+            align-items: center;
+            margin: 5px;
+        }
+
+        .side-btn {
+            display: flex;
+            align-items: center;
+        }
+
+        .side-bar {
+            background-image: linear-gradient(60deg, var(--main-color-p), var(--main-color-o));
+            width: 300px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            z-index: 9999;
+            transform: translateX(500px);
+            transition: 1s;
+        }
+
+        .side-bar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .side-bar .side-list li {
+            padding: 10px;
+            transition: .3s;
+            border-radius: 5px;
+            width: 90%;
+            margin: auto;
+        }
+
+        .side-bar .side-list li:hover {
+            transform: translateX(5px);
+            background-color: rgb(254, 252, 252);
+        }
+
+        .side-bar li a {
+            color: white;
+        }
+
+        .close-side {
+            border: 0;
+            background-color: transparent;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fd696f;
+            font-size: 20px;
+            border-radius: 5px;
+            transition: .3s;
+        }
+
+        .close-side:hover {
+            color: #FD696F;
+            background-color: white;
+        }
+
+        .side-icon {
+            margin: 10px;
+        }
+
+        .side-icon button {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            background-color: white;
+            transition: .3s;
+            color: var(--main-color-o);
+        }
+
+        .head {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .head-content {
+            margin-top: 20px;
+        }
+
+        .watch-btn {
+            width: 60px;
+            height: 60px;
+            padding: 15px;
+            margin: 0 20px;
+            border-radius: 50%;
+            background-image: linear-gradient(white, white);
+            font-size: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            transition: .3s;
+            color: #FE914D;
+        }
+
+        @font-face {
+            font-family: "p-font";
+            src: url(../webfonts/BalsamiqSans-Regular.ttf);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating-icon {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .node-glow {
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.6);
+        }
+        
+        .node-glow:hover {
+            box-shadow: 0 0 25px rgba(79, 70, 229, 0.9), 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .locked-node {
+            filter: grayscale(100%);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .path-line {
+            fill: none;
+            stroke: rgba(99, 102, 241, 0.3);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 20;
+            animation: dash 60s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -1000;
+            }
+        }
+
+        .bg-cyber-grid {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        
+
+        .zone-background-1 {
+    background-image: url("images/Group1.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 30px;
+    position: relative;
+}
+
+
+        /* .zone-background-1 {
+            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, rgba(16, 185, 129, 0.08) 50%, transparent 100%);
+            position: relative;
+        } */
+
+        .zone-background-2 {
+    background-image: url("images/Group2.png");
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+}
+
+        /* .zone-background-2 {
+            background: radial-gradient(ellipse at center, rgba(147, 51, 234, 0.15) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 100%);
+            position: relative;
+        } */
+.zone-background-3 {
+    background-image: url("images/Group3.png");
+    background-size: cover;
+    background-position: center;
+    border-radius: 30px;
+}
+        /* .zone-background-3 {
+            background: radial-gradient(ellipse at center, rgba(249, 115, 22, 0.15) 0%, rgba(251, 191, 36, 0.08) 50%, transparent 100%);
+            position: relative;
+        } */
+
+        .zone-connector {
+            position: absolute;
+            top: 50%;
+            right: -80px;
+            width: 80px;
+            height: 4px;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        .locked-level {
+    background-color: #2a1f3d;
+    border: 4px solid #7c3aed;
+    color: #d8b4fe;
+    filter: grayscale(60%);
+    opacity: 0.8;
+}
+
+
+        .zone-connector::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.6), transparent);
+            transform: translateY(-50%);
+            animation: energyFlow 3s ease-in-out infinite;
+        }
+
+        .zone-connector::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -8px;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.8), transparent);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes energyFlow {
+            0%, 100% {
+                opacity: 0.4;
+                transform: translateY(-50%) scaleX(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50%) scaleX(1.2);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translateY(-50%) scale(0.8);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-50%) scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .zone-glow-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(99, 102, 241, 0.6);
+            border-radius: 50%;
+            animation: floatParticle 8s ease-in-out infinite;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-400px) translateX(50px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body style="height: auto; min-height: 100%;" class="bg-slate-900">
+    <!-- Floating Stats Dashboard -->
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-40 bg-slate-900/80 backdrop-blur-md border border-indigo-500/30 rounded-2xl px-6 py-3 shadow-2xl flex items-center gap-8 text-sm font-display">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-trophy text-yellow-400 text-lg"></i>
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Total Score</div>
+                <div class="font-bold text-white text-base" id="mapStatScore">0</div>
+            </div>
+        </div>
+        <div class="h-8 w-[1px] bg-slate-800"></div>
+        <div class="flex items-center gap-2">
+            <i class="fas fa-tasks text-cyan-400 text-lg"></i>
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Completed</div>
+                <div class="font-bold text-white text-base" id="mapStatLevels">0 / 9</div>
+            </div>
+        </div>
+        <div class="h-8 w-[1px] bg-slate-800"></div>
+        <div class="flex items-center gap-2">
+            <i class="fas fa-percentage text-pink-400 text-lg"></i>
+            <div>
+                <div class="text-[10px] text-slate-400 uppercase tracking-wider">Completion</div>
+                <div class="font-bold text-white text-base" id="mapStatPercent">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unified Navbar -->
+    <script src="components/navbar.js"></script>
+
+    <div class="relative w-full min-h-screen flex flex-col overflow-hidden"
+         style="background-image: linear-gradient(
+  rgba(16, 16, 65, 0.85),
+  rgb(26,26,86)
+); background-size: cover; background-position: center; background-repeat: no-repeat;">
+        
+        <div class="absolute inset-0 bg-cyber-grid opacity-30 pointer-events-none"></div>
+        
+        <div class="absolute top-10 left-10 text-cyan-400 opacity-20 text-6xl floating-icon" style="animation-delay: 0s;"><i class="fas fa-shield-alt"></i></div>
+        <div class="absolute bottom-20 right-40 text-purple-400 opacity-20 text-5xl floating-icon" style="animation-delay: 1s;"><i class="fas fa-lock"></i></div>
+        <div class="absolute top-32 right-1/3 text-pink-400 opacity-20 text-4xl floating-icon" style="animation-delay: 2s;"><i class="fas fa-wifi"></i></div>
+
+        <div class="flex-1 relative overflow-x-auto overflow-y-hidden map-scroll-container cursor-grab active:cursor-grabbing" id="mapContainer">
+            
+            <div class="relative h-full min-w-[2000px] flex items-center p-10">
+                
+                <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0" id="pathSvg"></svg>
+
+                <div class="relative w-[550px] h-[700px] flex-shrink-0 mr-20 group zone-background-1">
+                    <div class="zone-glow-particles">
+                        <div class="particle" style="left: 20%; animation-delay: 0s;"></div>
+                        <div class="particle" style="left: 40%; animation-delay: 2s;"></div>
+                        <div class="particle" style="left: 60%; animation-delay: 4s;"></div>
+                        <div class="particle" style="left: 80%; animation-delay: 6s;"></div>
+                    </div>
+                    <div class="zone-connector"></div>
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-blue-600/20 px-4 py-2 rounded-lg border border-blue-500/30 backdrop-blur-sm">
+                        <h2 class="text-blue-300 font-bold text-lg"><i class="fas fa-user-shield mr-2"></i>Zone 1: User Protection</h2>
+                    </div>
+                    
+                    <div class="relative w-full h-full" id="section1-nodes"></div>
+                </div>
+
+                <div class="relative w-[500px] h-[700px] flex-shrink-0 mr-20 zone-background-2">
+                    <div class="zone-glow-particles">
+                        <div class="particle" style="left: 25%; animation-delay: 1s; background: rgba(147, 51, 234, 0.6);"></div>
+                        <div class="particle" style="left: 50%; animation-delay: 3s; background: rgba(147, 51, 234, 0.6);"></div>
+                        <div class="particle" style="left: 75%; animation-delay: 5s; background: rgba(147, 51, 234, 0.6);"></div>
+                    </div>
+                    <div class="zone-connector"></div>
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-purple-600/20 px-4 py-2 rounded-lg border border-purple-500/30 backdrop-blur-sm">
+                        <h2 class="text-purple-300 font-bold text-lg"><i class="fas fa-server mr-2"></i>Zone 2: System Core</h2>
+                    </div>
+                    
+                    <div class="relative w-full h-full" id="section2-nodes"></div>
+                </div>
+
+                <div class="relative w-[500px] h-[700px] flex-shrink-0 pr-20 zone-background-3">
+                    <div class="zone-glow-particles">
+                        <div class="particle" style="left: 30%; animation-delay: 0.5s; background: rgba(249, 115, 22, 0.6);"></div>
+                        <div class="particle" style="left: 60%; animation-delay: 2.5s; background: rgba(249, 115, 22, 0.6);"></div>
+                        <div class="particle" style="left: 85%; animation-delay: 4.5s; background: rgba(249, 115, 22, 0.6);"></div>
+                    </div>
+                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-orange-600/20 px-4 py-2 rounded-lg border border-orange-500/30 backdrop-blur-sm">
+                        <h2 class="text-orange-300 font-bold text-lg"><i class="fas fa-ambulance mr-2"></i>Zone 3: Response</h2>
+                    </div>
+                    
+                    <div class="relative w-full h-full" id="section3-nodes"></div>
+                </div>
+
+                <div class="relative flex-shrink-0 flex flex-col items-center justify-center opacity-50">
+                    <i class="fas fa-flag-checkered text-6xl text-slate-600 mb-4"></i>
+                    <span class="text-slate-500 font-bold">More Coming Soon</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="levelModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-800 border-2 border-indigo-500 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-90 transition-transform duration-300" id="modalContent">
+            <div class="flex justify-between items-start mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg text-3xl text-white" id="modalIcon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <button id="closeModal" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-white mb-2 font-display" id="modalTitle">Level Title</h2>
+            <div class="flex items-center gap-2 mb-4">
+                <span class="bg-indigo-500/20 text-indigo-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider" id="modalZone">Zone Name</span>
+                <span class="bg-green-500/20 text-green-300 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider hidden" id="modalCompletedBadge">Completed</span>
+            </div>
+            
+            <p class="text-slate-300 mb-6 leading-relaxed" id="modalDesc">
+                Mission description goes here.
+            </p>
+            
+            <button id="startMissionBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-cyan-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-lg">
+                <i class="fas fa-play"></i> Start Mission
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = null;
+
+        const levels = [
+            { id: 1, zone: 1, title: "Strong Password", desc: "Learn how to create unbreakable passwords.", icon: "fa-key", x: 120, y: 450, page: "levels/level1.html" },
+            { id: 2, zone: 1, title: "2FA Shield", desc: "Set up Two-Factor Authentication.", icon: "fa-mobile-alt", x: 50, y: 250, page: "levels/level2.html" },
+            { id: 3, zone: 1, title: "Phishing Spotter", desc: "Learn to spot online traps and scams.", icon: "fa-fish", x: 220, y: 30, page: "levels/level3.html" },
+            { id: 4, zone: 1, title: "Safe Browsing", desc: "Surf the web securely without catching malware.", icon: "fa-globe", x: 380, y: 290, page: "levels/level4.html" },
+            { id: 5, zone: 2, title: "Patch Manager", desc: "Keep systems updated and lock security gaps.", icon: "fa-band-aid", x: 30, y: 290, page: "levels/level5.html" },
+            { id: 6, zone: 2, title: "Firewall Guard", desc: "Defend against unauthorized connections. (Coming soon)", icon: "fa-brick", x: 200, y: 10 },
+            { id: 7, zone: 2, title: "Malware Hunter", desc: "Find and eliminate virus threats.", icon: "fa-bug", x: 440, y: 290, page: "levels/level7.html" },
+            { id: 8, zone: 3, title: "Data Backup", desc: "Protect files with backup clouds.", icon: "fa-database", x: 120, y: 200, page: "levels/level8.html" },
+            { id: 9, zone: 3, title: "Privacy Pro", desc: "Lock down your online personal data.", icon: "fa-user-secret", x: 400, y: 350, page: "levels/level9.html" }
+        ];
+
+        function applyProgress() {
+            const progress = window.hshProgress || { completedLevels: [], levels: [] };
+            const completedIds = progress.completedLevels || [];
+
+            levels.forEach((level, index) => {
+                const isCompleted = completedIds.includes(level.id);
+                const levelData = (progress.levels || []).find(l => l.levelId === level.id);
+                level.progress = levelData || null;
+
+                if (isCompleted) {
+                    level.status = "completed";
+                } else {
+                    let unlocked = false;
+                    if (level.id === 1) {
+                        unlocked = true;
+                    } else if (!level.page) {
+                        unlocked = false; // Levels without a page (coming soon) remain locked
+                    } else if (level.id === 7) {
+                        unlocked = completedIds.includes(5); // Skip Level 6
+                    } else {
+                        unlocked = completedIds.includes(level.id - 1);
+                    }
+                    level.status = unlocked ? "unlocked" : "locked";
+                }
+            });
+        }
+
+        function updateStats() {
+            const progress = window.hshProgress || { totalScore: 0, completedLevels: [], completionPercentage: 0 };
+            document.getElementById('mapStatScore').innerText = progress.totalScore || 0;
+            document.getElementById('mapStatPercent').innerText = (progress.completionPercentage || 0) + '%';
+            const completedCount = (progress.completedLevels || []).length;
+            document.getElementById('mapStatLevels').innerText = completedCount + ' / 9';
+        }
+
+        function renderMap() {
+            const s1 = document.getElementById('section1-nodes');
+            const s2 = document.getElementById('section2-nodes');
+            const s3 = document.getElementById('section3-nodes');
+            
+            s1.innerHTML = ''; s2.innerHTML = ''; s3.innerHTML = '';
+
+            levels.forEach(level => {
+                const node = document.createElement('div');
+                const isLocked = level.status === 'locked';
+                const isCompleted = level.status === 'completed';
+                
+                let classes = "absolute w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-300 transform z-10 ";
+                
+                if (isLocked) {
+                    classes += "locked-level locked-node";
+                } else if (isCompleted) {
+                    classes += "bg-gradient-to-br from-green-500 to-emerald-700 border-4 border-green-400 text-white cursor-pointer hover:scale-110 shadow-lg shadow-green-500/40";
+                } else {
+                    classes += "bg-gradient-to-br from-indigo-500 to-purple-700 border-4 border-cyan-400 text-white cursor-pointer hover:scale-110 node-glow animate-pulse-slow";
+                }
+
+                node.className = classes;
+                node.style.left = `${level.x}px`;
+                node.style.top = `${level.y}px`;
+                
+                let iconHtml = `<i class="fas ${isLocked ? 'fa-lock' : level.icon} text-3xl mb-1"></i>`;
+                if (isCompleted) {
+                    iconHtml = `<div class="relative"><i class="fas ${level.icon} text-3xl mb-1"></i><div class="absolute -top-2 -right-2 bg-white text-green-600 rounded-full w-6 h-6 flex items-center justify-center border-2 border-green-600"><i class="fas fa-check text-xs"></i></div></div>`;
+                }
+
+                node.innerHTML = `
+                    ${iconHtml}
+                    <span class="text-[10px] font-bold uppercase tracking-wider">${isLocked ? 'Locked' : 'Level ' + level.id}</span>
+                `;
+
+                const label = document.createElement('div');
+                label.className = `absolute w-32 text-center text-sm font-bold ${isLocked ? 'text-slate-500' : 'text-white'} bg-slate-900/80 px-2 py-1.5 rounded backdrop-blur-sm pointer-events-none flex flex-col items-center`;
+                label.style.left = `${level.x - 16}px`;
+                label.style.top = `${level.y + 105}px`;
+
+                if (isCompleted && level.progress) {
+                    const starsHtml = Array.from({ length: 3 }, (_, i) => 
+                        `<i class="fas fa-star ${i < level.progress.stars ? 'text-yellow-400' : 'text-slate-600'} text-[10px]"></i>`
+                    ).join('');
+                    label.innerHTML = `
+                        <div class="leading-tight">${level.title}</div>
+                        <div class="flex justify-center gap-0.5 mt-1">${starsHtml}</div>
+                        <div class="text-[9px] text-cyan-300 font-mono mt-0.5">${level.progress.grade} · PB: ${level.progress.highestScore}</div>
+                    `;
+                } else {
+                    label.innerText = level.title;
+                }
+
+                if (!isLocked) {
+                    node.addEventListener('click', () => openModal(level));
+                }
+
+                if (level.zone === 1) {
+                    s1.appendChild(node);
+                    s1.appendChild(label);
+                } else if (level.zone === 2) {
+                    s2.appendChild(node);
+                    s2.appendChild(label);
+                } else {
+                    s3.appendChild(node);
+                    s3.appendChild(label);
+                }
+            });
+
+            drawPaths();
+        }
+
+        function drawPaths() {
+            const svg = document.getElementById('pathSvg');
+            const s1Offset = 40;
+            const s2Offset = s1Offset + 550 + 80;
+            const s3Offset = 400 + 500 + 400;
+
+            let pathD = "";
+            let points = [];
+
+            levels.forEach((level, index) => {
+                let x = level.x + 48;
+                let y = level.y + 100;
+
+                if (level.zone === 1) x += s1Offset;
+                if (level.zone === 2) x += s2Offset;
+                if (level.zone === 3) x += s3Offset;
+
+                points.push({ x, y });
+            });
+
+            if (points.length > 0) {
+                pathD = `M ${points[0].x} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) {
+                    const p1 = points[i-1];
+                    const p2 = points[i];
+                    const mx = (p1.x + p2.x) / 2;
+                    pathD += ` C ${mx} ${p1.y}, ${mx} ${p2.y}, ${p2.x} ${p2.y}`;
+                }
+            }
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", pathD);
+            path.setAttribute("class", "path-line");
+            svg.innerHTML = '';
+            svg.appendChild(path);
+        }
+
+        const modal = document.getElementById('levelModal');
+        const modalContent = document.getElementById('modalContent');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        function openModal(level) {
+            currentLevel = level;
+            document.getElementById('modalTitle').innerText = level.title;
+            document.getElementById('modalDesc').innerText = level.desc;
+            document.getElementById('modalZone').innerText = level.zone === 1 ? 'User Protection' : level.zone === 2 ? 'System Core' : 'Response';
+            const iconContainer = document.getElementById('modalIcon');
+            iconContainer.innerHTML = `<i class="fas ${level.icon}"></i>`;
+            
+            const badge = document.getElementById('modalCompletedBadge');
+            level.status === "completed" ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+
+            const oldDetails = document.getElementById('modalDetailsBlock');
+            if (oldDetails) oldDetails.remove();
+
+            if (level.status === "completed" && level.progress) {
+                const starsHtml = Array.from({ length: 3 }, (_, i) => 
+                    `<i class="fas fa-star ${i < level.progress.stars ? 'text-yellow-400' : 'text-slate-600'} text-lg"></i>`
+                ).join('');
+                
+                const detailsHtml = `
+                    <div class="mt-4 p-4 bg-slate-900/60 border border-slate-700 rounded-xl font-display text-sm space-y-2" id="modalDetailsBlock">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Highest Score:</span>
+                            <span class="text-yellow-400 font-bold text-base">${level.progress.highestScore}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Stars Earned:</span>
+                            <div class="flex gap-1">${starsHtml}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Grade achieved:</span>
+                            <span class="text-cyan-400 font-bold text-base">${level.progress.grade}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Total Attempts:</span>
+                            <span class="text-white font-bold">${level.progress.attempts}</span>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('modalDesc').insertAdjacentHTML('afterend', detailsHtml);
+            }
+
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modalContent.classList.remove('scale-90');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-90');
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+        
+        const startBtn = document.getElementById('startMissionBtn');
+        startBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!currentLevel || !currentLevel.page) {
+                console.error('Level page is missing', currentLevel);
+                return;
+            }
+            window.location.href = currentLevel.page;
+        });
+
+        document.addEventListener('hshProgressUpdated', () => {
+            applyProgress();
+            renderMap();
+            updateStats();
+        });
+
+        window.addEventListener('load', () => {
+            applyProgress();
+            renderMap();
+            updateStats();
+            
+            const slider = document.getElementById('mapContainer');
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('active');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+            slider.addEventListener('mousemove', (e) => {
+                if(!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        });
+
+        window.addEventListener('resize', drawPaths);
+    </script>
+
+    <!-- Global UI Scripts -->
+    <script src="components/cyber-background.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

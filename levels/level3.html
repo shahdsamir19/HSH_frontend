@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Phishing Awareness Level - CyberShield</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Fredoka:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: 'hsl(230 60% 10%)',
+          foreground: 'hsl(200 20% 95%)',
+          card: 'hsl(230 50% 12%)',
+          primary: { DEFAULT: 'hsl(190 100% 50%)', foreground: 'hsl(230 60% 10%)' },
+          secondary: { DEFAULT: 'hsl(230 40% 18%)', foreground: 'hsl(200 20% 95%)' },
+          muted: { DEFAULT: 'hsl(230 30% 16%)', foreground: 'hsl(220 15% 60%)' },
+          accent: { DEFAULT: 'hsl(190 90% 45%)', foreground: 'hsl(230 60% 10%)' },
+          destructive: { DEFAULT: 'hsl(0 85% 55%)', foreground: 'hsl(0 0% 100%)' },
+          warning: { DEFAULT: 'hsl(45 100% 50%)', foreground: 'hsl(230 60% 10%)' },
+          success: { DEFAULT: 'hsl(155 100% 45%)', foreground: 'hsl(230 60% 10%)' },
+          fuchsia: { DEFAULT: 'hsl(300 100% 50%)', foreground: 'hsl(230 60% 10%)' },
+          border: 'hsl(230 30% 20%)',
+        },
+        fontFamily: {
+          display: ['Orbitron', 'sans-serif'],
+          body: ['Fredoka', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+body {
+  font-family: 'Fredoka', sans-serif;
+  color: hsl(200 20% 95%);
+  margin: 0;
+  background: transparent !important;
+}
+  h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Orbitron', sans-serif; }
+  code,.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  .text-glow-cyan { text-shadow: 0 0 10px hsl(190 100% 50% / .8), 0 0 30px hsl(190 100% 50% / .4), 0 0 50px hsl(190 100% 50% / .2); }
+  .text-glow-red { text-shadow: 0 0 10px hsl(0 85% 55% / .8), 0 0 30px hsl(0 85% 55% / .4); }
+  .text-glow-green { text-shadow: 0 0 10px hsl(155 100% 45% / .8), 0 0 30px hsl(155 100% 45% / .4); }
+  .text-glow-yellow { text-shadow: 0 0 10px hsl(45 100% 50% / .8), 0 0 30px hsl(45 100% 50% / .4); }
+  .text-glow-fuchsia { text-shadow: 0 0 10px hsl(300 100% 50% / .8), 0 0 30px hsl(300 100% 50% / .4); }
+
+  .box-glow-cyan { box-shadow: 0 0 20px hsl(190 100% 50% / .3), 0 0 40px hsl(190 100% 50% / .15), inset 0 1px 0 hsl(190 100% 50% / .1); }
+  .box-glow-red { box-shadow: 0 0 20px hsl(0 85% 55% / .4), 0 0 40px hsl(0 85% 55% / .2); }
+  .box-glow-green { box-shadow: 0 0 20px hsl(155 100% 45% / .4), 0 0 40px hsl(155 100% 45% / .2); }
+  .box-glow-yellow { box-shadow: 0 0 20px hsl(45 100% 50% / .4), 0 0 40px hsl(45 100% 50% / .2); }
+  .box-glow-fuchsia { box-shadow: 0 0 20px hsl(300 100% 50% / .4), 0 0 40px hsl(300 100% 50% / .2); }
+
+  .gradient-cyan-fuchsia { background: linear-gradient(135deg, hsl(190 100% 50%) 0%, hsl(300 100% 50%) 100%); }
+
+  @keyframes glitch {
+    0%,90%,100% { transform: translate(0); filter: hue-rotate(0); }
+    92% { transform: translate(-2px,1px); filter: hue-rotate(20deg); }
+    94% { transform: translate(2px,-1px); filter: hue-rotate(-20deg); }
+    96% { transform: translate(-1px,-1px); filter: hue-rotate(10deg); }
+    98% { transform: translate(1px,1px); filter: hue-rotate(-10deg); }
+  }
+  .glitch-text { animation: glitch 3s infinite; }
+
+  @keyframes pulse-glow { 0%,100% { opacity:.6; filter: brightness(1);} 50% { opacity:1; filter: brightness(1.2);} }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+  @keyframes shield-pulse { 0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px hsl(190 100% 50% / .4));} 50% { transform: scale(1.05); filter: drop-shadow(0 0 25px hsl(190 100% 50% / .8));} }
+  .animate-shield-pulse { animation: shield-pulse 2s ease-in-out infinite; }
+
+  @keyframes shake { 0%,100%{transform:translateX(0);} 10%,30%,50%,70%,90%{transform:translateX(-5px);} 20%,40%,60%,80%{transform:translateX(5px);} }
+  .animate-shake { animation: shake .5s ease-in-out; }
+
+  @keyframes confetti-fall { 0%{transform:translateY(-10vh) rotate(0); opacity:1;} 100%{transform:translateY(100vh) rotate(720deg); opacity:0;} }
+
+  @keyframes typing-dot { 0%,80%,100%{ transform: scale(0.6); opacity:0.4;} 40%{ transform: scale(1); opacity:1;} }
+  .typing-dot { animation: typing-dot 1.2s infinite ease-in-out; }
+  
+</style>
+<link rel="stylesheet" href="../chatbot.css">
+<link rel="stylesheet" href="../components/cyber-background.css">
+</head>
+<body >
+<script src="../components/navbar.js"></script>
+<div id="root"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "framer-motion": "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.462.0?deps=react@18.3.1"
+  }
+}
+</script>
+
+<script type="text/babel" data-type="module" data-presets="react">
+import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Shield, Menu, X, Trophy, Award, Facebook, Linkedin, Twitter,
+  Play, AlertTriangle, Eye, CheckCircle2,
+  Fish, Mail, MessageCircle, Flag, Reply, EyeOff,
+  ChevronLeft, ChevronRight, Lock, Gift, KeyRound, UserX,
+  ShieldAlert, ShieldCheck, Star, Sparkles, Bot, Send,
+  BadgeCheck, Instagram, Smartphone
+} from 'lucide-react';
+
+/* ============ Sounds ============ */
+let audioCtx;
+const getCtx = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; };
+const tone = (freq, dur=0.15, type='sine', gain=0.05) => {
+  try {
+    const ctx = getCtx();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e){}
+};
+const sounds = {
+  swipe: () => tone(600, 0.08, 'triangle', 0.04),
+  ping: () => tone(880, 0.1, 'sine', 0.04),
+  alertBeep: () => { tone(880, 0.1, 'square', 0.04); setTimeout(()=>tone(880,0.1,'square',0.04),140); },
+  error: () => { tone(200, 0.2, 'sawtooth', 0.05); setTimeout(()=>tone(160,0.25,'sawtooth',0.05),100); },
+  shieldActivate: () => { tone(440,0.1,'sine',0.05); setTimeout(()=>tone(660,0.1,'sine',0.05),80); setTimeout(()=>tone(880,0.15,'sine',0.05),160); },
+  reportFlag: () => { tone(523,0.1); setTimeout(()=>tone(659,0.1),100); setTimeout(()=>tone(784,0.2),200); },
+  success: () => { [523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,0.18,'sine',0.05), i*100)); },
+  flagFound: () => { tone(740,0.08,'triangle',0.05); setTimeout(()=>tone(988,0.12,'triangle',0.05),80); },
+};
+
+/* ============ Floating Particles ============ */
+function FloatingParticles({ count = 30 }) {
+  const particles = React.useMemo(() => Array.from({length: count}, (_,i) => ({
+    id:i, x:Math.random()*100, y:Math.random()*100, size:Math.random()*3+1,
+    duration:Math.random()*10+8, delay:Math.random()*5,
+    color:['hsl(190 100% 50%)','hsl(300 100% 50%)','hsl(155 100% 45%)'][Math.floor(Math.random()*3)],
+  })), [count]);
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0">
+      {particles.map(p => (
+        <motion.div key={p.id} className="absolute rounded-full"
+          style={{ left:`${p.x}%`, top:`${p.y}%`, width:p.size, height:p.size, background:p.color, boxShadow:`0 0 ${p.size*3}px ${p.color}` }}
+          animate={{ y:[0,-30,0], opacity:[0.3,1,0.3] }}
+          transition={{ duration:p.duration, delay:p.delay, repeat:Infinity, ease:'easeInOut' }}/>
+      ))}
+    </div>
+  );
+}
+
+/* ============ Confetti ============ */
+function ConfettiEffect({ active }) {
+  if (!active) return null;
+  const pieces = Array.from({length:60}, (_,i)=>({
+    id:i, x:Math.random()*100, delay:Math.random()*2, duration:Math.random()*2+2,
+    color:['hsl(190 100% 50%)','hsl(300 100% 50%)','hsl(155 100% 45%)','hsl(45 100% 50%)'][Math.floor(Math.random()*4)],
+    size: Math.random()*8+4,
+  }));
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50">
+      {pieces.map(p => (
+        <div key={p.id} style={{ position:'absolute', left:`${p.x}%`, top:0, width:p.size, height:p.size, background:p.color,
+          animation:`confetti-fall ${p.duration}s ease-in ${p.delay}s forwards`, borderRadius:'2px' }}/>
+      ))}
+    </div>
+  );
+}
+
+
+
+/* ============ Cyber Mentor Chatbot (floating) ============ */
+function CyberMentor({ message }) {
+  const [open, setOpen] = useState(false);
+  const [pulse, setPulse] = useState(false);
+  useEffect(()=>{ setPulse(true); const t=setTimeout(()=>setPulse(false),2000); return ()=>clearTimeout(t); }, [message]);
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{opacity:0,y:20,scale:0.9}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:0.9}}
+            className="mb-3 w-72 rounded-2xl border-2 border-fuchsia/40 bg-card/95 backdrop-blur-md p-4 box-glow-fuchsia">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg gradient-cyan-fuchsia flex items-center justify-center">
+                <Bot className="w-4 h-4 text-background"/>
+              </div>
+              <div className="flex-1">
+                <div className="font-display text-xs font-bold text-fuchsia text-glow-fuchsia">CYBER MENTOR</div>
+                <div className="text-[10px] text-muted-foreground font-mono flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"/>online
+                </div>
+              </div>
+              <button onClick={()=>setOpen(false)} className="p-1 rounded hover:bg-secondary/50"><X className="w-4 h-4 text-muted-foreground"/></button>
+            </div>
+            <motion.div key={message} initial={{opacity:0,y:5}} animate={{opacity:1,y:0}}
+              className="rounded-xl bg-secondary/40 border border-border p-3 text-sm text-foreground leading-relaxed">
+              {message}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <motion.button onClick={()=>{ setOpen(!open); sounds.ping(); }}
+        whileHover={{scale:1.08}} whileTap={{scale:0.95}}
+        animate={pulse ? { boxShadow:['0 0 0 0 hsl(300 100% 50% / 0.6)','0 0 0 18px hsl(300 100% 50% / 0)'] } : {}}
+        transition={{ duration:1.4, repeat: pulse?Infinity:0 }}
+        className="relative w-14 h-14 rounded-full gradient-cyan-fuchsia flex items-center justify-center box-glow-fuchsia">
+        <Bot className="w-7 h-7 text-background"/>
+        {!open && <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-success border-2 border-background animate-pulse"/>}
+      </motion.button>
+    </div>
+  );
+}
+
+/* ============ Trust Meter ============ */
+function TrustMeter({ value }) {
+  // value: 0-100. >70 green, 30-70 yellow, <30 red
+  const color = value > 70 ? 'success' : value > 30 ? 'warning' : 'destructive';
+  const glowMap = { success:'hsl(155 100% 45%)', warning:'hsl(45 100% 50%)', destructive:'hsl(0 85% 55%)' };
+  const label = value > 70 ? 'SAFE' : value > 30 ? 'SUSPICIOUS' : 'DANGEROUS';
+  return (
+    <div className="rounded-xl border border-border bg-secondary/30 p-3">
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Trust Meter</span>
+        <span className={`font-display text-xs font-bold text-${color}`} style={{textShadow:`0 0 10px ${glowMap[color]}`}}>{label}</span>
+      </div>
+      <div className="relative w-full h-2.5 rounded-full bg-muted overflow-hidden">
+        <motion.div className="h-full rounded-full"
+          initial={{width:'50%'}} animate={{width:`${value}%`, background:glowMap[color], boxShadow:`0 0 12px ${glowMap[color]}`}}
+          transition={{type:'spring',stiffness:120,damping:18}}/>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Briefing ============ */
+function BriefingSection({ onComplete }) {
+  const objectives = [
+    { icon: Eye, text: 'Detect suspicious messages' },
+    { icon: AlertTriangle, text: 'Identify emotional manipulation' },
+    { icon: Flag, text: 'Spot phishing red flags' },
+    { icon: Shield, text: 'Make safe decisions online' },
+  ];
+  const handleStart = () => { sounds.shieldActivate(); onComplete(); };
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+      className="min-h-screen pt-24 pb-12 px-4 flex items-center justify-center">
+      <div className="w-full max-w-5xl">
+        <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-8">
+          <span className="font-mono text-xs text-primary/70 tracking-[0.3em] uppercase">Level 3</span>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2 text-glow-cyan">Phishing Detection Mission</h1>
+          <p className="text-muted-foreground mt-2 max-w-lg mx-auto">Learn how scammers trick people online using fake messages and manipulation.</p>
+        </motion.div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <motion.div initial={{opacity:0,x:-30}} animate={{opacity:1,x:0}} transition={{delay:0.2}}
+            className="rounded-2xl border-2 border-primary/40 bg-card/80 backdrop-blur-sm overflow-hidden box-glow-cyan">
+            <div className="aspect-video bg-secondary/50 relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-fuchsia/10" />
+              <div className="absolute inset-0 cyber-grid opacity-30" />
+              <motion.div className="absolute" animate={{y:[0,-10,0]}} transition={{repeat:Infinity,duration:3}}>
+                <Fish className="w-16 h-16 text-fuchsia/40" strokeWidth={1.2}/>
+              </motion.div>
+              <motion.button whileHover={{scale:1.1}} whileTap={{scale:0.95}}
+                className="relative z-10 w-20 h-20 rounded-full gradient-cyan-fuchsia flex items-center justify-center box-glow-cyan">
+                <Play className="w-8 h-8 text-background ml-1" fill="currentColor" />
+              </motion.button>
+              <div className="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-background/80 backdrop-blur-sm">
+                <span className="font-mono text-xs text-primary">Mission Briefing</span>
+              </div>
+              <div className="absolute bottom-4 right-4 px-2 py-1 rounded bg-background/80 backdrop-blur-sm">
+                <span className="font-mono text-xs text-muted-foreground">3:12</span>
+              </div>
+            </div>
+          </motion.div>
+          <motion.div initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} transition={{delay:0.3}}
+            className="rounded-2xl border-2 border-fuchsia/40 bg-card/80 backdrop-blur-sm p-6 box-glow-fuchsia">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl gradient-cyan-fuchsia flex items-center justify-center"><Fish className="w-5 h-5 text-background"/></div>
+              <h2 className="font-display text-lg font-bold text-foreground">Mission Objectives</h2>
+            </div>
+            <div className="space-y-3">
+              {objectives.map((o,i)=>(
+                <motion.div key={i} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{delay:0.4+i*0.1}}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30 border border-border">
+                  <div className="w-8 h-8 rounded-lg bg-fuchsia/20 flex items-center justify-center flex-shrink-0">
+                    <o.icon className="w-4 h-4 text-fuchsia"/>
+                  </div>
+                  <div className="flex-1"><p className="text-sm text-foreground">{o.text}</p></div>
+                  <CheckCircle2 className="w-5 h-5 text-muted-foreground/30"/>
+                </motion.div>
+              ))}
+            </div>
+            <motion.button onClick={handleStart} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.8}}
+              whileHover={{scale:1.02, boxShadow:'0 0 30px hsl(190 100% 50% / 0.4)'}} whileTap={{scale:0.98}}
+              className="w-full mt-6 py-4 rounded-xl gradient-cyan-fuchsia font-display text-base font-bold text-background box-glow-cyan transition-all">
+              Start Mission →
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ============ Flash Cards ============ */
+const cards = [
+  { icon: Fish, title:'What is Phishing?', description:'Scammers pretend to be people or companies you trust, just to steal your information, passwords, or money.', accent:'cyan' },
+  { icon: AlertTriangle, title:'How Phishing Works', description:'Scammers create panic, urgency, fake rewards, or fake trust to push you into clicking before you think.', accent:'fuchsia' },
+  { icon: Gift, title:'Common Tricks', description:'Fake giveaways, fake account alerts, urgent "act now" messages, and OTP code scams from "friends".', accent:'yellow' },
+  { icon: Flag, title:'Red Flags', description:'Asking for passwords, threatening language, weird links, and rewards that look way too good to be true.', accent:'red' },
+  { icon: ShieldCheck, title:'How To Stay Safe', description:'Think before you click. Never share OTPs. Verify links. Report suspicious messages immediately.', accent:'green' },
+];
+const accentMap = {
+  cyan: { border:'border-primary/50', glow:'box-glow-cyan', text:'text-primary', icon:'text-primary', bg:'bg-primary/10', dot:'hsl(190 100% 50%)' },
+  fuchsia: { border:'border-fuchsia/50', glow:'box-glow-fuchsia', text:'text-fuchsia', icon:'text-fuchsia', bg:'bg-fuchsia/10', dot:'hsl(300 100% 50%)' },
+  yellow: { border:'border-warning/50', glow:'box-glow-yellow', text:'text-warning', icon:'text-warning', bg:'bg-warning/10', dot:'hsl(45 100% 50%)' },
+  red: { border:'border-destructive/50', glow:'box-glow-red', text:'text-destructive', icon:'text-destructive', bg:'bg-destructive/10', dot:'hsl(0 85% 55%)' },
+  green: { border:'border-success/50', glow:'box-glow-green', text:'text-success', icon:'text-success', bg:'bg-success/10', dot:'hsl(155 100% 45%)' },
+};
+function ExplanationCards({ onComplete }) {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const goTo = idx => { setDirection(idx > current ? 1 : -1); setCurrent(idx); sounds.swipe(); };
+  const next = () => { if (current < cards.length-1) goTo(current+1); else onComplete(); };
+  const prev = () => { if (current > 0) goTo(current-1); };
+  const card = cards[current]; const style = accentMap[card.accent]; const Icon = card.icon;
+  const variants = {
+    enter: d => ({ x: d>0?300:-300, opacity:0, scale:0.9 }),
+    center: { x:0, opacity:1, scale:1 },
+    exit: d => ({ x: d>0?-300:300, opacity:0, scale:0.9 }),
+  };
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-6">
+        <span className="font-mono text-xs text-fuchsia/70 tracking-[0.3em] uppercase">Knowledge Base</span>
+        <h2 className="font-display text-xl font-bold text-foreground mt-1 text-glow-fuchsia">Understanding Phishing</h2>
+      </motion.div>
+      <div className="flex gap-2 mb-8">
+        {cards.map((c,i)=>(
+          <button key={i} onClick={()=>goTo(i)}
+            className={`h-2.5 rounded-full transition-all duration-300 ${i===current ? `w-10 ${accentMap[c.accent].glow}` : i<current ? 'w-2.5 bg-primary/60' : 'w-2.5 bg-muted'}`}
+            style={{ backgroundColor: i===current ? accentMap[c.accent].dot : undefined }}/>
+        ))}
+      </div>
+      <div className="relative w-full max-w-md h-80">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div key={current} custom={direction} variants={variants}
+            initial="enter" animate="center" exit="exit"
+            transition={{ type:'spring', stiffness:300, damping:30 }}
+            drag="x" dragConstraints={{left:0,right:0}} dragElastic={0.4}
+            onDragEnd={(e,info)=>{ if (info.offset.x < -80) next(); else if (info.offset.x > 80) prev(); }}
+            className={`absolute inset-0 rounded-2xl border-2 ${style.border} ${style.glow} bg-card/90 backdrop-blur-sm p-8 flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing`}>
+            <motion.div initial={{scale:0,rotate:-20}} animate={{scale:1,rotate:0}} transition={{delay:0.15,type:'spring',stiffness:200}}
+              className={`w-20 h-20 rounded-2xl ${style.bg} flex items-center justify-center mb-6`}>
+              <Icon className={`w-10 h-10 ${style.icon}`} strokeWidth={1.5}/>
+            </motion.div>
+            <h3 className={`font-display text-xl font-bold mb-3 ${style.text}`}>{card.title}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">{card.description}</p>
+            <div className="absolute top-4 right-4 px-2 py-1 rounded-lg bg-secondary/50">
+              <span className="font-mono text-xs text-muted-foreground">{current+1}/{cards.length}</span>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <div className="flex items-center gap-6 mt-8">
+        <motion.button onClick={prev} disabled={current===0}
+          whileHover={{scale: current===0?1:1.05}} whileTap={{scale: current===0?1:0.95}}
+          className="p-3 rounded-full border-2 border-border bg-card/50 hover:border-primary/50 hover:bg-secondary transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+          <ChevronLeft className="w-5 h-5"/>
+        </motion.button>
+        <span className="text-muted-foreground font-mono text-sm w-16 text-center">{current+1} / {cards.length}</span>
+        <motion.button onClick={next} whileHover={{scale:1.05}} whileTap={{scale:0.95}}
+          className="p-3 rounded-full gradient-cyan-fuchsia box-glow-cyan">
+          <ChevronRight className="w-5 h-5 text-background"/>
+        </motion.button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Chat Simulator ============ */
+/* Each scenario: app icon, sender, message lines (typed in), correct action (report/ignore/reply), explanation */
+const scenarios = [
+  {
+    id:1, app:'whatsapp', appLabel:'WhatsApp', appIcon:MessageCircle, appColor:'success',
+    sender:'+91 98XX XX1240', avatar:'🎁', verified:false,
+    title:'Fake Giveaway Message',
+    sublabel:'Simulation 1',
+    messages:[
+      "🎉 CONGRATS!! You WON an iPhone 17 Pro 🎁",
+      "Just click this link to claim 👉 ipho ne-win.ru/free",
+      "HURRY! Only 2 minutes left ⏰⏰"
+    ],
+    correct:'report', trustStart:55, trustGood:95, trustBad:8,
+    feedbackGood:"You spotted a fake giveaway. Real brands never DM random people to give away phones with a 2-minute timer.",
+    feedbackBad:"That link was a phishing trap. Free iPhones via random DMs do not exist.",
+    mentor:"Free iPhone + huge urgency + weird link? That's three red flags in one message."
+  },
+  {
+    id:2, app:'instagram', appLabel:'Instagram DM', appIcon:Instagram, appColor:'fuchsia',
+    sender:'@meta_verify_team', avatar:'✔️', verified:false,
+    title:'Fake Instagram Verification',
+    sublabel:'Simulation 2',
+    messages:[
+      "Hello creator 👋 Meta has selected your account for FREE blue tick verification.",
+      "Login here to confirm identity: meta-verify[.]help/login",
+      "Failure to verify in 24h will delete your account permanently."
+    ],
+    correct:'report', trustStart:50, trustGood:92, trustBad:5,
+    feedbackGood:"You caught it. Meta never DMs you a login link, and a real verification badge is never given through a random link.",
+    feedbackBad:"That was a fake login page designed to steal your Instagram password.",
+    mentor:"Asking you to log in via a DM link is one of the biggest phishing red flags."
+  },
+  {
+    id:3, app:'sms', appLabel:'SMS', appIcon:Smartphone, appColor:'warning',
+    sender:'BANK-ALRT', avatar:'🏦', verified:false,
+    title:'OTP Scam',
+    sublabel:'Simulation 3',
+    messages:[
+      "Hi! This is Customer Care. We see suspicious activity on your account.",
+      "To secure it, please READ BACK the 6-digit OTP we just sent you.",
+      "Do NOT cancel this message or your account will be blocked."
+    ],
+    correct:'report', trustStart:45, trustGood:96, trustBad:3,
+    feedbackGood:"Perfect. No real bank, app, or company will EVER ask you to share your OTP. Never. Not once.",
+    feedbackBad:"They just emptied the account. Sharing an OTP is like handing them your house key.",
+    mentor:"Repeat after me: OTPs are like underwear. You never share them, even with people who ask nicely."
+  },
+  {
+    id:4, app:'email', appLabel:'Email Inbox', appIcon:Mail, appColor:'destructive',
+    sender:'no-reply@account-secure-alert.com', avatar:'⚠️', verified:false,
+    title:'"Your Account Will Be Deleted"',
+    sublabel:'Simulation 4',
+    messages:[
+      "URGENT: Your account will be PERMANENTLY DELETED in 12 hours.",
+      "Confirm your password and date of birth here to keep your account active:",
+      "http:// account-secure-alert .com / verify-now"
+    ],
+    correct:'report', trustStart:40, trustGood:94, trustBad:6,
+    feedbackGood:"Caught it. Scary deadlines + asking for your password = phishing every single time.",
+    feedbackBad:"Your account is now in someone else's hands. Real companies don't ask for passwords by email.",
+    mentor:"Real companies use 'support@theirdomain.com' — not 'account-secure-alert dot com'. Always check the sender."
+  },
+  {
+    id:5, app:'whatsapp', appLabel:'WhatsApp', appIcon:MessageCircle, appColor:'success',
+    sender:'Rohan (new number)', avatar:'😅', verified:false,
+    title:'Fake Friend Asking for Money',
+    sublabel:'Simulation 5',
+    messages:[
+      "Hey it's me Rohan! I lost my phone, this is my new number.",
+      "Bro emergency — can you send ₹2000 on this UPI? I'll return tomorrow promise 🙏",
+      "Don't call mom please she'll freak out 😭"
+    ],
+    correct:'report', trustStart:48, trustGood:93, trustBad:7,
+    feedbackGood:"Smart. 'New number + urgent money + don't tell anyone' is a classic impersonation scam. Always call your friend on their old number to confirm.",
+    feedbackBad:"That money is gone. Scammers love pretending to be a friend in trouble.",
+    mentor:"If a friend's 'new number' asks for money and says 'don't tell anyone' — call them on the OLD number first."
+  },
+];
+
+function MessageBubble({ text, delay, color }) {
+  return (
+    <motion.div initial={{opacity:0,y:10,scale:0.9}} animate={{opacity:1,y:0,scale:1}}
+      transition={{delay, type:'spring', stiffness:200, damping:20}}
+      className={`max-w-[85%] rounded-2xl rounded-tl-sm px-4 py-2.5 bg-secondary/60 border border-border text-sm text-foreground leading-snug`}>
+      {text}
+    </motion.div>
+  );
+}
+
+function ChatSimulator({ scenario, onComplete, setMentor }) {
+  const [visibleMsgs, setVisibleMsgs] = useState(0);
+  const [typing, setTyping] = useState(true);
+  const [choice, setChoice] = useState(null);
+  const [trust, setTrust] = useState(scenario.trustStart);
+  const [shake, setShake] = useState(false);
+  const [phase, setPhase] = useState('chat'); // chat | feedback
+
+  useEffect(()=>{
+    setMentor(scenario.mentor);
+    setVisibleMsgs(0); setChoice(null); setTrust(scenario.trustStart); setPhase('chat'); setTyping(true);
+    let i=0;
+    const tick = () => {
+      if (i >= scenario.messages.length) { setTyping(false); return; }
+      sounds.ping();
+      setVisibleMsgs(v=>v+1);
+      i++;
+      if (i < scenario.messages.length) setTimeout(tick, 1100);
+      else setTimeout(()=>setTyping(false), 600);
+    };
+    setTimeout(tick, 800);
+  }, [scenario.id]);
+
+  const handleChoice = c => {
+    setChoice(c);
+    const correct = c === scenario.correct;
+    if (correct) { sounds.reportFlag(); setTrust(scenario.trustGood); }
+    else { sounds.error(); setTrust(scenario.trustBad); setShake(true); setTimeout(()=>setShake(false),500); }
+    setTimeout(()=>setPhase('feedback'), 900);
+  };
+  const isCorrect = choice === scenario.correct;
+  const AppIcon = scenario.appIcon;
+  const appColor = scenario.appColor;
+
+  // dynamic trust drop as messages arrive
+  useEffect(()=>{
+    if (phase!=='chat') return;
+    if (visibleMsgs === 0) return;
+    setTrust(t => Math.max(scenario.trustStart - visibleMsgs*8, 18));
+  }, [visibleMsgs, phase, scenario.trustStart]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-6">
+        <span className={`font-mono text-xs text-${appColor}/70 tracking-[0.3em] uppercase`}>{scenario.sublabel}</span>
+        <h2 className={`font-display text-xl font-bold text-foreground mt-1 text-glow-${appColor==='destructive'?'red':appColor==='success'?'green':appColor==='warning'?'yellow':'fuchsia'}`}>{scenario.title}</h2>
+      </motion.div>
+
+      <div className="w-full max-w-md space-y-3">
+        <TrustMeter value={trust}/>
+
+        <AnimatePresence mode="wait">
+        {phase==='chat' && (
+          <motion.div key="chat" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale: shake?[1,0.98,1.02,0.98,1]:1}} exit={{opacity:0,scale:0.95}}
+            className={`rounded-2xl border-2 border-${appColor}/40 bg-card/90 backdrop-blur-sm overflow-hidden box-glow-${appColor==='destructive'?'red':appColor==='success'?'green':appColor==='warning'?'yellow':'fuchsia'} ${shake?'animate-shake':''}`}>
+
+            {/* Chat header */}
+            <div className={`flex items-center gap-3 px-4 py-3 bg-secondary/60 border-b border-border`}>
+              <div className={`w-10 h-10 rounded-full bg-${appColor}/20 flex items-center justify-center text-lg`}>{scenario.avatar}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-display text-sm font-bold text-foreground truncate">{scenario.sender}</span>
+                  {scenario.verified && <BadgeCheck className="w-4 h-4 text-primary"/>}
+                </div>
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono">
+                  <AppIcon className={`w-3 h-3 text-${appColor}`}/>{scenario.appLabel}
+                </div>
+              </div>
+              <div className="px-2 py-0.5 rounded bg-destructive/15 border border-destructive/30">
+                <span className="text-[10px] font-mono text-destructive glitch-text">UNKNOWN</span>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="p-4 min-h-[200px] space-y-2 flex flex-col">
+              {scenario.messages.slice(0, visibleMsgs).map((m,i)=>(
+                <MessageBubble key={i} text={m} delay={0} color={appColor}/>
+              ))}
+              {typing && (
+                <div className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-secondary/60 border border-border w-fit">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground typing-dot" style={{animationDelay:'0s'}}/>
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground typing-dot" style={{animationDelay:'0.2s'}}/>
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground typing-dot" style={{animationDelay:'0.4s'}}/>
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="p-4 border-t border-border bg-secondary/20">
+              <p className="text-[11px] text-muted-foreground text-center mb-3 font-mono uppercase tracking-widest">Your move, agent</p>
+              <div className="grid grid-cols-3 gap-2">
+                <motion.button onClick={()=>handleChoice('reply')} disabled={typing||!!choice} whileHover={{scale: typing?1:1.03}} whileTap={{scale:0.97}}
+                  className="py-2.5 rounded-xl bg-warning/15 border-2 border-warning/40 text-warning text-xs font-medium hover:bg-warning/25 transition-all disabled:opacity-40 flex flex-col items-center gap-1">
+                  <Reply className="w-4 h-4"/>Reply
+                </motion.button>
+                <motion.button onClick={()=>handleChoice('ignore')} disabled={typing||!!choice} whileHover={{scale: typing?1:1.03}} whileTap={{scale:0.97}}
+                  className="py-2.5 rounded-xl bg-muted border-2 border-border text-muted-foreground text-xs font-medium hover:bg-secondary transition-all disabled:opacity-40 flex flex-col items-center gap-1">
+                  <EyeOff className="w-4 h-4"/>Ignore
+                </motion.button>
+                <motion.button onClick={()=>handleChoice('report')} disabled={typing||!!choice}
+                  whileHover={{scale: typing?1:1.05, boxShadow:'0 0 25px hsl(155 100% 45% / 0.4)'}} whileTap={{scale:0.95}}
+                  className="py-2.5 rounded-xl bg-success/15 border-2 border-success/50 text-success text-xs font-bold hover:bg-success/25 transition-all disabled:opacity-40 box-glow-green flex flex-col items-center gap-1">
+                  <Flag className="w-4 h-4"/>Report
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {phase==='feedback' && (
+          <motion.div key="fb" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}}
+            className={`rounded-2xl border-2 ${isCorrect?'border-success/50 box-glow-green':'border-destructive/50 box-glow-red'} bg-card/95 backdrop-blur-sm p-7 text-center`}>
+            {isCorrect ? (<>
+              <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',stiffness:200,delay:0.15}}
+                className="w-20 h-20 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
+                <ShieldCheck className="w-12 h-12 text-success animate-shield-pulse" strokeWidth={1.5}/>
+              </motion.div>
+              <h3 className="font-display text-xl font-bold text-success mb-2 text-glow-green">Scam Blocked!</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">{scenario.feedbackGood}</p>
+              <motion.div initial={{scale:0}} animate={{scale:1}} transition={{delay:0.4}}
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/20 border border-success/30">
+                <span className="font-display text-lg font-bold text-success">+100</span>
+                <span className="text-xs text-success/70">XP</span>
+              </motion.div>
+            </>) : (<>
+              <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
+                <ShieldAlert className="w-12 h-12 text-destructive" strokeWidth={1.5}/>
+              </div>
+              <h3 className="font-display text-xl font-bold text-destructive mb-2 text-glow-red">You Got Phished!</h3>
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto">{scenario.feedbackBad}</p>
+            </>)}
+            <motion.button onClick={()=>onComplete(isCorrect)} whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+              className="mt-6 px-8 py-3 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background box-glow-cyan">
+              {scenario.id === scenarios.length ? 'Finish Mission →' : 'Next Scenario →'}
+            </motion.button>
+          </motion.div>
+        )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Find the Red Flags Challenge ============ */
+const redFlagText = [
+  { t:"URGENT!! ", flag:true, why:"Urgent wording" },
+  { t:"Your bank account ", flag:false },
+  { t:"will be CLOSED in 1 hour ", flag:true, why:"Threat / deadline" },
+  { t:"unless you ", flag:false },
+  { t:"send your password ", flag:true, why:"Password request" },
+  { t:"to ", flag:false },
+  { t:"http://secure-bank-help.ru/login ", flag:true, why:"Suspicious link" },
+  { t:"and ", flag:false },
+  { t:"claim a FREE ₹10,000 reward 🎁", flag:true, why:"Too-good-to-be-true reward" },
+];
+function RedFlagsChallenge({ onComplete, setMentor }) {
+  const totalFlags = redFlagText.filter(t=>t.flag).length;
+  const [found, setFound] = useState({});
+  const [done, setDone] = useState(false);
+
+  useEffect(()=>{ setMentor("Tap the parts of this message that feel suspicious. Look for urgency, threats, password requests, weird links, and fake rewards."); }, []);
+
+  const click = (i) => {
+    if (!redFlagText[i].flag || found[i]) return;
+    sounds.flagFound();
+    setFound(f => ({...f, [i]:true}));
+  };
+  const foundCount = Object.keys(found).length;
+  useEffect(()=>{ if (foundCount === totalFlags && !done) { setDone(true); sounds.success(); } }, [foundCount, totalFlags, done]);
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-6">
+        <span className="font-mono text-xs text-warning/70 tracking-[0.3em] uppercase">Challenge</span>
+        <h2 className="font-display text-xl font-bold text-foreground mt-1 text-glow-yellow">Find the Red Flags</h2>
+        <p className="text-sm text-muted-foreground mt-1">Tap every suspicious part of the message.</p>
+      </motion.div>
+
+      <div className="w-full max-w-lg space-y-4">
+        <div className="rounded-2xl border-2 border-warning/40 bg-card/90 backdrop-blur-sm p-6 box-glow-yellow">
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border">
+            <Mail className="w-4 h-4 text-warning"/>
+            <span className="font-mono text-xs text-muted-foreground">From: alerts@secure-bank-help.ru</span>
+          </div>
+          <p className="text-base leading-relaxed text-foreground">
+            {redFlagText.map((seg, i) => seg.flag ? (
+              <motion.span key={i} onClick={()=>click(i)}
+                animate={ found[i] ? { scale:[1,1.1,1] } : {} }
+                className={`cursor-pointer rounded px-1 transition-all ${found[i] ? 'bg-destructive/30 text-destructive font-semibold' : 'hover:bg-destructive/10'}`}
+                style={ found[i] ? { boxShadow:'0 0 14px hsl(0 85% 55% / 0.7)', textShadow:'0 0 8px hsl(0 85% 55% / 0.8)' } : {} }>
+                {seg.t}
+              </motion.span>
+            ) : <span key={i}>{seg.t}</span>)}
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-secondary/30 p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Flag className="w-4 h-4 text-destructive"/>
+            <span className="font-mono text-xs text-muted-foreground">RED FLAGS FOUND</span>
+          </div>
+          <span className="font-display text-lg font-bold text-destructive text-glow-red">{foundCount} / {totalFlags}</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {redFlagText.filter(s=>s.flag).map((s, idx) => {
+            const realIdx = redFlagText.indexOf(s);
+            const isFound = found[realIdx];
+            return (
+              <motion.div key={idx} initial={false} animate={{opacity: isFound?1:0.4, scale: isFound?1:0.95}}
+                className={`rounded-xl p-3 border ${isFound?'border-success/40 bg-success/10':'border-border bg-secondary/20'} flex items-center gap-2`}>
+                {isFound ? <CheckCircle2 className="w-4 h-4 text-success"/> : <Eye className="w-4 h-4 text-muted-foreground"/>}
+                <span className={`text-xs ${isFound?'text-success':'text-muted-foreground'}`}>{s.why}</span>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <AnimatePresence>
+          {done && (
+            <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0}}
+              className="rounded-2xl border-2 border-success/50 bg-card/95 p-5 text-center box-glow-green">
+              <h3 className="font-display text-base font-bold text-success text-glow-green mb-1">All Red Flags Detected!</h3>
+              <p className="text-xs text-muted-foreground mb-3">You've got a sharp eye, agent.</p>
+              <motion.button onClick={onComplete} whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+                className="px-6 py-2.5 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background box-glow-cyan">
+                Continue →
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Completion ============ */
+function CompletionScreen({ score, badges, threatsBlocked, backendResult }) {
+  const [showConfetti, setShowConfetti] = useState(true);
+  useEffect(()=>{ sounds.success(); const t=setTimeout(()=>setShowConfetti(false), 4000); return ()=>clearTimeout(t); }, []);
+  const earnedBadges = [
+    { name:'Scam Detector', color:'cyan' },
+    { name:'Phishing Hunter', color:'fuchsia' },
+    { name:'Cyber Detective', color:'green' },
+  ];
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4">
+      <ConfettiEffect active={showConfetti}/>
+      <motion.div initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{type:'spring',stiffness:200,damping:20}}
+        className="w-full max-w-md text-center">
+        <motion.div initial={{scale:0,rotate:-180}} animate={{scale:1,rotate:0}} transition={{type:'spring',stiffness:200,delay:0.3}}
+          className="relative mx-auto mb-8">
+          <motion.div animate={{scale:[1,1.1,1],opacity:[0.3,0.6,0.3]}} transition={{repeat:Infinity,duration:2}}
+            className="absolute inset-0 w-40 h-40 mx-auto rounded-full bg-success/20 blur-xl"/>
+          <div className="relative w-40 h-40 mx-auto rounded-full bg-gradient-to-br from-success/30 to-primary/30 flex items-center justify-center border-4 border-success/50 box-glow-green">
+            <motion.div animate={{filter:['drop-shadow(0 0 10px hsl(155 100% 45% / 0.5))','drop-shadow(0 0 25px hsl(155 100% 45% / 0.8))','drop-shadow(0 0 10px hsl(155 100% 45% / 0.5))']}} transition={{repeat:Infinity,duration:2}}>
+              <Shield className="w-20 h-20 text-success" strokeWidth={1.5}/>
+            </motion.div>
+            <Sparkles className="absolute top-2 right-4 w-6 h-6 text-warning animate-pulse"/>
+            <Sparkles className="absolute bottom-4 left-2 w-4 h-4 text-primary animate-pulse"/>
+          </div>
+        </motion.div>
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}}>
+          <h1 className="font-display text-3xl font-bold text-success mb-2 text-glow-green">Excellent, Agent 🔥</h1>
+          <p className="text-muted-foreground mb-8">You learned how scammers manipulate people online!</p>
+        </motion.div>
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.7}}
+          className="rounded-2xl border-2 border-success/30 bg-card/90 backdrop-blur-sm p-6 mb-6 box-glow-green">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Flag className="w-5 h-5 text-success"/>
+            <span className="font-display text-lg text-foreground">Threats Detected: {threatsBlocked}</span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',delay:0.9}}
+              className="p-4 rounded-xl bg-warning/10 border border-warning/30">
+              <Trophy className="w-8 h-8 text-warning mx-auto mb-2"/>
+              <div className="font-display text-2xl font-bold text-warning text-glow-yellow">{score}</div>
+              <div className="text-xs text-muted-foreground">XP Earned</div>
+            </motion.div>
+            <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',delay:1.1}}
+              className="p-4 rounded-xl bg-primary/10 border border-primary/30">
+              <Award className="w-8 h-8 text-primary mx-auto mb-2"/>
+              <div className="font-display text-2xl font-bold text-primary text-glow-cyan">{badges}</div>
+              <div className="text-xs text-muted-foreground">Badges Unlocked</div>
+            </motion.div>
+          </div>
+
+          {backendResult && (
+            <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} transition={{delay:0.2}}
+              className="mt-6 space-y-2 text-left border-t border-border pt-4">
+              <h3 className="font-display text-xs font-bold text-muted-foreground uppercase tracking-widest text-center mb-3">Evaluation Report</h3>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border">
+                <span className="text-[11px] text-muted-foreground">Stars Earned:</span>
+                <span className="text-yellow-400 font-bold">{'⭐'.repeat(backendResult.stars) + '☆'.repeat(3 - backendResult.stars)}</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border">
+                <span className="text-[11px] text-muted-foreground">Final Grade:</span>
+                <span className="text-cyan-400 font-bold">{backendResult.grade}</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border">
+                <span className="text-[11px] text-muted-foreground">Highest Score:</span>
+                <span className="text-success font-bold">{backendResult.highestScore} / 100</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border">
+                <span className="text-[11px] text-muted-foreground">Attempts:</span>
+                <span className="text-primary font-bold">{backendResult.attempts}</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border">
+                <span className="text-[11px] text-muted-foreground">Completion Time:</span>
+                <span className="text-fuchsia font-bold">{backendResult.completionTime}s</span>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+
+        <motion.div initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{delay:1.3}} className="mb-8 space-y-2">
+          {earnedBadges.map((b,i)=>{
+            const cls = b.color==='cyan' ? 'border-primary/40 box-glow-cyan text-primary' : b.color==='fuchsia' ? 'border-fuchsia/40 box-glow-fuchsia text-fuchsia' : 'border-success/40 box-glow-green text-success';
+            return (
+              <motion.div key={b.name} initial={{opacity:0,x:-20}} animate={{opacity:1,x:0}} transition={{delay:1.3 + i*0.15}}
+                className={`inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-card/80 border-2 ${cls} mr-2`}>
+                <div className="w-8 h-8 rounded-full gradient-cyan-fuchsia flex items-center justify-center"><Shield className="w-4 h-4 text-background"/></div>
+                <div className="text-left">
+                  <div className="font-display text-sm font-bold">{b.name}</div>
+                  <div className="text-[10px] text-muted-foreground">Badge Earned</div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+        
+        <div className="flex flex-wrap justify-center gap-4 mt-6">
+          <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.5}}
+            whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+            onClick={()=>window.location.reload()}
+            className="px-6 py-4 rounded-xl bg-secondary border border-border font-display text-sm font-bold text-foreground flex items-center justify-center gap-2">
+            Play Again
+          </motion.button>
+          
+          <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.6}}
+            whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+            onClick={()=>window.location.href = '../map.html'}
+            className="px-6 py-4 rounded-xl bg-secondary border border-border font-display text-sm font-bold text-foreground flex items-center justify-center gap-2">
+            Go to Map
+          </motion.button>
+
+          <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.7}}
+            whileHover={{scale:1.02, boxShadow:'0 0 40px hsl(190 100% 50% / 0.4)'}} whileTap={{scale:0.98}}
+            onClick={()=>window.location.href = 'level4.html'}
+            className="px-8 py-4 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background flex items-center justify-center gap-2 box-glow-cyan">
+            Next Level <ChevronRight className="w-5 h-5"/>
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ============ App ============ */
+function App() {
+  const [startTime] = useState(() => Date.now());
+  const [backendResult, setBackendResult] = useState(null);
+  const [stage, setStage] = useState('briefing');
+  const [simIndex, setSimIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [badges, setBadges] = useState(0);
+  const [threats, setThreats] = useState(0);
+  const [mentorMsg, setMentorMsg] = useState("Welcome, agent. I'll guide you through this mission. Tap me anytime for a hint.");
+
+  const handleSimDone = (ok) => {
+    if (ok) { setScore(s=>s+100); setThreats(t=>t+1); }
+    if (simIndex < scenarios.length - 1) setSimIndex(i => i+1);
+    else setStage('redflags');
+  };
+
+  // award badges at milestones
+  useEffect(()=>{
+    if (threats === 2) setBadges(b => Math.max(b,1));
+    if (threats === 4) setBadges(b => Math.max(b,2));
+  }, [threats]);
+
+  useEffect(()=>{
+    if (stage==='briefing') setMentorMsg("Welcome, agent. I'll guide you through this mission. Tap me anytime for a hint.");
+    if (stage==='cards') setMentorMsg("Swipe through the cards to learn the basics of phishing. The more you know, the harder it is to trick you.");
+  }, [stage]);
+
+  const handleCompleteChallenge = async () => {
+    const finalScore = score + 150;
+    const finalBadges = badges + 1;
+    setScore(finalScore);
+    setBadges(finalBadges);
+    localStorage.setItem('level_3', 'completed');
+    
+    const normalizedScore = Math.round((finalScore / 650) * 100);
+    const duration = Math.round((Date.now() - startTime) / 1000);
+    try {
+      const res = await window.api.submitProgress(3, normalizedScore, duration);
+      if (res.success) {
+        setBackendResult(res.data);
+      }
+    } catch (e) {
+      console.error("Failed to submit Level 3 progress:", e);
+    }
+    setStage('complete');
+  };
+
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      
+      
+      
+      
+      <main className="relative z-10">
+        <AnimatePresence mode="wait">
+          {stage==='briefing' && <BriefingSection key="b" onComplete={()=>setStage('cards')}/>}
+          {stage==='cards' && <ExplanationCards key="c" onComplete={()=>setStage('sims')}/>}
+          {stage==='sims' && <ChatSimulator key={"sim"+simIndex} scenario={scenarios[simIndex]} onComplete={handleSimDone} setMentor={setMentorMsg}/>}
+          {stage==='redflags' && <RedFlagsChallenge key="rf" onComplete={handleCompleteChallenge} setMentor={setMentorMsg}/>}
+          {stage==='complete' && <CompletionScreen key="cp" score={score} badges={badges} threatsBlocked={threats} backendResult={backendResult}/>}
+        </AnimatePresence>
+      </main>
+      
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="../chatbot.js"></script>
+<script src="../components/cyber-background.js"></script>
+</body>
+</html>

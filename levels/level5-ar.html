@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مدير التحديثات - المستوى الخامس</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Alpine -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chatbot -->
+    <link rel="stylesheet" href="../chatbot.css">
+    
+    <script>
+        function showSideBar() {
+            var sb = document.querySelector('.side-bar');
+            if (sb) sb.style.transform = 'translateX(0)';
+        }
+        function hideSideBar() {
+            var sb = document.querySelector('.side-bar');
+            if (sb) sb.style.transform = 'translateX(500px)';
+        }
+    </script>
+    
+    <style>
+     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        
+        /* ===== VARIABLES ===== */
+        :root{
+          --bg:230 80% 11%;--fg:200 100% 95%;--card:230 55% 14%;
+          --primary:185 100% 50%;--primary-fg:230 80% 8%;
+          --secondary:270 100% 65%;--muted:230 40% 20%;--muted-fg:220 20% 60%;
+          --destructive:0 90% 55%;--success:150 100% 40%;--border:230 40% 22%;
+          --glow-cyan:0 0 20px hsl(185 100% 50%/.4),0 0 60px hsl(185 100% 50%/.1);
+          --glow-purple:0 0 20px hsl(270 100% 65%/.4),0 0 60px hsl(270 100% 65%/.1);
+          --glow-red:0 0 20px hsl(0 90% 55%/.5),0 0 60px hsl(0 90% 55%/.15);
+          --glow-green:0 0 20px hsl(150 100% 40%/.4),0 0 60px hsl(150 100% 40%/.1);
+          --main-color-o: hsl(270,100%,65%);
+          --main-color-p: hsl(185,100%,50%);
+        }
+        
+        /* ===== BASE ===== */
+        body{
+          background:hsl(var(--bg));color:hsl(var(--fg));
+          font-family:'Cairo', 'Inter',sans-serif;min-height:100vh;
+          overflow-x:hidden;-webkit-font-smoothing:antialiased;
+          padding-top:80px;
+        }
+        a{text-decoration:none;cursor:pointer;transition:.3s;}
+        img{user-select:none;}
+        .font-cyber,.font-display,h1,h2,h3,h4{font-family:'Cairo', 'Orbitron',sans-serif;}
+        
+        /* ===== NAVBAR ===== */
+        .main-btn{
+          padding:10px;border-radius:100px;
+          background-image:linear-gradient(60deg,hsl(var(--primary)),hsl(var(--secondary)));
+          display:flex;justify-content:center;align-items:center;
+          border:0;transition:.3s;color:hsl(var(--primary-fg));cursor:pointer;font-weight:600;
+        }
+        .main-btn:hover{transform:scale(1.03);box-shadow:var(--glow-cyan);}
+        
+        .nav-bar{
+          display:flex;flex-direction:row-reverse;align-items:center;
+          justify-content:space-between;height:80px;padding:0 30px;
+          position:fixed;top:0;left:0;right:0;
+          background-color:#0d1b3e;z-index:999;
+          border-bottom:1px solid hsla(185,100%,50%,0.15);
+          box-shadow:0 2px 20px rgba(0,0,0,0.5);
+        }
+        .nav-img{width:100px;margin-right:40px;margin-left:0;}
+        .nav-menu{display:flex;align-items:center;flex-direction:row-reverse;}
+        .nav-list{
+          display:flex;flex-direction:row-reverse;list-style:none;
+          justify-content:space-between;align-items:center;padding:0;margin:0;
+        }
+        .nav-list li{margin:8px;padding:5px;transition:all .3s;position:relative;}
+        .nav-list li::after{
+          content:"";width:90%;height:3px;
+          background:linear-gradient(90deg,hsl(185,100%,50%),hsl(270,100%,65%));
+          position:absolute;bottom:0;left:50%;
+          transform:translateX(-50%) scaleX(0);transition:.3s;
+        }
+        .nav-list li:hover::after{transform:translateX(-50%) scaleX(1);}
+        .nav-list li:hover a{color:hsl(185,100%,50%);}
+        .main-p{color:hsl(215,20%,70%);font-size:15px;line-height:1.8;}
+        .nav-icon ul{display:flex;flex-direction:row-reverse;align-items:center;gap:10px;list-style:none;padding:0;margin:0;}
+        .nav-icon ul li{display:flex;align-items:center;margin:5px;}
+        .side-btn{display:flex;align-items:center;}
+        
+        /* ===== SIDEBAR ===== */
+        .side-bar{
+          background-image:linear-gradient(160deg,hsl(230,80%,11%),hsl(270,60%,18%));
+          width:300px;position:fixed;top:0;left:0;right:auto;
+          display:flex;flex-direction:column;justify-content:space-around;
+          z-index:9999;transform:translateX(-500px);transition:0.6s cubic-bezier(.4,0,.2,1);
+          border-right:1px solid hsla(185,100%,50%,0.2);border-left:0;
+          box-shadow:10px 0 40px rgba(0,0,0,0.6);
+        }
+        .side-bar ul{list-style:none;padding:0;margin:0;}
+        .side-bar .side-list li{
+          padding:12px 16px;transition:.3s;border-radius:8px;
+          width:90%;margin:4px auto;text-align:right;
+        }
+        .side-bar .side-list li:hover{transform:translateX(-6px);background-color:hsla(185,100%,50%,0.1);}
+        .side-bar li a{color:hsl(185,100%,85%);font-size:15px;}
+        .close-side{
+          border:0;background-color:transparent;position:absolute;
+          top:14px;right:14px;left:auto;color:hsl(185,100%,50%);font-size:20px;
+          border-radius:6px;transition:.3s;cursor:pointer;padding:4px 8px;
+        }
+        .close-side:hover{color:#fff;background-color:hsla(185,100%,50%,0.2);}
+        .side-icon{margin:10px;display:flex;justify-content:center;}
+        .side-icon button{
+          margin:6px;padding:10px;border-radius:16px;
+          display:flex;justify-content:center;align-items:center;
+          border:1px solid hsla(185,100%,50%,0.3);background-color:hsla(185,100%,50%,0.1);
+          transition:.3s;color:hsl(185,100%,60%);cursor:pointer;
+        }
+        .side-icon button:hover{background-color:hsla(185,100%,50%,0.25);}
+        
+        /* ===== ANIMATED BACKGROUND ===== */
+        #cyber-bg{position:fixed;inset:0;pointer-events:none;z-index:0;}
+        #cyber-bg .grad{position:absolute;inset:0;background:linear-gradient(to bottom,hsl(var(--bg)),hsl(var(--bg)),hsl(230 50% 5%));}
+        #cyber-bg canvas{position:absolute;inset:0;}
+        .c-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,hsla(185,100%,50%,.08) 0%,transparent 60%);animation:pulse 8s ease-in-out infinite;}
+        .p-glow{position:absolute;top:33%;left:25%;right:auto;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,hsla(280,100%,60%,.05) 0%,transparent 60%);animation:pulse 10s ease-in-out 2s infinite;}
+        .b-glow{position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(to top,hsla(185,100%,50%,.05),transparent);}
+        
+        /* ===== PROGRESS BAR ===== */
+        #pbar{position:fixed;top:0;left:0;right:0;height:4px;background:hsl(var(--muted)/.3);z-index:100;opacity:0;transition:opacity .3s;}
+        #pbar.vis{opacity:1;}
+        #pfill{height:100%;background:linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)));box-shadow:var(--glow-cyan);transition:width .6s ease-out;width:0;}
+        #plabel{position:fixed;top:16px;right:16px;left:auto;z-index:100;font-family:'Orbitron',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:3px;color:hsl(var(--primary)/.6);opacity:0;transition:opacity .3s;}
+        #plabel.vis{opacity:1;}
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes pulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.1);}}
+        @keyframes cglow{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1);}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.1);}}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        @keyframes springIn{0%{transform:scale(0)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+        @keyframes pulseSc{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+        @keyframes fillShield{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0% 0 0 0)}}
+        @keyframes bounceIn{0%{transform:scale(0)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+        
+        /* Level1 original animation names (kept for compatibility) */
+        @keyframes bounce-in{0%{transform:scale(0)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+        @keyframes float-up{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes confetti-fall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(360deg);opacity:0}}
+        @keyframes expand-center{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+        @keyframes slide-in-right{from{transform:translateX(-100px);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes blink-alert{0%,100%{opacity:1}50%{opacity:.3}}
+        @keyframes pulse-glow{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+        
+        .bounce-in     {animation:bounceIn .5s ease-out;}
+        .float-up      {animation:float-up 2s ease-in-out infinite;}
+        .pulse-glow    {animation:pulse-glow 1s ease-in-out infinite;}
+        .shake         {animation:shake 0.5s ease-in-out;}
+        .expand-center {animation:expand-center 0.4s ease-out;}
+        .slide-in-right{animation:slide-in-right 0.5s ease-out;}
+        .blink-alert   {animation:blink-alert 0.5s ease-in-out infinite;}
+        .confetti{position:absolute;width:10px;height:10px;animation:confetti-fall 3s linear infinite;}
+        
+        /* ===== CIRCUIT BACKGROUNDS ===== */
+        .circuit-bg{
+          background-color:hsl(var(--bg));
+          background-image:
+            radial-gradient(circle at 20% 30%,hsla(185,100%,50%,.08) 0%,transparent 50%),
+            radial-gradient(circle at 80% 70%,hsla(270,100%,65%,.06) 0%,transparent 50%),
+            linear-gradient(90deg,transparent 48%,hsla(185,100%,50%,.06) 49%,hsla(185,100%,50%,.06) 51%,transparent 52%),
+            linear-gradient(0deg,transparent 48%,hsla(185,100%,50%,.06) 49%,hsla(185,100%,50%,.06) 51%,transparent 52%);
+          background-size:100% 100%,100% 100%,50px 50px,50px 50px;
+        }
+        .circuit-bg-green{
+          background-color:hsl(var(--bg));
+          background-image:
+            radial-gradient(circle at 20% 30%,hsla(150,100%,40%,.1) 0%,transparent 50%),
+            radial-gradient(circle at 80% 70%,hsla(185,100%,50%,.08) 0%,transparent 50%),
+            linear-gradient(90deg,transparent 48%,hsla(150,100%,40%,.07) 49%,hsla(150,100%,40%,.07) 51%,transparent 52%),
+            linear-gradient(0deg,transparent 48%,hsla(150,100%,40%,.07) 49%,hsla(150,100%,40%,.07) 51%,transparent 52%);
+          background-size:100% 100%,100% 100%,50px 50px,50px 50px;
+        }
+        .circuit-bg-red{
+          background-color:hsl(var(--bg));
+          background-image:
+            radial-gradient(circle at 20% 30%,hsla(0,90%,55%,.1) 0%,transparent 50%),
+            radial-gradient(circle at 80% 70%,hsla(20,90%,55%,.08) 0%,transparent 50%),
+            linear-gradient(90deg,transparent 48%,hsla(0,90%,55%,.07) 49%,hsla(0,90%,55%,.07) 51%,transparent 52%),
+            linear-gradient(0deg,transparent 48%,hsla(0,90%,55%,.07) 49%,hsla(0,90%,55%,.07) 51%,transparent 52%);
+          background-size:100% 100%,100% 100%,50px 50px,50px 50px;
+        }
+        
+        /* ===== NEON TEXT ===== */
+        .neon-blue   {color:hsl(185,100%,50%);text-shadow:0 0 10px hsl(185 100% 50%/.7),0 0 30px hsl(185 100% 50%/.3);}
+        .neon-green  {color:hsl(150,100%,40%);text-shadow:0 0 10px hsl(150 100% 40%/.7),0 0 30px hsl(150 100% 40%/.3);}
+        .neon-red    {color:hsl(0,90%,55%);text-shadow:0 0 10px hsl(0 90% 55%/.7),0 0 30px hsl(0 90% 55%/.3);}
+        .neon-fuchsia{color:hsl(270,100%,65%);text-shadow:0 0 10px hsl(270 100% 65%/.7),0 0 30px hsl(270 100% 65%/.3);}
+        .neon-yellow {color:#ffd700;text-shadow:0 0 10px #ffd700aa,0 0 30px #ffd70044;}
+        
+        /* ===== GLOW BOXES ===== */
+        .glow-blue  {box-shadow:var(--glow-cyan);}
+        .glow-green {box-shadow:var(--glow-green);}
+        .glow-red   {box-shadow:var(--glow-red);}
+        .glow-purple{box-shadow:var(--glow-purple);}
+        .glow-yellow{box-shadow:0 0 20px #ffd700aa,0 0 60px #ffd70033;}
+        
+        /* ===== COMMON COMPONENTS ===== */
+        .glass{background:linear-gradient(135deg,hsl(230 55% 14%/.8),hsl(230 55% 10%/.6));backdrop-filter:blur(20px);border-radius:16px;border:1px solid hsl(var(--border));padding:24px;}
+        .glow-text{text-shadow:0 0 10px hsl(185 100% 50%/.6),0 0 30px hsl(185 100% 50%/.2);}
+        .btn{font-family:'Cairo',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:2px;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .3s;font-size:14px;position:relative;overflow:hidden;}
+        .btn:hover{transform:translateY(-2px);}
+        .btn:active{transform:scale(.95);}
+        .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;}
+        .btn-p{background:hsl(var(--primary));color:hsl(var(--primary-fg));box-shadow:var(--glow-cyan);}
+        .btn-p:hover{box-shadow:0 0 30px hsl(185 100% 50%/.6),0 0 80px hsl(185 100% 50%/.2);}
+        .btn-d{background:hsl(var(--destructive));color:#fff;box-shadow:var(--glow-red);}
+        .btn-s{background:hsl(var(--success));color:hsl(150 100% 10%);box-shadow:var(--glow-green);}
+        .btn-m{background:hsl(var(--muted)/.5);color:hsl(var(--fg));backdrop-filter:blur(8px);}
+        .tc{text-align:center;}.wf{width:100%;}.mw{max-width:448px;}
+        .tm{color:hsl(var(--muted-fg));}.tp{color:hsl(var(--primary));}.ts{color:hsl(var(--secondary));}.td{color:hsl(var(--destructive));}.tg{color:hsl(var(--success));}
+        .f{display:flex;}.fc{flex-direction:column;}.ac{align-items:center;}.jc{justify-content:center;}.g3{gap:12px;}.g4{gap:16px;}.f1{flex:1;}
+        
+        /* ===== VIDEO SCENE ===== */
+        .video-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;width:100%;max-width:900px;margin:0 auto;}
+        @media(max-width:768px){.video-grid{grid-template-columns:1fr;}}
+        .video-panel{background:linear-gradient(135deg,hsl(230 55% 10%/.9),hsl(230 55% 7%/.8));backdrop-filter:blur(20px);border:2px solid hsl(var(--primary)/.5);border-radius:20px;padding:20px;box-shadow:var(--glow-cyan);text-align:right;}
+        .video-panel video{width:100%;border-radius:12px;background:#000;}
+        .objectives-panel{background:linear-gradient(135deg,hsl(270 60% 12%/.9),hsl(270 60% 8%/.8));backdrop-filter:blur(20px);border:2px solid hsl(var(--secondary)/.5);border-radius:20px;padding:28px;box-shadow:var(--glow-purple);text-align:right;}
+        .obj-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;flex-direction:row-reverse;}
+        .obj-check{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)));display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+        .obj-check svg{width:14px;height:14px;}
+        .start-btn{width:100%;padding:16px;margin-top:24px;border-radius:12px;border:none;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;font-size:15px;letter-spacing:2px;text-transform:uppercase;transition:all .3s;position:relative;overflow:hidden;}
+        .start-btn.locked{background:hsl(var(--muted));color:hsl(var(--muted-fg));cursor:not-allowed;}
+        .start-btn.unlocked{background:linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)));color:hsl(var(--primary-fg));box-shadow:var(--glow-cyan);}
+        .start-btn.unlocked:hover{transform:translateY(-2px);box-shadow:0 0 30px hsl(185 100% 50%/.6),0 0 80px hsl(185 100% 50%/.2);}
+        .start-btn .shimmer{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmer 2s linear infinite;}
+        .warning-strip{margin-top:20px;background:hsla(40,90%,55%,.08);border:1px solid hsla(40,90%,55%,.3);border-right-width:4px;border-left-width:0;border-radius:8px;padding:14px 16px;display:flex;align-items:flex-start;gap:10px;font-size:13px;color:hsl(40,90%,70%);flex-direction:row-reverse;}
+        .video-badge{display:inline-flex;align-items:center;gap:8px;background:hsl(var(--muted)/.5);border:1px solid hsl(var(--primary)/.3);border-radius:999px;padding:6px 14px;font-size:12px;color:hsl(var(--primary));font-family:'Orbitron',sans-serif;letter-spacing:1px;margin-top:12px;}
+        .watched-badge{background:hsl(var(--success)/.15);border-color:hsl(var(--success)/.5);color:hsl(var(--success));animation:springIn .4s both;}
+        
+        /* ===== SHIELD ===== */
+        .sh-wrap{position:relative;margin-bottom:32px;}
+        .sh-fill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:fillShield 2s ease-out .8s both;}
+        .sh-chk{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0;animation:springIn .5s 2.5s both;text-shadow:0 0 20px hsl(185 100% 50%/.8);}
+        .shieldSvg{filter:drop-shadow(0 0 20px hsl(185 100% 50%/.5));}
+        
+        /* ===== MISC ===== */
+        .strength-bar{transition:all 0.3s ease;}
+        #wtst{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(50px);max-width:380px;z-index:200;opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:flex-start;gap:12px;flex-direction:row-reverse;}
+        #wtst.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+        
+        /* ===== BOOTSTRAP-LIKE HELPERS (for nav) ===== */
+        .d-flex{display:flex!important;}
+        .justify-content-between{justify-content:space-between!important;}
+        .p-0{padding:0!important;}.m-0{margin:0!important;}
+        .mx-3{margin-left:12px!important;margin-right:12px!important;}
+        .align-items-center{align-items:center!important;}
+        .text-yellow-400{color:#facc15;}
+        .text-gray-500{color:#6b7280;}
+        .text-xs{font-size:12px;}.text-xl{font-size:20px;}.text-2xl{font-size:24px;}
+        .font-bold{font-weight:700;}.uppercase{text-transform:uppercase;}
+        .gap-1{gap:4px;}.gap-4{gap:16px;}.gap-6{gap:24px;}.gap-8{gap:32px;}
+        .items-center{align-items:center;}.justify-center{justify-content:center;}
+        .flex{display:flex;}.text-center{text-align:center;}.w-100{width:100px;}
+        
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:640px){
+          h1{font-size:22px!important;}
+          .nav-img{margin-right:0;width:70px;}
+          .nav-bar{padding:0 16px;}
+        }
+        [x-cloak] { display: none !important; }
+        body > #cyber-bg-container {
+      z-index: 0 !important;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    [x-data] {
+      position: relative;
+      z-index: 10;
+    }
+        </style>
+        
+<link rel="stylesheet" href="../components/cyber-background.css"> 
+</head>
+
+<body class="flex flex-col min-h-screen opacity-0 transition-opacity duration-500"
+      onload="document.body.classList.remove('opacity-0')">
+
+    <div id="cyber-bg" style="position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,hsl(230 80% 11%),hsl(230 50% 5%));"></div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,hsla(185,100%,50%,.08) 0%,transparent 60%);animation:cglow 8s ease-in-out infinite;"></div>
+      <div style="position:absolute;top:33%;left:25%;right:auto;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,hsla(280,100%,60%,.05) 0%,transparent 60%);animation:cglow 10s ease-in-out 2s infinite;"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:160px;background:linear-gradient(to top,hsla(185,100%,50%,.05),transparent);"></div >
+    </div>
+    
+    <!-- Chatbot -->
+    <link rel="stylesheet" href="../chatbot.css">
+
+    <!-- Unified Navbar -->
+    <script src="../components/navbar.js"></script>
+
+    <div x-data="{
+        currentScene: 1,
+        videoWatched: false,
+        autoUpdateEnabled: false,
+        simulationRun: false,
+        simulationResult: '',
+        points: 100,
+        badges: 1,
+        quiz1Answer: '',
+        quiz2Answer: '',
+        deviceChecked: false,
+        startTime: Date.now(),
+        backendResult: null,
+        
+        startMission() {
+            if (!this.videoWatched) {
+                alert('يرجى مشاهدة الفيديو التوضيحي بالكامل أولاً! 📹');
+                return;
+            }
+            this.startTime = Date.now();
+            this.backendResult = null;
+            this.currentScene = 2;
+        },
+        
+        runSimulation() {
+            this.simulationRun = true;
+            
+            if (this.autoUpdateEnabled) {
+                setTimeout(() => {
+                    this.simulationResult = 'success';
+                    this.points += 20;
+                    setTimeout(() => {
+                        this.currentScene = 6;
+                    }, 2000);
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    this.simulationResult = 'fail';
+                    this.currentScene = 5;
+                }, 1500);
+            }
+        },
+        
+        tryAgainSimulation() {
+            this.simulationRun = false;
+            this.simulationResult = '';
+            this.currentScene = 4;
+        },
+        
+        skipToNext() {
+            this.currentScene = 6;
+        },
+        
+        checkQuiz() {
+            if (this.quiz1Answer === 'before' && this.quiz2Answer === 'no') {
+                this.points += 30;
+                Swal.fire({
+                    title: '✅ فهم مثالي وممتاز!',
+                    text: 'لقد أجبت على كلا السؤالين بشكل صحيح!\n\nأنت تفهم الآن كيف تحمي التحديثات الأجهزة!',
+                    icon: 'success',
+                    confirmButtonText: 'متابعة',
+                    background: '#0f172a',
+                    color: '#fff',
+                    confirmButtonColor: '#00ff88'
+                });
+                setTimeout(() => {
+                    this.currentScene = 8;
+                }, 2000);
+            } else {
+                let feedback = '';
+                if (this.quiz1Answer !== 'before') {
+                    feedback += 'التحديثات تكون أكثر فاعلية قبل حدوث المشاكل.\\n\\n';
+                }
+                if (this.quiz2Answer !== 'no') {
+                    feedback += 'حتى لو بدا الجهاز يعمل بشكل جيد، فقد تظل الثغرات القديمة موجودة.';
+                }
+                
+                Swal.fire({
+                    title: '🤔 الإجابة غير صحيحة تماماً',
+                    text: feedback || 'حاول مجدداً!',
+                    icon: 'info',
+                    confirmButtonText: 'حسناً، فهمت!',
+                    background: '#0f172a',
+                    color: '#fff',
+                    confirmButtonColor: '#7483D4'
+                });
+            }
+        },
+        
+        skipQuiz() {
+            this.currentScene = 8;
+        },
+        
+        async checkDevice(choice) {
+            this.deviceChecked = true;
+            if (choice === 'protected') {
+                Swal.fire({
+                    title: '🎉 ممتاز جداً!',
+                    text: 'جهازك محمي بالكامل!\n\nحافظ دائماً على تفعيل التحديثات التلقائية!',
+                    icon: 'success',
+                    confirmButtonText: 'متابعة',
+                    background: '#0f172a',
+                    color: '#fff',
+                    confirmButtonColor: '#00ff88'
+                });
+            } else {
+                Swal.fire({
+                    title: '⚠️ بحاجة إلى اتخاذ إجراء',
+                    text: 'تذكر تفعيل التحديثات التلقائية في جهازك الحقيقي!\n\nلا يستغرق الأمر سوى دقيقة واحدة ويحميك على مدار الساعة.',
+                    icon: 'warning',
+                    confirmButtonText: 'سأفعل ذلك!',
+                    background: '#0f172a',
+                    color: '#fff',
+                    confirmButtonColor: '#f95156'
+                });
+            }
+
+            const score = Math.min(100, this.points);
+            const duration = Math.round((Date.now() - this.startTime) / 1000);
+            localStorage.setItem('level_5', 'completed');
+            this.submitPromise = window.api.submitProgress(5, score, duration)
+                .then(res => {
+                    if (res.success) {
+                        this.backendResult = res.data;
+                    }
+                    return res;
+                })
+                .catch(e => {
+                    console.error('Failed to submit Level 5 progress:', e);
+                });
+
+            setTimeout(() => {
+                this.currentScene = 9;
+            }, 2000);
+        },
+        
+        async goToNextLevel() {
+            if (this.submitPromise) await this.submitPromise;
+            window.location.href = 'level7-ar.html';
+        },
+        
+        async goToMap() {
+            if (this.submitPromise) await this.submitPromise;
+            window.location.href = '../map-ar.html';
+        }
+    }" class="flex-1 flex items-center justify-center p-4">
+    
+
+        <main class="w-full max-w-6xl mx-auto py-8">
+
+            <!-- SCENE 1: VIDEO BRIEFING -->
+            <div x-show="currentScene === 1" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 class="w-full">
+                
+                <div class="text-center mb-8">
+                    <h1 class="text-5xl sm:text-6xl font-cyber font-bold neon-blue mb-4">
+                        🛡️ شرح المهمة الأمنية
+                    </h1>
+                    <p class="text-2xl text-cyan-300">شاهد الفيديو بعناية قبل بدء مهمتك</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <!-- Video Section -->
+                    <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-6">
+                        <video 
+                            id="briefingVideo"
+                            controls 
+                            class="w-full rounded-xl mb-4"
+                            @ended="videoWatched = true">
+                            <source src="videos/2fa-explainer.mp4" type="video/mp4">
+                            متصفحك لا يدعم تشغيل هذا الفيديو.
+                        </video>
+                        <div class="text-center">
+                            <div x-show="!videoWatched" class="text-yellow-400 flex items-center justify-center gap-2 flex-row-reverse">
+                                <i class="fas fa-lock"></i>
+                                <span>يجب عليك مشاهدة الفيديو بالكامل للبدء</span>
+                            </div>
+                            <div x-show="videoWatched" class="text-green-400 flex items-center justify-center gap-2 flex-row-reverse">
+                                <i class="fas fa-check-circle"></i>
+                                <span>اكتمل الفيديو! يمكنك البدء الآن.</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <!-- Explanation Section -->
+                    <div class="bg-black/60 border-4 border-purple-500 rounded-2xl p-6 text-right">
+                        <h2 class="text-3xl font-cyber font-bold text-purple-400 mb-4 flex items-center justify-start flex-row-reverse gap-2">
+                            <span>نظرة عامة على المهمة</span> 📋
+                        </h2>
+                        <div class="space-y-4 text-white text-lg">
+                            <p class="leading-relaxed">
+                                "بعض المشكلات لا تطرق الباب قبل الدخول."
+                            </p>
+                            <p class="leading-relaxed">
+                                دعنا نرى كيف تظل الأنظمة محمية <span class="text-cyan-400 font-bold">قبل</span> وقوع الهجمات.
+                            </p>
+                            <div class="bg-purple-900/30 border-r-4 border-purple-400 p-4 rounded text-right">
+                                <p class="text-purple-200 text-base">
+                                    <i class="fas fa-shield-alt ml-2"></i>
+                                    التحديثات مثل الحراس غير المرئيين الذين يصلحون نقاط الضعف قبل أن يستغلها المخترقون.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button 
+                        @click="startMission()"
+                        :disabled="!videoWatched"
+                        :class="videoWatched ? 'opacity-100 cursor-pointer hover:scale-105' : 'opacity-50 cursor-not-allowed'"
+                        class="px-12 py-4 bg-gradient-to-r from-cyan-600 to-purple-600 rounded-xl font-bold text-white text-2xl transition-all transform shadow-lg">
+                        <i class="fas fa-rocket mr-2"></i>
+                        بدء المهمة
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCENE 2: STORY INTRODUCTION -->
+            <div x-show="currentScene === 2" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl mx-auto expand-center">
+                
+                <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-8 text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-laptop text-7xl text-cyan-400 mb-4 inline-block float-up"></i>
+                    </div>
+                    
+                    <h2 class="text-4xl font-cyber font-bold text-white mb-6">
+                        تبدأ القصة...
+                    </h2>
+                    
+                    <div class="space-y-6 text-xl text-gray-300">
+                        <p class="leading-relaxed">
+                            لدينا <span class="text-cyan-400 font-bold">جهازان</span>.
+                        </p>
+                        <p class="leading-relaxed">
+                            يبدوان متطابقين تماماً في المظهر الخارجي.
+                        </p>
+                        <p class="leading-relaxed">
+                            نفس التطبيقات. ونفس نوع الاستخدام.
+                        </p>
+                        <div class="my-8 flex justify-center">
+                            <div class="w-2 h-2 bg-cyan-400 rounded-full mx-2 animate-pulse"></div>
+                            <div class="w-2 h-2 bg-cyan-400 rounded-full mx-2 animate-pulse" style="animation-delay: 0.2s"></div>
+                            <div class="w-2 h-2 bg-cyan-400 rounded-full mx-2 animate-pulse" style="animation-delay: 0.4s"></div>
+                        </div>
+                        <p class="text-2xl text-yellow-400 font-bold">
+                            ما هو الفرق الوحيد بينهما؟
+                        </p>
+                        <p class="text-2xl text-cyan-300">
+                            طريقة التعامل مع <span class="neon-cyan">التحديثات الأمنية</span>.
+                        </p>
+                    </div>
+
+                    <button 
+                        @click="currentScene = 3"
+                        class="mt-8 px-10 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        متابعة
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCENE 3: TWO USERS -->
+            <div x-show="currentScene === 3" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-5xl mx-auto expand-center">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-5xl font-cyber font-bold neon-blue mb-4">
+                        👥 تعرف على المستخدمين
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- User A -->
+                    <div class="bg-black/60 border-4 border-red-500 glow-red rounded-2xl p-6 slide-in-bottom">
+                        <div class="text-center mb-4">
+                            <div class="inline-block w-32 h-32 bg-red-900/50 rounded-full flex items-center justify-center border-4 border-red-500 mb-4">
+                                <i class="fas fa-user text-6xl text-red-400"></i>
+                            </div>
+                            <h3 class="text-3xl font-cyber font-bold text-red-400 mb-2">المستخدم (أ)</h3>
+                        </div>
+                        
+                        <div class="bg-red-900/30 rounded-lg p-4 mb-4 text-center">
+                            <p class="text-xl text-white italic mb-4">
+                                "سأقوم بالتحديث لاحقاً..."
+                            </p>
+                            <div class="flex items-center justify-center gap-3 text-red-400 text-lg flex-row-reverse">
+                                <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                                    <i class="fas fa-times text-white"></i>
+                                </div>
+                                <span class="font-bold">التحديث التلقائي: مغلق</span>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-red-300 text-sm">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            تم تأجيل التحديثات إلى أجل غير مسمى
+                        </div>
+                    </div>
+
+                    <!-- User B -->
+                    <div class="bg-black/60 border-4 border-green-500 glow-green rounded-2xl p-6 slide-in-bottom" style="animation-delay: 0.2s">
+                        <div class="text-center mb-4">
+                            <div class="inline-block w-32 h-32 bg-green-900/50 rounded-full flex items-center justify-center border-4 border-green-500 mb-4">
+                                <i class="fas fa-user-shield text-6xl text-green-400"></i>
+                            </div>
+                            <h3 class="text-3xl font-cyber font-bold text-green-400 mb-2">المستخدم (ب)</h3>
+                        </div>
+                        
+                        <div class="bg-green-900/30 rounded-lg p-4 mb-4 text-center">
+                            <p class="text-xl text-white italic mb-4">
+                                "أريد حماية جهازي وبياناتي باستمرار."
+                            </p>
+                            <div class="flex items-center justify-center gap-3 text-green-400 text-lg flex-row-reverse">
+                                <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                                <span class="font-bold">التحديث التلقائي: مفعل</span>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-green-300 text-sm">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            محمي تلقائياً وبأحدث الإصدارات
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button 
+                        @click="currentScene = 4"
+                        class="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        متابعة
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCENE 4: MINI SIMULATOR -->
+            <div x-show="currentScene === 4" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl mx-auto expand-center">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-5xl font-cyber font-bold neon-fuchsia mb-4">
+                        🧪 محاكي الهجمات
+                    </h2>
+                    <p class="text-xl text-gray-300">اختبر كيف تساهم التحديثات في إيقاف الهجمات السيبرانية</p>
+                </div>
+
+                <div class="bg-black/60 border-4 border-fuchsia-500 rounded-2xl p-8">
+                    <!-- Control Panel -->
+                    <div class="bg-gray-900/50 rounded-xl p-6 mb-6">
+                        <h3 class="text-2xl font-cyber font-bold text-fuchsia-400 mb-6 text-center">
+                            لوحة التحكم
+                        </h3>
+
+                        <!-- Toggle Switch -->
+                        <div class="flex items-center justify-center gap-4 mb-8 flex-row-reverse">
+                            <span class="text-xl text-white font-bold">التحديثات التلقائية:</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    x-model="autoUpdateEnabled"
+                                    :disabled="simulationRun"
+                                    class="sr-only peer">
+                                <div class="w-20 h-10 bg-red-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-10 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-8 after:w-8 after:transition-all peer-checked:bg-green-600"></div>
+                            </label>
+                            <span 
+                                x-text="autoUpdateEnabled ? 'مفعلة' : 'معطلة'" 
+                                :class="autoUpdateEnabled ? 'text-green-400' : 'text-red-400'"
+                                class="text-xl font-bold min-w-[50px] text-right">
+                            </span>
+                        </div>
+
+                        <!-- Status Display -->
+                        <div class="text-center mb-6">
+                            <div 
+                                :class="autoUpdateEnabled ? 'bg-green-900/30 border-green-500' : 'bg-red-900/30 border-red-500'"
+                                class="border-2 rounded-lg p-4 inline-block">
+                                <i 
+                                    :class="autoUpdateEnabled ? 'fa-shield-alt text-green-400' : 'fa-shield text-red-400'"
+                                    class="fas text-4xl mb-2">
+                                </i>
+                                <p 
+                                    :class="autoUpdateEnabled ? 'text-green-300' : 'text-red-300'"
+                                    class="text-lg font-bold">
+                                    <span x-text="autoUpdateEnabled ? 'آمن ومحمي' : 'معرض للاختراق'"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Simulation Button -->
+                    <div class="text-center mb-6">
+                        <button 
+                            @click="runSimulation()"
+                            :disabled="simulationRun"
+                            :class="simulationRun ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'"
+                            class="px-12 py-5 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-xl font-bold text-white text-2xl transition-all transform shadow-lg">
+                            <i class="fas fa-flask mr-2"></i>
+                            تشغيل محاكاة الهجوم
+                        </button>
+                    </div>
+
+                    <!-- Simulation Results -->
+                    <div x-show="simulationRun" 
+                         x-transition:enter="transition ease-out duration-500"
+                         x-transition:enter-start="opacity-0 scale-90"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         class="mt-8">
+                        
+                        <!-- Success Result -->
+                        <div x-show="simulationResult === 'success'" class="text-center">
+                            <div class="inline-block mb-4 float-up">
+                                <i class="fas fa-check-circle text-8xl text-green-400 drop-shadow-[0_0_30px_rgba(0,255,136,0.8)]"></i>
+                            </div>
+                            <div class="bg-green-900/30 border-2 border-green-500 rounded-lg p-6">
+                                <h3 class="text-3xl font-cyber font-bold text-green-400 mb-3">
+                                    ✅ تم صد الهجوم بنجاح
+                                </h3>
+                                <p class="text-xl text-green-200 mb-2">
+                                    تم كشف محاولة الهجوم...
+                                </p>
+                                <p class="text-lg text-green-300">
+                                    الثغرة الأمنية المستهدفة <span class="font-bold">تم سدها مسبقاً بالتحديث</span>.
+                                </p>
+                                <div class="mt-4 text-yellow-300">
+                                    <i class="fas fa-star mr-2"></i>
+                                    <span class="font-bold">+٢٠ نقطة!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fail Result -->
+                        <div x-show="simulationResult === 'fail'" class="text-center">
+                            <div class="inline-block mb-4 shake">
+                                <i class="fas fa-times-circle text-8xl text-red-400 drop-shadow-[0_0_30px_rgba(255,0,85,0.8)]"></i>
+                            </div>
+                            <div class="bg-red-900/30 border-2 border-red-500 rounded-lg p-6">
+                                <h3 class="text-3xl font-cyber font-bold text-red-400 mb-3 blink-alert">
+                                    ❌ تم اختراق النظام وتضرره
+                                </h3>
+                                <p class="text-xl text-red-200 mb-2">
+                                    تم العثور على ثغرة قديمة غير مصلحة...
+                                </p>
+                                <p class="text-lg text-red-300">
+                                    نجح الهجوم <span class="font-bold">بسبب إهمال التحديث</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE 5: GENTLE RECOVERY -->
+            <div x-show="currentScene === 5" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-3xl mx-auto expand-center">
+                
+                <div class="bg-black/60 border-4 border-yellow-500 rounded-2xl p-8 text-center">
+                    <div class="mb-6">
+                        <i class="fas fa-sad-tear text-7xl text-yellow-400 mb-4 inline-block"></i>
+                    </div>
+
+                    <h2 class="text-4xl font-cyber font-bold text-yellow-400 mb-6">
+                        😕 حدث خطأ وتضرر النظام
+                    </h2>
+
+                    <div class="space-y-4 text-lg text-white mb-8">
+                        <p class="leading-relaxed">
+                            بدا الجهاز <span class="text-cyan-400 font-bold">سليماً من الخارج</span>...
+                        </p>
+                        <p class="leading-relaxed">
+                            ولكن تأجيل التحديثات ترك <span class="text-red-400 font-bold">الباب مفتوحاً</span> للمهاجمين.
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-900/30 border-r-4 border-yellow-400 p-6 rounded mb-8 text-right">
+                        <div class="flex items-start gap-3 flex-row-reverse">
+                            <i class="fas fa-lightbulb text-3xl text-yellow-400 mt-1"></i>
+                            <div>
+                                <h4 class="text-yellow-400 font-bold text-lg mb-2">💡 درس أمني مستفاد</h4>
+                                <p class="text-yellow-200">
+                                    يستهدف المخترقون ثغرات معروفة تم إصلاحها بالفعل في التحديثات الجديدة. 
+                                    إذا لم تقم بالتحديث، فإنك تبقي نقاط الضعف القديمة هذه مكشوفة للجميع.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button 
+                            @click="tryAgainSimulation()"
+                            class="px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-redo mr-2"></i>
+                            حاول مجدداً
+                        </button>
+
+                        <button 
+                            @click="skipToNext()"
+                            class="px-8 py-4 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-forward mr-2"></i>
+                            تجاوز ومتابعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE 6: REALIZATION MOMENT -->
+            <div x-show="currentScene === 6" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl mx-auto expand-center">
+                
+                <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl font-cyber font-bold neon-cyan mb-4">
+                            🔄 لحظة الإدراك وفهم المشكلة
+                        </h2>
+                    </div>
+
+                    <!-- User A's Realization -->
+                    <div class="bg-red-900/20 border-2 border-red-500 rounded-lg p-6 mb-6 text-right">
+                        <div class="flex items-center gap-4 mb-4 flex-row-reverse">
+                            <div class="w-16 h-16 bg-red-900/50 rounded-full flex items-center justify-center border-2 border-red-500">
+                                <i class="fas fa-user text-3xl text-red-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-cyber font-bold text-red-400">المستخدم (أ)</h3>
+                                <p class="text-red-300">أدرك فداحة المشكلة <span class="font-bold">ولكن بعد فوات الأوان</span>...</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/40 rounded-lg p-4 mb-4 text-right">
+                            <p class="text-white text-lg italic mb-4">
+                                "كان ينبغي علي تفعيل التحديثات التلقائية منذ البداية!"
+                            </p>
+                        </div>
+
+                        <!-- Update Actions -->
+                        <div class="space-y-3 mb-4">
+                            <div class="bg-cyan-900/30 border border-cyan-500 rounded p-3 flex items-center gap-3 flex-row-reverse text-right">
+                                <div class="w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-check text-white text-xs"></i>
+                                </div>
+                                <span class="text-cyan-300">تفعيل التحديثات التلقائية الآن</span>
+                            </div>
+                            <div class="bg-cyan-900/30 border border-cyan-500 rounded p-3 flex items-center gap-3 flex-row-reverse text-right">
+                                <div class="w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-check text-white text-xs"></i>
+                                </div>
+                                <span class="text-cyan-300">تحديث كامل النظام فوراً</span>
+                            </div>
+                        </div>
+
+                        <!-- Updating Animation -->
+                        <div class="bg-black/60 rounded-lg p-4 mb-4">
+                            <div class="flex items-center gap-3 mb-2 flex-row-reverse">
+                                <div class="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+                                <span class="text-cyan-400 font-bold">جاري تحديث النظام وتثبيت الرقع...</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full animate-pulse" style="width: 75%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-900/30 border-r-4 border-green-400 p-4 rounded text-right">
+                            <p class="text-green-300 mb-2">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                <span class="font-bold">سيتم صد وحظر جميع الهجمات المماثلة مستقبلاً.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Important Note -->
+                    <div class="bg-yellow-900/30 border-2 border-yellow-500 rounded-lg p-6 mb-6 text-right">
+                        <div class="flex items-start gap-3 flex-row-reverse">
+                            <i class="fas fa-exclamation-triangle text-3xl text-yellow-400 mt-1"></i>
+                            <div>
+                                <h4 class="text-yellow-400 font-bold text-xl mb-2">⚠️ تنبيه هام</h4>
+                                <p class="text-yellow-200 text-lg">
+                                    التحديثات لا يمكنها <span class="font-bold">التراجع عن الأضرار السابقة</span>،<br>
+                                    لكنها بالتأكيد <span class="font-bold">تمنع الهجمات والتهديدات القادمة</span>.
+                                </p>
+                                <p class="text-yellow-300 text-sm mt-2">
+                                    الوقاية الاستباقية خير دائماً من محاولات الإصلاح المتأخرة!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button 
+                            @click="currentScene = 7"
+                            class="px-10 py-4 bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-500 hover:to-cyan-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            متابعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE 7: UNDERSTANDING CHECK -->
+            <div x-show="currentScene === 7" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl mx-auto expand-center">
+                
+                <div class="bg-black/60 border-4 border-purple-500 rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-4xl font-cyber font-bold neon-fuchsia mb-4">
+                            🧠 دعنا نتأكد من فهمنا للأمر
+                        </h2>
+                        <p class="text-xl text-gray-300">اختبار سريع وبسيط لقياس الفهم! 😊</p>
+                    </div>
+
+                    <!-- Question 1 -->
+                    <div class="bg-gray-900/50 rounded-xl p-6 mb-6 text-right">
+                        <h3 class="text-2xl text-white font-bold mb-4">
+                            <span class="text-yellow-400">السؤال الأول:</span> متى تكون التحديثات الأمنية أكثر فائدة؟
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 bg-black/40 rounded-lg p-4 cursor-pointer hover:bg-black/60 transition-all border-2 border-transparent hover:border-cyan-500 flex-row-reverse text-right">
+                                <input 
+                                    type="radio" 
+                                    name="quiz1" 
+                                    value="before"
+                                    x-model="quiz1Answer"
+                                    class="w-5 h-5 text-cyan-600">
+                                <span class="text-lg text-white">قبل وقوع الهجمة واكتشافها من المخترق</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 bg-black/40 rounded-lg p-4 cursor-pointer hover:bg-black/60 transition-all border-2 border-transparent hover:border-cyan-500 flex-row-reverse text-right">
+                                <input 
+                                    type="radio" 
+                                    name="quiz1" 
+                                    value="after"
+                                    x-model="quiz1Answer"
+                                    class="w-5 h-5 text-cyan-600">
+                                <span class="text-lg text-white">بعد حدوث الاختراق وتعطل النظام بالكامل</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="bg-gray-900/50 rounded-xl p-6 mb-8 text-right">
+                        <h3 class="text-2xl text-white font-bold mb-4">
+                            <span class="text-yellow-400">السؤال الثاني:</span> جهاز يعمل بشكل جيد وتحديثاته معطلة. هل هو آمن؟
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 bg-black/40 rounded-lg p-4 cursor-pointer hover:bg-black/60 transition-all border-2 border-transparent hover:border-cyan-500 flex-row-reverse text-right">
+                                <input 
+                                    type="radio" 
+                                    name="quiz2" 
+                                    value="yes"
+                                    x-model="quiz2Answer"
+                                    class="w-5 h-5 text-cyan-600">
+                                <span class="text-lg text-white">نعم، طالما أنه يعمل بشكل جيد فهو آمن تماماً</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 bg-black/40 rounded-lg p-4 cursor-pointer hover:bg-black/60 transition-all border-2 border-transparent hover:border-cyan-500 flex-row-reverse text-right">
+                                <input 
+                                    type="radio" 
+                                    name="quiz2" 
+                                    value="no"
+                                    x-model="quiz2Answer"
+                                    class="w-5 h-5 text-cyan-600">
+                                <span class="text-lg text-white">لا، فقد يحتوي على ثغرات أمنية قديمة لم يتم ترقيعها</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button 
+                            @click="checkQuiz()"
+                            class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-check mr-2"></i>
+                            تحقق من الإجابات
+                        </button>
+
+                        <button 
+                            @click="skipQuiz()"
+                            class="px-8 py-4 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-forward mr-2"></i>
+                            تجاوز
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE 8: REALITY CHECK -->
+            <div x-show="currentScene === 8" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl mx-auto expand-center">
+                
+                <div class="bg-black/60 border-4 border-green-500 glow-green rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <i class="fas fa-mobile-alt text-7xl text-green-400 mb-4 inline-block float-up"></i>
+                        <h2 class="text-4xl font-cyber font-bold neon-green mb-4">
+                            🌍 ماذا عن أمان جهازك الشخصي؟
+                        </h2>
+                        <p class="text-xl text-gray-300">دعنا نلقي نظرة على أمان جهازك الحقيقي الآن!</p>
+                    </div>
+
+                    <div class="bg-gray-900/50 rounded-xl p-6 mb-6">
+                        <h3 class="text-2xl text-white font-bold mb-6 text-center">
+                            📋 قائمة مراجعة الأمان
+                        </h3>
+
+                        <div class="space-y-4 mb-6">
+                            <div class="bg-black/40 border-2 border-cyan-500 rounded-lg p-4 flex items-center gap-3 flex-row-reverse text-right">
+                                <div class="w-8 h-8 rounded border-2 border-cyan-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-sync text-cyan-400"></i>
+                                </div>
+                                <span class="text-white text-lg">ميزة التحديث التلقائي مفعلة ومحسنة</span>
+                            </div>
+
+                            <div class="bg-black/40 border-2 border-cyan-500 rounded-lg p-4 flex items-center gap-3 flex-row-reverse text-right">
+                                <div class="w-8 h-8 rounded border-2 border-cyan-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-desktop text-cyan-400"></i>
+                                </div>
+                                <span class="text-white text-lg">نظام تشغيل الجهاز محدث بالكامل لأحدث إصدار</span>
+                            </div>
+
+                            <div class="bg-black/40 border-2 border-cyan-500 rounded-lg p-4 flex items-center gap-3 flex-row-reverse text-right">
+                                <div class="w-8 h-8 rounded border-2 border-cyan-500 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-globe text-cyan-400"></i>
+                                </div>
+                                <span class="text-white text-lg">متصفح الإنترنت المفضل لديك محدث باستمرار</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-900/30 border-r-4 border-blue-400 p-4 rounded mb-6 text-right">
+                            <p class="text-blue-200 text-sm">
+                                <i class="fas fa-info-circle ml-2"></i>
+                                تفحص إعدادات هاتفك أو جهازك اللوحي أو حاسوبك للتأكد من تفعيل هذه الخيارات!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="text-white text-xl mb-6">كيف تبدو حالة جهازك الشخصي حالياً؟</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button 
+                                @click="checkDevice('protected')"
+                                :disabled="deviceChecked"
+                                class="px-8 py-4 bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-500 hover:to-cyan-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                جهازي محمي ومحدث
+                            </button>
+
+                            <button 
+                                @click="checkDevice('need-update')"
+                                :disabled="deviceChecked"
+                                class="px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-tools mr-2"></i>
+                                أحتاج إلى إجراء تحديث
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE 9: END SCENE -->
+            <div x-show="currentScene === 9" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl mx-auto expand-center">
+                
+                <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div class="confetti bg-green-400" style="left: 10%; animation-delay: 0s;"></div>
+                    <div class="confetti bg-cyan-400" style="left: 20%; animation-delay: 0.2s;"></div>
+                    <div class="confetti bg-yellow-400" style="left: 30%; animation-delay: 0.4s;"></div>
+                    <div class="confetti bg-fuchsia-400" style="left: 40%; animation-delay: 0.6s;"></div>
+                    <div class="confetti bg-green-400" style="left: 50%; animation-delay: 0.8s;"></div>
+                    <div class="confetti bg-cyan-400" style="left: 60%; animation-delay: 1s;"></div>
+                    <div class="confetti bg-yellow-400" style="left: 70%; animation-delay: 1.2s;"></div>
+                    <div class="confetti bg-fuchsia-400" style="left: 80%; animation-delay: 1.4s;"></div>
+                    <div class="confetti bg-green-400" style="left: 90%; animation-delay: 1.6s;"></div>
+                </div>
+
+                <div class="text-center mb-8">
+                    <div class="inline-block mb-4 float-up">
+                        <i class="fas fa-trophy text-8xl text-yellow-400 drop-shadow-[0_0_30px_rgba(234,179,8,0.8)]"></i>
+                    </div>
+                    <h2 class="text-5xl sm:text-6xl font-cyber font-bold neon-green mb-4">اكتملت المهمة بنجاح!</h2>
+                    <p class="text-2xl sm:text-3xl text-green-300">لقد أصبحت الآن حارس التحديثات الرسمي! 🛡️</p>
+                </div>
+
+                <div class="bg-black/60 border-4 border-green-500 glow-green rounded-2xl p-8 mb-8 text-right">
+                    <!-- Badge Display -->
+                    <div class="text-center mb-8">
+                        <div class="relative inline-block mb-4">
+                            <div class="w-40 h-40 bg-gradient-to-br from-green-500 to-cyan-500 rounded-full flex items-center justify-center animate-bounce">
+                                <i class="fas fa-shield-alt text-6xl text-white"></i>
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center border-4 border-black">
+                                <i class="fas fa-award text-3xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="font-cyber text-green-400 font-bold text-3xl mb-2">🏆 شارة حارس التحديثات</div>
+                        <div class="text-yellow-400 font-bold text-2xl">
+                            مجموع النقاط: <span x-text="points"></span>
+                        </div>
+                    </div>
+
+                    <!-- Backend Report Card -->
+                    <template x-if="backendResult">
+                        <div class="mt-6 mb-6 bg-slate-900/80 border-2 border-slate-700 rounded-xl p-5 text-right max-w-md mx-auto font-cyber">
+                            <h4 class="text-center text-cyan-400 font-bold text-sm tracking-wider mb-4">تقرير تقييم المهمة</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">النجوم المكتسبة:</span>
+                                    <span class="text-yellow-400 font-bold" x-text="'⭐'.repeat(backendResult.stars) + '☆'.repeat(3 - backendResult.stars)"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">التقييم النهائي:</span>
+                                    <span class="text-cyan-400 font-bold text-lg" x-text="backendResult.grade"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">أعلى درجة:</span>
+                                    <span class="text-emerald-400 font-bold" x-text="backendResult.highestScore + ' / 100'"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">المحاولات المستغرقة:</span>
+                                    <span class="text-purple-400 font-bold" x-text="backendResult.attempts"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">زمن الإنجاز:</span>
+                                    <span class="text-pink-400 font-bold" x-text="backendResult.completionTime + ' ثانية'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Key Lessons -->
+                    <div class="bg-gradient-to-r from-cyan-900/30 to-blue-900/30 border-r-4 border-cyan-400 p-6 rounded-lg mb-6 text-right">
+                        <h3 class="text-2xl font-cyber font-bold text-cyan-400 mb-4">
+                            📚 ماذا تعلمت من هذه المهمة:
+                        </h3>
+                        <div class="space-y-3 text-white text-lg">
+                            <div class="flex items-start gap-3 flex-row-reverse text-right">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <p>التحديثات المستمرة هي <span class="text-cyan-400 font-bold">وقاية وحماية استباقية</span> للأنظمة</p>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse text-right">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <p>قد يبدو الجهاز <span class="text-yellow-400 font-bold">سليماً ولكنه يحتوي على ثغرات غير مكتشفة</span></p>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse text-right">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <p>تثبيت التحديثات في وقت مبكر <span class="text-green-400 font-bold">يحظر ويحمي ضد الهجمات</span></p>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse text-right">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <p>الحماية الصامتة والتلقائية <span class="text-fuchsia-400 font-bold">هي حماية مستدامة ومريحة</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Message -->
+                    <div class="bg-yellow-900/30 border-2 border-yellow-500 rounded-lg p-6 mb-6 text-right">
+                        <div class="flex items-start gap-3 flex-row-reverse">
+                            <i class="fas fa-quote-left text-3xl text-yellow-400"></i>
+                            <div>
+                                <p class="text-yellow-100 text-2xl font-bold italic">
+                                    "الوقاية خير دائماً من العلاج ومحاولات الإصلاح."
+                                </p>
+                                <p class="text-yellow-300 text-sm mt-2">
+                                    - حكمة سيبرانية خالدة
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button 
+                            @click="goToNextLevel()"
+                            class="px-8 py-5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-arrow-right mr-2"></i>
+                            المستوى التالي ٧
+                        </button>
+
+                        <button @click="goToMap()" class="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 rounded-xl font-bold text-black text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-map-marked-alt mr-2"></i>
+                            الذهاب للخريطة
+                          </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    
+
+<script src="../chatbot.js"></script>
+<script src="../components/cyber-background.js"></script>
+<script src="../components/navbar.js"></script>
+</body>
+</html>

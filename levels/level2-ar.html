@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>أبطال حماية الاختراق - المستوى الثاني: المصادقة ثنائية العامل 2FA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Alpine -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Chatbot -->
+    <link rel="stylesheet" href="../chatbot.css">
+    <link rel="stylesheet" href="../components/cyber-background.css">
+    <style>
+        body, button, input, h1, h2, h3, h4, p, span {
+            font-family: 'Cairo', 'Fredoka', sans-serif !important;
+        }
+        /* Swap positioning of fixed device in RTL */
+        #securityDevice {
+            right: auto !important;
+            left: 1rem !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen opacity-0 transition-opacity duration-500 bg-slate-900 text-white"
+      onload="document.body.classList.remove('opacity-0')">
+     <div x-data="{
+        scene: 'video',
+        videoWatched: false,
+        twoFactorEnabled: false,
+        points: 100,
+        badges: 1,
+        deviceHasNotification: false,
+        deviceZoomed: false,
+        inboxOpen: false,
+        emailOpen: false,
+        currentEmailType: 'welcome',
+        firstLoginApproved: false,
+        attackTimeout: null,
+        ignoreTimeout: null,
+        username: '',
+        password: '',
+        startTime: Date.now(),
+        backendResult: null,
+        
+        enableTwoFactor() {
+            this.twoFactorEnabled = true;
+            this.deviceHasNotification = true;
+            this.currentEmailType = 'welcome';
+            setTimeout(() => {
+                const device = document.getElementById('securityDevice');
+                if (device) device.classList.add('shake-gentle');
+            }, 300);
+        },
+        
+        openDevice() {
+            if (!this.deviceHasNotification) return;
+            this.deviceZoomed = true;
+            this.inboxOpen = true;
+            this.deviceHasNotification = false;
+        },
+        
+        closeDevice() {
+            this.deviceZoomed = false;
+            this.inboxOpen = false;
+            this.emailOpen = false;
+        },
+        
+        openEmail(type) {
+            this.currentEmailType = type;
+            this.emailOpen = true;
+        },
+        
+        goToLogin() {
+            if (!this.twoFactorEnabled) {
+                alert('يرجى تفعيل المصادقة ثنائية العامل أولاً لحماية حسابك! 🛡️');
+                return;
+            }
+            this.scene = 'login';
+            this.closeDevice();
+        },
+        
+        attemptLogin() {
+            if (!this.username || !this.password) {
+                alert('يرجى إدخال اسم المستخدم وكلمة المرور');
+                return;
+            }
+            
+            if (this.twoFactorEnabled) {
+                this.deviceHasNotification = true;
+                this.currentEmailType = 'login';
+                setTimeout(() => {
+                    const device = document.getElementById('securityDevice');
+                    if (device) device.classList.add('shake-gentle');
+                }, 300);
+            } else {
+                this.scene = 'normal';
+                this.scheduleAttack();
+            }
+        },
+        
+        approveLogin(approved) {
+            if (approved) {
+                this.closeDevice();
+                this.scene = 'normal';
+                
+                if (!this.firstLoginApproved) {
+                    this.firstLoginApproved = true;
+                    setTimeout(() => {
+                        Swal.fire({
+                          title: '🎉 أحسنت!',
+                          text: 'لقد استخدمت المصادقة ثنائية العامل (2FA).\n\nهذه خطوتك الأولى نحو أمان رقمي قوي.\nجرّب تفعيلها في جميع حساباتك الشخصية!',
+                          icon: 'success',
+                          confirmButtonText: 'رائع!',
+                          background: '#0f172a',
+                          color: '#fff',
+                          confirmButtonColor: '#38bdf8'
+                        });
+                    }, 500);
+                }
+                
+                this.scheduleAttack();
+            } else {
+                this.closeDevice();
+                Swal.fire({
+                  title: '❌ تم حظر الدخول!',
+                  text:
+                    'تم حظر محاولة الدخول حفاظاً على سلامتك.\n\n' +
+                    'لقد ضغطت على لَا، لذلك تم رفض المحاولة.\n\n' +
+                    'هذه هي الطريقة التي تحمي بها المصادقة الثنائية حسابك!',
+                  icon: 'success',
+                  confirmButtonText: 'فهمت!',
+                  background: '#0f172a',
+                  color: '#fff',
+                  confirmButtonColor: '#22c55e'
+                });
+                this.scene = 'login';
+                this.username = '';
+                this.password = '';
+            }
+        },
+        
+        scheduleAttack() {
+            const delay = Math.random() * 20000 + 10000;
+            this.attackTimeout = setTimeout(() => {
+                this.triggerAttack();
+            }, delay);
+        },
+        
+        triggerAttack() {
+            this.scene = 'alert';
+            this.deviceHasNotification = true;
+            this.currentEmailType = 'attack';
+            
+            setTimeout(() => {
+                this.deviceZoomed = true;
+                this.inboxOpen = true;
+                this.emailOpen = true;
+                this.deviceHasNotification = false;
+            }, 500);
+            
+            this.ignoreTimeout = setTimeout(() => {
+                this.handleIgnored();
+            }, 30000);
+        },
+        
+        handleAttackChoice(blocked) {
+            clearTimeout(this.ignoreTimeout);
+            this.closeDevice();
+            
+            if (blocked) {
+                this.scene = 'success';
+                this.points += 50;
+                this.badges += 1;
+                this.finishLevel();
+            } else {
+                this.scene = 'fail';
+                this.points = Math.max(0, this.points - 10);
+            }
+        },
+        
+        handleIgnored() {
+            this.closeDevice();
+            this.scene = 'fail';
+            this.points = Math.max(0, this.points - 10);
+            setTimeout(() => {
+                Swal.fire({
+                    title: '⏰ تنبيه أمني!',
+                    html: `
+                      لا يمكنك تجاهل التنبيهات الأمنية!<br><br>
+                      يجب عليك الضغط على لَا لحظر المهاجم المجهول.<br><br>
+                      تجاهل التنبيهات الأمنية يضع حسابك تحت خطر الاختراق.
+                    `,
+                    icon: 'warning',
+                    confirmButtonText: 'أنا أفهم',
+                    background: '#0f172a',
+                    color: '#fff',
+                    confirmButtonColor: '#ef4444'
+                });
+            }, 500);
+        },
+        
+        reset() {
+            clearTimeout(this.attackTimeout);
+            clearTimeout(this.ignoreTimeout);
+            this.scene = 'setup';
+            this.twoFactorEnabled = false;
+            this.deviceHasNotification = false;
+            this.deviceZoomed = false;
+            this.inboxOpen = false;
+            this.emailOpen = false;
+            this.currentEmailType = 'welcome';
+            this.firstLoginApproved = false;
+            this.username = '';
+            this.password = '';
+            this.points = 100;
+            this.badges = 1;
+            this.startTime = Date.now();
+            this.backendResult = null;
+        },
+        
+        async finishLevel() {
+            localStorage.setItem('level_2', 'completed');
+            const score = Math.min(100, Math.round((this.points / 150) * 100));
+            const duration = Math.round((Date.now() - this.startTime) / 1000);
+            this.submitPromise = window.api.submitProgress(2, score, duration)
+                .then(res => {
+                    if (res.success) {
+                        this.backendResult = res.data;
+                    }
+                    return res;
+                })
+                .catch(e => {
+                    console.error('Failed to submit Level 2 progress:', e);
+                });
+        },
+        async goToLevel3() {
+            if (this.submitPromise) await this.submitPromise;
+            window.location.href = 'level3-ar.html';
+        },
+
+        async goToMap() {
+            if (this.submitPromise) await this.submitPromise;
+            window.location.href = '../map-ar.html';
+        }
+     }" 
+     class="flex flex-col min-h-screen transition-all duration-500 relative overflow-x-hidden">
+
+        <!-- Top HUD -->
+        <div class="fixed top-2 z-20 left-4 flex gap-4 text-xs font-bold uppercase tracking-wider bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+            <div>النقاط: <span class="text-yellow-400" x-text="points">0</span></div>
+            <div>الشارات: <span class="text-green-400" x-text="badges">1</span></div>
+        </div>
+
+        <!-- Security Device (Fixed in Corner, on the Left for RTL layout flow) -->
+        <div x-show="twoFactorEnabled && !deviceZoomed" 
+             id="securityDevice"
+             @click="openDevice()"
+             class="fixed bottom-4 left-4 z-30 cursor-pointer slide-in-bottom"
+             :class="{'shake-gentle': deviceHasNotification}">
+            <div class="relative">
+                <div class="w-24 h-32 bg-gradient-to-b from-purple-600 to-pink-600 rounded-2xl border-4 border-cyan-400 shadow-2xl p-2 hover:scale-110 transition-transform">
+                    <div class="w-full h-full bg-black/40 rounded-xl flex flex-col items-center justify-center text-center">
+                        <i class="fas fa-mobile-alt text-3xl text-cyan-300 mb-1"></i>
+                        <div class="text-[10px] text-cyan-300 font-bold">جهاز</div>
+                        <div class="text-[10px] text-cyan-300">التحقق</div>
+                    </div>
+                </div>
+                <template x-if="deviceHasNotification">
+                    <div class="absolute -top-2 -left-2 w-8 h-8 bg-red-500 rounded-full border-2 border-white flex items-center justify-center animate-bounce">
+                        <span class="text-white font-bold text-xs">1</span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Device Zoomed (Center Screen) -->
+        <div x-show="deviceZoomed" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-50"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            
+            <div class="w-full max-w-md bg-gradient-to-b from-purple-600 to-pink-600 rounded-3xl border-4 border-cyan-400 shadow-2xl p-4 relative">
+                <button @click="closeDevice()" class="absolute top-2 left-2 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white font-bold">
+                    ×
+                </button>
+
+                <div class="bg-black/60 rounded-2xl p-4 min-h-96">
+                    <!-- Inbox View -->
+                    <div x-show="inboxOpen && !emailOpen">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-cyan-500 flex-row-reverse justify-end">
+                            <i class="fas fa-inbox text-2xl text-cyan-400"></i>
+                            <h3 class="text-xl font-bold text-cyan-300">صندوق الوارد الآمن</h3>
+                        </div>
+
+                        <div class="space-y-2 text-right">
+                            <template x-if="currentEmailType === 'welcome'">
+                                <div @click="openEmail('welcome')" class="bg-cyan-900/30 border-2 border-cyan-500 rounded-lg p-3 cursor-pointer hover:bg-cyan-900/50 transition-all">
+                                    <div class="flex items-center gap-3 flex-row-reverse">
+                                        <i class="fas fa-shield-alt text-2xl text-cyan-400"></i>
+                                        <div class="flex-1">
+                                            <div class="text-white font-bold">رسالة الترحيب</div>
+                                            <div class="text-xs text-cyan-300">حسابك الآن محمي بالمصادقة</div>
+                                        </div>
+                                        <i class="fas fa-chevron-left text-cyan-400"></i>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="currentEmailType === 'login'">
+                                <div @click="openEmail('login')" class="bg-green-900/30 border-2 border-green-500 rounded-lg p-3 cursor-pointer hover:bg-green-900/50 transition-all">
+                                    <div class="flex items-center gap-3 flex-row-reverse">
+                                        <i class="fas fa-sign-in-alt text-2xl text-green-400"></i>
+                                        <div class="flex-1">
+                                            <div class="text-white font-bold">طلب تسجيل الدخول</div>
+                                            <div class="text-xs text-green-300">يرجى تأكيد هويتك لإكمال العملية</div>
+                                        </div>
+                                        <i class="fas fa-chevron-left text-green-400"></i>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="currentEmailType === 'attack'">
+                                <div @click="openEmail('attack')" class="bg-red-900/30 border-2 border-red-500 rounded-lg p-3 cursor-pointer hover:bg-red-900/50 transition-all blink-alert">
+                                    <div class="flex items-center gap-3 flex-row-reverse">
+                                        <i class="fas fa-exclamation-triangle text-2xl text-red-400"></i>
+                                        <div class="flex-1">
+                                            <div class="text-white font-bold">تنبيه أمني عاجل</div>
+                                            <div class="text-xs text-red-300">محاولة دخول مشبوهة لحسابك</div>
+                                        </div>
+                                        <i class="fas fa-chevron-left text-red-400"></i>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Email Content -->
+                    <div x-show="emailOpen">
+                        <button @click="emailOpen = false" class="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 mb-4 flex-row-reverse">
+                            <i class="fas fa-arrow-right"></i>
+                            <span>العودة لصندوق الوارد</span>
+                        </button>
+
+                        <!-- Welcome Email -->
+                        <template x-if="currentEmailType === 'welcome'">
+                            <div class="text-center">
+                                <i class="fas fa-shield-alt text-6xl text-cyan-400 mb-4"></i>
+                                <h3 class="text-2xl font-bold text-white mb-3">مرحباً بك! 🛡️</h3>
+                                <p class="text-cyan-200 mb-4 font-bold">سيساعد هذا الجهاز في حماية حسابك باستخدام المصادقة ثنائية العامل (2FA).</p>
+                                <div class="bg-cyan-900/30 border-2 border-cyan-500 rounded-lg p-4">
+                                    <p class="text-white text-sm">في كل مرة يحاول فيها شخص ما تسجيل الدخول إلى حسابك، ستتلقى رسالة هنا للتأكد على أنه أنت بالفعل!</p>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Login Email -->
+                        <template x-if="currentEmailType === 'login'">
+                            <div class="text-center">
+                                <i class="fas fa-sign-in-alt text-6xl text-green-400 mb-4"></i>
+                                <h3 class="text-2xl font-bold text-white mb-3">تم الكشف عن طلب دخول</h3>
+                                <p class="text-green-200 mb-4">يحاول شخص ما تسجيل الدخول إلى حسابك الشخصي الآن.</p>
+                                <div class="bg-green-900/30 border-2 border-green-500 rounded-lg p-4 mb-6">
+                                    <p class="text-white font-bold text-lg mb-2">هل هذا أنت؟</p>
+                                    <p class="text-green-200 text-sm">إذا كنت أنت من يحاول تسجيل الدخول الآن، اضغط على نَعَم. خلاف ذلك، اضغط على لَا لمنع الوصول فوراً.</p>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button @click="approveLogin(false)" class="py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-all transform hover:scale-105">
+                                        <i class="fas fa-times-circle ml-2"></i>لَا
+                                    </button>
+                                    <button @click="approveLogin(true)" class="py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-all transform hover:scale-105">
+                                        <i class="fas fa-check-circle ml-2"></i>نَعَم
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Attack Email -->
+                        <template x-if="currentEmailType === 'attack'">
+                            <div class="text-center">
+                                <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4 animate-bounce"></i>
+                                <h3 class="text-2xl font-bold text-red-400 mb-3">🚨 تنبيه أمني عاجل!</h3>
+                                <p class="text-red-200 mb-2">يحاول شخص ما تسجيل الدخول من موقع آخر بعيد:</p>
+                                <div class="bg-red-900/50 border-2 border-red-500 rounded-lg p-3 mb-4" dir="ltr">
+                                    <p class="text-white font-bold text-lg">📍 Shanghai, China</p>
+                                    <p class="text-red-200 text-sm">Unknown Device (جهاز مجهول)</p>
+                                </div>
+                                <div class="bg-yellow-900/30 border-2 border-yellow-500 rounded-lg p-4 mb-6">
+                                    <p class="text-white font-bold text-lg mb-2">هل هذا أنت؟</p>
+                                    <p class="text-yellow-200 text-sm">إذا لم تكن أنت من يحاول الدخول الآن، اضغط على لَا فوراً لحظر المهاجم وحماية حسابك!</p>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <button @click="handleAttackChoice(true)" class="py-3 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-all transform hover:scale-105 shadow-lg">
+                                        <i class="fas fa-times-circle ml-2"></i>لَا (حظر)
+                                    </button>
+                                    <button @click="handleAttackChoice(false)" class="py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-all transform hover:scale-105 shadow-lg">
+                                        <i class="fas fa-check-circle ml-2"></i>نَعَم (سماح)
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <main class="flex-1 flex items-center justify-center relative p-4 sm:p-8">
+            <!-- SCENE: VIDEO BRIEFING -->
+            <div x-show="scene === 'video'"
+                x-transition:enter="transition ease-out duration-500"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                class="w-full max-w-6xl mt-12">
+
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl sm:text-5xl font-cyber font-bold neon-blue mb-4">شرح المهمة الأمنية</h2>
+                    <p class="text-lg text-gray-300">شاهد الفيديو بعناية قبل بدء مهمتك للحفاظ على أمان حسابك</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- VIDEO -->
+                    <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-4">
+                        <video controls class="w-full rounded-xl" @ended="videoWatched = true">
+                            <source src="videos/2fa-explainer.mp4" type="video/mp4">
+                        </video>
+                        <p class="text-sm text-gray-400 mt-3 text-center">⏱️ المدة: ١–٢ دقيقة</p>
+                    </div>
+
+                    <!-- MISSION INFO -->
+                    <div class="bg-black/60 border-4 border-fuchsia-500 glow-pink rounded-2xl p-6 text-right">
+                        <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2 flex-row-reverse">
+                            <i class="fas fa-shield-alt text-fuchsia-400"></i>
+                            أهداف المهمة
+                        </h3>
+
+                        <ul class="space-y-4 text-gray-300">
+                            <li class="flex items-start gap-3 flex-row-reverse">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <span>فهم ما هي المصادقة ثنائية العامل (2FA) وأهميتها</span>
+                            </li>
+                            <li class="flex items-start gap-3 flex-row-reverse">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <span>تعلم لماذا لا تكفي كلمات المرور وحدها لحماية حسابك</span>
+                            </li>
+                            <li class="flex items-start gap-3 flex-row-reverse">
+                                <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                                <span>معرفة كيفية صد وحظر المهاجمين باستخدام إشعارات التحقق</span>
+                            </li>
+                        </ul>
+
+                        <div class="mt-6 bg-yellow-900/30 border-r-4 border-yellow-400 p-4 rounded text-right">
+                            <p class="text-yellow-200 text-sm">
+                                ⚠️ <strong>هام جداً:</strong>
+                                إذا ظهر لك طلب تسجيل دخول على هاتفك وأنت لا تسجل الدخول، فهذا يعني أن شخصاً آخر يعرف كلمة مرورك بالفعل ويحاول سرقة حسابك!
+                            </p>
+                        </div>
+
+                        <button @click="scene = 'setup'"
+                            :disabled="!videoWatched"
+                            :class="{'opacity-50 cursor-not-allowed': !videoWatched}"
+                            class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <span x-show="videoWatched">
+                                <i class="fas fa-play mr-2"></i>
+                                ابدأ المهمة
+                            </span>
+                            <span x-show="!videoWatched">
+                                <i class="fas fa-lock mr-2"></i>
+                                شاهد الفيديو لتتمكن من المتابعة
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE: SETUP (Enable 2FA) -->
+            <div x-show="scene === 'setup'" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 class="w-full max-w-2xl mt-12">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl sm:text-5xl font-cyber font-bold neon-blue mb-4">إعدادات الأمان</h2>
+                    <p class="text-lg text-gray-300">احمِ حسابك باستخدام تقنية المصادقة ثنائية العامل</p>
+                </div>
+
+                <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-6 sm:p-8 text-right">
+                    <div class="flex items-center justify-between mb-6 pb-6 border-b border-cyan-500/50 flex-row-reverse">
+                        <div class="flex-1 text-right">
+                            <h3 class="text-2xl font-bold text-white mb-2">المصادقة ثنائية العامل (2FA)</h3>
+                            <p class="text-gray-400 text-sm" x-show="!twoFactorEnabled">حسابك غير محمي. قم بتفعيل المصادقة لإضافة درع حماية إضافي! 🛡️</p>
+                            <p class="text-green-400 text-sm" x-show="twoFactorEnabled">✅ حسابك محمي الآن بالمصادقة ثنائية العامل 2FA!</p>
+                        </div>
+                        <div class="relative inline-block w-16 h-8 mr-4">
+                            <input type="checkbox" 
+                                   x-model="twoFactorEnabled" 
+                                   @change="if (twoFactorEnabled) enableTwoFactor()"
+                                   class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300"
+                                   style="top: 1px; right: 1px;">
+                            <label class="toggle-label block overflow-hidden h-8 rounded-full bg-gray-600 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-start gap-3 bg-cyan-900/20 border-r-4 border-cyan-500 p-4 rounded flex-row-reverse text-right">
+                            <i class="fas fa-shield-alt text-2xl text-cyan-400 mt-1"></i>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">ما هي المصادقة ثنائية العامل؟</h4>
+                                <p class="text-gray-300 text-sm">تضيف المصادقة ثنائية العامل خطوة أمان إضافية لحسابك. حتى لو استطاع أحد سارقي كلمات المرور معرفة كلمتك، فلن يتمكن من الدخول إلى حسابك دون موافقتك عبر جهازك الآمن!</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 bg-fuchsia-900/20 border-r-4 border-fuchsia-500 p-4 rounded flex-row-reverse text-right">
+                            <i class="fas fa-mobile-alt text-2xl text-fuchsia-400 mt-1"></i>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">كيف تعمل؟</h4>
+                                <p class="text-gray-300 text-sm">عندما تسجل الدخول بالاسم وكلمة المرور، سيتم إرسال رسالة فورية إلى جهازك الآمن (هاتفك). يجب عليك الضغط على "نعم" لتسمح لنفسك بالدخول!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="goToLogin()" 
+                            :disabled="!twoFactorEnabled"
+                            :class="{'opacity-50 cursor-not-allowed': !twoFactorEnabled}"
+                            class="w-full py-4 bg-gradient-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-arrow-right mr-2"></i>
+                        الذهاب لتسجيل الدخول
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCENE: LOGIN -->
+            <div x-show="scene === 'login'" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 class="w-full max-w-md mt-12">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl sm:text-5xl font-cyber font-bold neon-blue mb-4">تسجيل الدخول</h2>
+                    <p class="text-lg text-gray-300">أدخل اسم المستخدم وكلمة المرور</p>
+                </div>
+
+                <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-6 sm:p-8 text-right">
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-cyan-400 font-bold mb-2">اسم المستخدم</label>
+                            <input type="text" 
+                                   x-model="username"
+                                   placeholder="أدخل اسم المستخدم"
+                                   class="w-full px-4 py-3 bg-gray-900 border-2 border-cyan-500 rounded-lg text-white focus:outline-none focus:border-cyan-400 text-right">
+                        </div>
+                        <div>
+                            <label class="block text-cyan-400 font-bold mb-2">كلمة المرور</label>
+                            <input type="password" 
+                                   x-model="password"
+                                   placeholder="أدخل كلمة المرور"
+                                   class="w-full px-4 py-3 bg-gray-900 border-2 border-cyan-500 rounded-lg text-white focus:outline-none focus:border-cyan-400 text-right">
+                        </div>
+                    </div>
+
+                    <template x-if="twoFactorEnabled">
+                        <div class="bg-green-900/20 border-2 border-green-500 rounded-lg p-3 mb-6 flex items-center gap-3 flex-row-reverse text-right">
+                            <i class="fas fa-shield-alt text-2xl text-green-400"></i>
+                            <p class="text-green-300 text-sm">المصادقة ثنائية العامل (2FA) مفعلة. ستحتاج للموافقة على الطلب من جهازك الآمن.</p>
+                        </div>
+                    </template>
+
+                    <button @click="attemptLogin()" class="w-full py-4 bg-gradient-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        تسجيل الدخول
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCENE: NORMAL (Command Center) -->
+            <div x-show="scene === 'normal'" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 class="w-full max-w-4xl mt-12">
+                
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-5xl font-cyber font-bold neon-blue mb-4">مركز قيادة البطل</h2>
+                    <p class="text-lg sm:text-xl text-gray-300">نظام المراقبة والتحكم نشط</p>
+                </div>
+
+                <div class="relative bg-black/40 border-2 border-cyan-500 glow-blue rounded-2xl p-6 sm:p-8 mb-8">
+                    <div class="absolute top-2 left-2 flex gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-4">
+                        <div class="bg-cyan-900/20 border border-cyan-500/50 rounded-lg p-4 text-center">
+                            <i class="fas fa-shield-alt text-4xl text-cyan-400 mb-2"></i>
+                            <div class="text-sm text-gray-400">مستوى الأمان</div>
+                            <div class="text-2xl font-bold text-cyan-400">مرتفع (HIGH)</div>
+                        </div>
+                        <div class="bg-fuchsia-900/20 border border-fuchsia-500/50 rounded-lg p-4 text-center">
+                            <i class="fas fa-lock text-4xl text-fuchsia-400 mb-2"></i>
+                            <div class="text-sm text-gray-400">جدار الحماية</div>
+                            <div class="text-2xl font-bold text-fuchsia-400">نشط (ACTIVE)</div>
+                        </div>
+                        <div class="bg-green-900/20 border border-green-500/50 rounded-lg p-4 text-center">
+                            <i class="fas fa-check-circle text-4xl text-green-400 mb-2"></i>
+                            <div class="text-sm text-gray-400">سلامة النظام</div>
+                            <div class="text-2xl font-bold text-green-400">100%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center text-gray-400">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    حسابك محمي وآمن حالياً. ابقَ متيقظاً لأي إشعارات أو تنبيهات أمنية تصلك على الهاتف!
+                </div>
+            </div>
+
+            <!-- SCENE: SUCCESS -->
+            <div x-show="scene === 'success'" 
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-4xl expand-center mt-12">
+                
+                <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div class="confetti bg-green-400" style="left: 10%; animation-delay: 0s;"></div>
+                    <div class="confetti bg-cyan-400" style="left: 20%; animation-delay: 0.2s;"></div>
+                    <div class="confetti bg-yellow-400" style="left: 30%; animation-delay: 0.4s;"></div>
+                    <div class="confetti bg-fuchsia-400" style="left: 40%; animation-delay: 0.6s;"></div>
+                    <div class="confetti bg-green-400" style="left: 50%; animation-delay: 0.8s;"></div>
+                    <div class="confetti bg-cyan-400" style="left: 60%; animation-delay: 1s;"></div>
+                    <div class="confetti bg-yellow-400" style="left: 70%; animation-delay: 1.2s;"></div>
+                    <div class="confetti bg-fuchsia-400" style="left: 80%; animation-delay: 1.4s;"></div>
+                    <div class="confetti bg-green-400" style="left: 90%; animation-delay: 1.6s;"></div>
+                </div>
+
+                <div class="text-center mb-8">
+                    <div class="inline-block mb-4 float-up">
+                        <i class="fas fa-shield-alt text-8xl text-green-400 drop-shadow-[0_0_30px_rgba(0,255,136,0.8)]"></i>
+                    </div>
+                    <h2 class="text-4xl sm:text-6xl font-cyber font-bold neon-green mb-4">تم صد الهجوم بنجاح!</h2>
+                    <p class="text-xl sm:text-2xl text-green-300">لقد أنقذت حسابك ومنعت المخترق يا بطل!</p>
+                </div>
+
+                <div class="bg-black/60 border-4 border-green-500 glow-green rounded-2xl p-6 sm:p-8 mb-8 text-right">
+                    <div class="flex flex-col sm:flex-row-reverse items-center gap-6 mb-6">
+                        <div class="text-center">
+                            <div class="relative inline-block mb-4">
+                                <div class="w-32 h-32 bg-gradient-to-br from-green-500 to-cyan-500 rounded-full flex items-center justify-center animate-bounce">
+                                    <i class="fas fa-shield-alt text-5xl text-white"></i>
+                                </div>
+                                <div class="absolute -bottom-2 -left-2 w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center border-4 border-black">
+                                    <span class="text-2xl">✓</span>
+                                </div>
+                            </div>
+                            <div class="font-cyber text-green-400 font-bold text-xl">الحارس اليقظ</div>
+                            <div class="text-yellow-400 font-bold text-2xl mt-2">+٥٠ نقطة خبرة</div>
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="text-white text-lg mb-4">عمل رائع ومذهل! بالضغط على "لَا"، منعت المخترق من الدخول وسرقة حسابك، وبذلك أحبطت هجوم الاختراق. أنت بطل أمان سيبراني حقيقي!</p>
+                            
+                            <div class="bg-yellow-900/30 border-r-4 border-yellow-400 p-4 rounded text-right">
+                                <div class="flex items-start gap-3 flex-row-reverse">
+                                    <i class="fas fa-lightbulb text-3xl text-yellow-400 mt-1"></i>
+                                    <div>
+                                        <h4 class="text-yellow-400 font-bold text-lg mb-2">💡 نصيحة البطل</h4>
+                                        <p class="text-yellow-200 text-sm">المصادقة ثنائية العامل (2FA) ليست مجرد زر تضغط عليه بسرعة. إذا ظهر لك طلب تحقق على هاتفك وأنت لا تسجل الدخول، فهذا يعني أن شخصاً آخر لديه كلمة مرورك ويحاول الدخول. الضغط على "لَا" لحظر المهاجم هو ما ينقذ حسابك!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backend Report Card -->
+                    <template x-if="backendResult">
+                        <div class="mt-8 bg-slate-950/80 border border-green-500/30 rounded-xl p-6 text-right space-y-3 font-cyber max-w-xl mx-auto mb-6">
+                            <h3 class="text-center font-bold text-lg text-cyan-300 uppercase tracking-widest border-b border-green-500/30 pb-2">تقرير تقييم المهمة</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-3 text-white">
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">حالة النتيجة:</span>
+                                    <span :class="backendResult.status === 'passed' ? 'text-green-400' : 'text-red-400'" class="font-bold" x-text="backendResult.status === 'passed' ? 'ناجح' : 'راسب'"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">النجوم المكتسبة:</span>
+                                    <span class="text-yellow-400 font-bold" x-text="'⭐'.repeat(backendResult.stars) + '☆'.repeat(3 - backendResult.stars)"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">التقييم النهائي:</span>
+                                    <span class="text-cyan-400 font-bold text-lg" x-text="backendResult.grade"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">أعلى درجة:</span>
+                                    <span class="text-emerald-400 font-bold" x-text="backendResult.highestScore + ' / 100'"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">المحاولات المستغرقة:</span>
+                                    <span class="text-purple-400 font-bold" x-text="backendResult.attempts"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                                    <span class="text-gray-400">زمن الإنجاز:</span>
+                                    <span class="text-pink-400 font-bold" x-text="backendResult.completionTime + ' ثانية'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <button @click="reset()" class="w-full py-4 bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-500 hover:to-cyan-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-redo mr-2"></i>
+                        العب مجدداً
+                    </button>
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <!-- GO TO LEVEL 3 -->
+                        <button @click="goToLevel3()"
+                            class="btn-level w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-arrow-right mr-2"></i>
+                            المستوى التالي ٣
+                        </button>
+
+                        <!-- GO TO MAP -->
+                        <button @click="goToMap()"
+                            class="btn-level w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 rounded-xl font-bold text-black text-xl transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-map-marked-alt mr-2"></i>
+                            الذهاب للخريطة
+                        </button> 
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCENE: FAIL -->
+            <div x-show="scene === 'fail'" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="w-full max-w-2xl expand-center mt-12">
+                
+                <div class="bg-black/80 border-4 border-red-600 glow-red rounded-2xl p-6 sm:p-8 text-center">
+                    <div class="mb-6">
+                        <div class="inline-block w-24 h-24 bg-red-900/50 rounded-full flex items-center justify-center border-4 border-red-500 mb-4 animate-pulse">
+                            <i class="fas fa-skull-crossbones text-5xl text-red-500"></i>
+                        </div>
+                        <h2 class="text-4xl sm:text-5xl font-cyber font-bold neon-red mb-4">خطر الاختراق!</h2>
+                        <p class="text-xl text-red-300 mb-6">لقد سمحت للمهاجم بالوصول إلى حسابك وعرّضت أمانك للخطر!</p>
+                    </div>
+
+                    <div class="bg-red-900/30 border-2 border-red-500 rounded-lg p-4 mb-6 text-right">
+                        <div class="flex items-start gap-3 flex-row-reverse">
+                            <i class="fas fa-exclamation-circle text-3xl text-red-400 mt-1"></i>
+                            <div>
+                                <p class="text-red-200 mb-2"><strong>تذكر دائماً:</strong> وافق على طلب تسجيل الدخول فقط إذا كنت أنت من يحاول الدخول في نفس اللحظة.</p>
+                                <p class="text-red-300 text-sm">إذا رأيت طلب مصادقة 2FA على هاتفك وأنت لا تسجل الدخول حالياً، فهذا يعني أن شخصاً آخر يعرف كلمة مرورك. يجب حظره فوراً بالضغط على لَا!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button @click="reset()" class="px-8 py-4 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-redo mr-2"></i>
+                        حاول مجدداً
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../chatbot.js"></script>
+    <script src="../components/navbar.js"></script>
+    <script src="../components/cyber-background.js"></script>
+</body>
+</html>

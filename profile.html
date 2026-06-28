@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSH - Agent Profile</title>
+    <meta name="description" content="View your Hack-Shield Heroes agent profile, scores, badges, and progress.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Global components -->
+    <link rel="stylesheet" href="components/cyber-background.css">
+    <link rel="stylesheet" href="chatbot.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .profile-container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        /* ── Profile Header Card ──────────────────────────── */
+        .profile-header {
+            background: linear-gradient(135deg, rgba(18, 22, 48, 0.85), rgba(26, 10, 46, 0.75));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.15), 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #a855f7, #f0abfc, #00d4ff);
+            background-size: 200% 100%;
+            animation: profileShimmer 3s linear infinite;
+        }
+
+        @keyframes profileShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #080c18;
+            border: 4px solid rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), 0 0 60px rgba(168, 85, 247, 0.2);
+            animation: avatarGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), 0 0 60px rgba(168, 85, 247, 0.2); }
+            50%      { box-shadow: 0 0 40px rgba(168, 85, 247, 0.6), 0 0 80px rgba(0, 212, 255, 0.3); }
+        }
+
+        .profile-avatar .status-dot {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #39ff14;
+            border: 3px solid #080c18;
+            box-shadow: 0 0 10px #39ff14;
+        }
+
+        .profile-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: #00d4ff;
+            text-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .profile-rank {
+            font-family: 'Share Tech Mono', 'Orbitron', monospace;
+            font-size: 12px;
+            color: #a855f7;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            margin-top: 8px;
+        }
+
+        .profile-email {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .profile-email i {
+            color: #00d4ff;
+            margin-right: 6px;
+        }
+
+        /* ── Stats Grid ───────────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(18, 22, 48, 0.85), rgba(26, 10, 46, 0.6));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 18px;
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.25);
+            border-color: rgba(0, 212, 255, 0.4);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #94a3b8;
+        }
+
+        .stat-cyan .stat-value { color: #00d4ff; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+        .stat-yellow .stat-value { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.5); }
+        .stat-green .stat-value { color: #39ff14; text-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
+
+        /* ── Section Cards ────────────────────────────────── */
+        .section-card {
+            background: linear-gradient(135deg, rgba(18, 22, 48, 0.85), rgba(26, 10, 46, 0.6));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 18px;
+            padding: 28px;
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 20px;
+        }
+
+        /* ── Badges Grid ──────────────────────────────────── */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .badge-item {
+            background: linear-gradient(135deg, rgba(18, 22, 48, 0.85), rgba(26, 10, 46, 0.6));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.4);
+        }
+
+        .badge-visual {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .badge-visual i {
+            display: block;
+        }
+
+        .badge-locked {
+            opacity: 0.5;
+        }
+
+        .badge-locked .badge-visual {
+            color: #64748b;
+            border-color: rgba(100, 116, 139, 0.2);
+            background: rgba(100, 116, 139, 0.05);
+        }
+
+        .badge-lock-overlay {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-size: 9px;
+            background: #080c18;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 5px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Unlocked badge style changes */
+        .badge-item:not(.badge-locked) {
+            background: linear-gradient(135deg, rgba(18, 22, 48, 0.9), rgba(0, 212, 255, 0.15));
+            border-color: rgba(0, 212, 255, 0.35);
+        }
+
+        .badge-item:not(.badge-locked) .badge-visual {
+            background: rgba(0, 212, 255, 0.12);
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+            border-color: rgba(0, 212, 255, 0.4);
+            animation: badgeGlowPulse 2.5s infinite ease-in-out;
+        }
+
+        @keyframes badgeGlowPulse {
+            0%, 100% { box-shadow: 0 0 4px rgba(0, 212, 255, 0.15); border-color: rgba(0, 212, 255, 0.3); }
+            50% { box-shadow: 0 0 12px rgba(0, 212, 255, 0.45); border-color: rgba(0, 212, 255, 0.6); }
+        }
+
+        .badge-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .badge-info .badge-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .badge-info .badge-desc {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .badge-locked .badge-info .badge-desc {
+            color: #ef4444;
+            text-shadow: 0 0 5px rgba(239, 68, 68, 0.2);
+        }
+
+        .badge-item:not(.badge-locked) .badge-info .badge-desc {
+            color: #39ff14;
+            text-shadow: 0 0 5px rgba(57, 255, 20, 0.2);
+        }
+
+        /* ── Level Progress ───────────────────────────────── */
+        .level-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .level-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 212, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .level-item:hover {
+            transform: translateX(4px);
+        }
+
+        .level-completed {
+            border-color: rgba(57, 255, 20, 0.15);
+            background: linear-gradient(90deg, rgba(57, 255, 20, 0.03), rgba(0, 0, 0, 0.25));
+        }
+
+        .level-completed:hover {
+            background: rgba(0, 212, 255, 0.05);
+            border-color: rgba(57, 255, 20, 0.35);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+        }
+
+        .level-locked {
+            opacity: 0.6;
+        }
+
+        .level-locked:hover {
+            border-color: rgba(100, 116, 139, 0.25);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .level-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .level-completed .level-icon {
+            background: linear-gradient(135deg, rgba(57, 255, 20, 0.2), rgba(0, 212, 255, 0.1));
+            color: #39ff14;
+            border: 1px solid rgba(57, 255, 20, 0.3);
+        }
+
+        .level-locked .level-icon {
+            background: rgba(100, 116, 139, 0.2);
+            color: #64748b;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .level-info {
+            flex: 1;
+        }
+
+        .level-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .level-status-text {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .level-completed .level-status-text {
+            color: #39ff14;
+        }
+
+        .level-locked .level-status-text {
+            color: #64748b;
+        }
+
+        .level-check {
+            font-size: 18px;
+        }
+
+        .level-completed .level-check {
+            color: #39ff14;
+        }
+
+        .level-locked .level-check {
+            color: #334155;
+        }
+
+        /* ── Account Info ─────────────────────────────────── */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label i {
+            color: #00d4ff;
+            width: 18px;
+            text-align: center;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <script src="components/navbar.js"></script>
+
+    <div class="profile-container">
+
+        <!-- Profile Header -->
+        <div class="profile-header" id="profileHeader">
+            <div class="profile-avatar" id="profileAvatar">
+                <span id="profileInitial">A</span>
+                <div class="status-dot"></div>
+            </div>
+            <div class="profile-name" id="profileName">Agent</div>
+            <div class="profile-rank" id="profileRank">CYBER CADET</div>
+            <div class="profile-email" id="profileEmail">
+                <i class="fa-solid fa-envelope"></i>
+                <span>agent@hackshield.io</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card stat-yellow">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="statScore">0</div>
+                <div class="stat-label">Total Score</div>
+            </div>
+            <div class="stat-card stat-cyan">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value" id="statLevels">0 / 9</div>
+                <div class="stat-label">Levels Completed</div>
+            </div>
+            <div class="stat-card stat-green">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-value" id="statBadges">0</div>
+                <div class="stat-label">Badges Earned</div>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fa-solid fa-award"></i>
+                Badges Collection
+            </div>
+            <div class="badges-grid" id="badgesGrid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Level Progress -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fa-solid fa-map-location-dot"></i>
+                Mission Progress
+            </div>
+            <div class="level-progress-list" id="levelProgress">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Account Info -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fa-solid fa-gear"></i>
+                Account Details
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fa-solid fa-user"></i> Username</span>
+                <span class="info-value" id="infoUsername">Agent</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fa-solid fa-envelope"></i> Email</span>
+                <span class="info-value" id="infoEmail">agent@hackshield.io</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fa-solid fa-calendar"></i> Member Since</span>
+                <span class="info-value" id="infoJoined">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fa-solid fa-shield-halved"></i> Security Level</span>
+                <span class="info-value" id="infoSecurity" style="color: #39ff14;">Protected</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Global UI Scripts -->
+    <script src="components/cyber-background.js"></script>
+    <script src="chatbot.js"></script>
+
+    <script>
+        /* ── Profile Data (reads from window.hshProgress and localStorage session info) ── */
+        function renderProfileData() {
+            const progress = window.hshProgress || { completedLevels: [], totalScore: 0, completionPercentage: 0 };
+            const userStr = localStorage.getItem('hsh_user');
+            const user = userStr ? JSON.parse(userStr) : { firstName: 'Agent', lastName: '', email: 'agent@hackshield.io', createdAt: new Date() };
+
+            const levels = [
+                { id: 1, title: 'Strong Password', icon: 'fa-key' },
+                { id: 2, title: '2FA Shield', icon: 'fa-mobile-alt' },
+                { id: 3, title: 'Phishing Spotter', icon: 'fa-fish' },
+                { id: 4, title: 'Safe Browsing', icon: 'fa-globe' },
+                { id: 5, title: 'Patch Manager', icon: 'fa-band-aid' },
+                { id: 6, title: 'Firewall Guard', icon: 'fa-fire' },
+                { id: 7, title: 'Malware Hunter', icon: 'fa-bug' },
+                { id: 8, title: 'Data Backup', icon: 'fa-database' },
+                { id: 9, title: 'Privacy Pro', icon: 'fa-user-secret' },
+            ];
+
+            const allBadges = [
+                { icon: 'fa-shield-halved', emoji: '🛡️', name: 'Password Defender', desc: 'Level 1 Complete' },
+                { icon: 'fa-mobile-alt', emoji: '🔐', name: '2FA Guardian', desc: 'Level 2 Complete' },
+                { icon: 'fa-fish', emoji: '🎣', name: 'Phishing Spotter', desc: 'Level 3 Complete' },
+                { icon: 'fa-globe', emoji: '🌐', name: 'Safe Browser', desc: 'Level 4 Complete' },
+                { icon: 'fa-band-aid', emoji: '🩹', name: 'Patch Master', desc: 'Level 5 Complete' },
+                { icon: 'fa-fire', emoji: '🔥', name: 'Firewall Expert', desc: 'Level 6 Complete' },
+                { icon: 'fa-bug', emoji: '🦠', name: 'Malware Hunter', desc: 'Level 7 Complete' },
+                { icon: 'fa-database', emoji: '💾', name: 'Data Guardian', desc: 'Level 8 Complete' },
+                { icon: 'fa-user-secret', emoji: '🕵️', name: 'Privacy Pro', desc: 'Level 9 Complete' },
+            ];
+
+            // Map completed levels by levelId for fast lookup
+            const completedLevelsMap = {};
+            let completedCount = 0;
+
+            // 1. Populate details from progress.levels
+            if (progress.levels && Array.isArray(progress.levels)) {
+                progress.levels.forEach(cl => {
+                    if (cl && typeof cl === 'object' && cl.levelId !== undefined) {
+                        completedLevelsMap[cl.levelId] = cl;
+                    }
+                });
+            }
+
+            // 2. Fallback/count using progress.completedLevels
+            if (progress.completedLevels && Array.isArray(progress.completedLevels)) {
+                completedCount = progress.completedLevels.length;
+                progress.completedLevels.forEach(id => {
+                    const levelId = (id && typeof id === 'object') ? id.levelId : id;
+                    if (levelId !== undefined && !completedLevelsMap[levelId]) {
+                        completedLevelsMap[levelId] = {
+                            levelId: levelId,
+                            score: progress.totalScore || 100,
+                            grade: 'Completed'
+                        };
+                    }
+                });
+            } else if (progress.levels && Array.isArray(progress.levels)) {
+                completedCount = progress.levels.length;
+            }
+
+            const score = progress.totalScore || 0;
+
+            // Determine rank based on completed count (skicking level 6)
+            let rank = 'CYBER CADET';
+            if (completedCount >= 8) rank = 'CYBER LEGEND';
+            else if (completedCount >= 6) rank = 'CYBER COMMANDER';
+            else if (completedCount >= 4) rank = 'CYBER GUARDIAN';
+            else if (completedCount >= 2) rank = 'CYBER AGENT';
+            else if (completedCount >= 1) rank = 'CYBER RECRUIT';
+
+            const username = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Agent';
+            const email = user.email || 'agent@hackshield.io';
+            const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+
+            // Populate profile header
+            document.getElementById('profileInitial').textContent = username.charAt(0).toUpperCase();
+            document.getElementById('profileName').textContent = username;
+            document.getElementById('profileRank').textContent = rank;
+            document.getElementById('profileEmail').querySelector('span').textContent = email;
+
+            // Populate stats
+            document.getElementById('statScore').textContent = score;
+            document.getElementById('statLevels').textContent = `${completedCount} / 8`;
+            document.getElementById('statBadges').textContent = completedCount;
+
+            // Populate badges
+            const badgesGrid = document.getElementById('badgesGrid');
+            badgesGrid.innerHTML = '';
+            allBadges.forEach((badge, index) => {
+                const levelId = index + 1;
+                if (levelId === 6) return; // skip level 6
+                
+                const isUnlocked = !!completedLevelsMap[levelId];
+                const item = document.createElement('div');
+                item.className = `badge-item${isUnlocked ? '' : ' badge-locked'}`;
+                
+                const iconHtml = badge.icon 
+                    ? `<i class="fa-solid ${badge.icon} badge-icon"></i>` 
+                    : `<span class="badge-emoji">${badge.emoji}</span>`;
+
+                item.innerHTML = `
+                    <div class="badge-visual">
+                        ${iconHtml}
+                        ${isUnlocked ? '' : '<i class="fa-solid fa-lock badge-lock-overlay"></i>'}
+                    </div>
+                    <div class="badge-info">
+                        <div class="badge-name">${badge.name}</div>
+                        <div class="badge-desc">${isUnlocked ? badge.desc : 'Locked'}</div>
+                    </div>
+                `;
+                badgesGrid.appendChild(item);
+            });
+
+            // Populate level progress
+            const levelProgress = document.getElementById('levelProgress');
+            levelProgress.innerHTML = '';
+            levels.forEach(level => {
+                if (level.id === 6) return; // skip level 6
+                
+                const cl = completedLevelsMap[level.id];
+                const isCompleted = !!cl;
+                const item = document.createElement('div');
+                item.className = `level-item ${isCompleted ? 'level-completed' : 'level-locked'}`;
+                
+                let details = isCompleted ? 'Completed' : 'Locked';
+                if (isCompleted && cl.grade) {
+                    details += ` • Score: ${cl.score}/100 (${cl.grade})`;
+                }
+                
+                item.innerHTML = `
+                    <div class="level-icon">
+                        <i class="fa-solid ${level.icon}"></i>
+                    </div>
+                    <div class="level-info">
+                        <div class="level-name">Level ${level.id}: ${level.title}</div>
+                        <div class="level-status-text">${details}</div>
+                    </div>
+                    <div class="level-check">
+                        <i class="fa-solid ${isCompleted ? 'fa-circle-check' : 'fa-lock'}"></i>
+                    </div>
+                `;
+                levelProgress.appendChild(item);
+            });
+
+            // Populate account info
+            document.getElementById('infoUsername').textContent = username;
+            document.getElementById('infoEmail').textContent = email;
+            document.getElementById('infoJoined').textContent = joinDate;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProfileData();
+            window.addEventListener('hshProgressUpdated', renderProfileData);
+        });
+    </script>
+</body>
+</html>

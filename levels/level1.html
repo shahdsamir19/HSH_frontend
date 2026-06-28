@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberShield · Strong Password Defense Mission</title>
+  <meta name="description" content="Interactive cyberpunk training: learn how hackers guess weak passwords and how to build digital fortresses." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../chatbot.css">
+  <style>
+    :root {
+      --cs-bg: 230 80% 9%;
+      --cs-bg-deep: 230 60% 5%;
+      --cs-fg: 200 100% 95%;
+      --cs-card: 230 55% 13%;
+      --cs-primary: 185 100% 50%;
+      --cs-secondary: 270 100% 65%;
+      --cs-accent: 320 100% 60%;
+      --cs-muted: 230 40% 22%;
+      --cs-muted-fg: 220 20% 65%;
+      --cs-danger: 0 90% 58%;
+      --cs-warn: 45 100% 55%;
+      --cs-success: 150 100% 45%;
+      --cs-border: 230 40% 24%;
+      --cs-glow-cyan: 0 0 20px hsl(185 100% 50% / .45), 0 0 60px hsl(185 100% 50% / .15);
+      --cs-glow-purple: 0 0 20px hsl(270 100% 65% / .45), 0 0 60px hsl(270 100% 65% / .15);
+      --cs-glow-pink: 0 0 20px hsl(320 100% 60% / .45), 0 0 60px hsl(320 100% 60% / .15);
+      --cs-glow-red: 0 0 20px hsl(0 90% 58% / .5), 0 0 60px hsl(0 90% 58% / .15);
+      --cs-glow-green: 0 0 20px hsl(150 100% 45% / .45), 0 0 60px hsl(150 100% 45% / .15);
+    }
+    html, body, #root {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      background: hsl(var(--cs-bg));
+      color: hsl(var(--cs-fg));
+      font-family: 'Fredoka', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .cs-shell {
+      background: hsl(var(--cs-bg));
+      color: hsl(var(--cs-fg));
+      font-family: 'Fredoka', sans-serif;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .font-display {
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: .02em;
+    }
+    .cs-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(1200px 600px at 80% -10%, hsl(270 100% 50% / .18), transparent 60%), radial-gradient(900px 500px at 10% 110%, hsl(185 100% 50% / .15), transparent 60%), linear-gradient(to bottom, hsl(var(--cs-bg)), hsl(var(--cs-bg-deep)));
+    }
+    .cs-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: linear-gradient(hsl(185 100% 50% / .07) 1px, transparent 1px), linear-gradient(90deg, hsl(185 100% 50% / .07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 90%);
+      mask-image: radial-gradient(ellipse at center, black 40%, transparent 90%);
+      animation: csGridShift 20s linear infinite;
+    }
+    @keyframes csGridShift {
+      from { background-position: 0 0, 0 0 }
+      to { background-position: 48px 48px, 48px 48px }
+    }
+    .cs-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      animation: csPulse 8s ease-in-out infinite;
+    }
+    @keyframes csPulse {
+      0%, 100% { opacity: .5; transform: scale(1) }
+      50% { opacity: .85; transform: scale(1.12) }
+    }
+    .cs-glass {
+      background: linear-gradient(135deg, hsl(var(--cs-card) / .78), hsl(var(--cs-card) / .55));
+      backdrop-filter: blur(20px);
+      border: 1px solid hsl(var(--cs-border));
+      border-radius: 18px;
+    }
+    .cs-glass-cyan { box-shadow: var(--cs-glow-cyan), inset 0 0 0 1px hsl(185 100% 50% / .25); }
+    .cs-glass-pink { box-shadow: var(--cs-glow-pink), inset 0 0 0 1px hsl(320 100% 60% / .25); }
+    .cs-glass-green { box-shadow: var(--cs-glow-green), inset 0 0 0 1px hsl(150 100% 45% / .25); }
+    .cs-glass-red { box-shadow: var(--cs-glow-red), inset 0 0 0 1px hsl(0 90% 58% / .3); }
+    .cs-glass-purple { box-shadow: var(--cs-glow-purple), inset 0 0 0 1px hsl(270 100% 65% / .25); }
+    .cs-text-glow-cyan { text-shadow: 0 0 10px hsl(185 100% 50% / .7), 0 0 30px hsl(185 100% 50% / .25); }
+    .cs-text-glow-pink { text-shadow: 0 0 10px hsl(320 100% 60% / .7), 0 0 30px hsl(320 100% 60% / .25); }
+    .cs-text-glow-green { text-shadow: 0 0 10px hsl(150 100% 45% / .7), 0 0 30px hsl(150 100% 45% / .25); }
+    .cs-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: 13px;
+      padding: 14px 26px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .25s ease, background .25s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cs-btn:hover { transform: translateY(-2px); }
+    .cs-btn:active { transform: scale(.97); }
+    .cs-btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+    .cs-btn-primary { background: linear-gradient(135deg, hsl(185 100% 50%), hsl(195 100% 55%)); color: hsl(230 80% 8%); box-shadow: var(--cs-glow-cyan); }
+    .cs-btn-primary:hover { box-shadow: 0 0 30px hsl(185 100% 50% / .8), 0 0 80px hsl(185 100% 50% / .25); }
+    .cs-btn-secondary { background: linear-gradient(135deg, hsl(270 100% 65%), hsl(320 100% 60%)); color: white; box-shadow: var(--cs-glow-purple); }
+    .cs-btn-ghost { background: hsl(var(--cs-muted) / .5); color: hsl(var(--cs-fg)); border-color: hsl(var(--cs-border)); backdrop-filter: blur(8px); }
+    .cs-btn-danger { background: hsl(var(--cs-danger)); color: white; box-shadow: var(--cs-glow-red); }
+    .cs-corners { position: relative; }
+    .cs-corners::before, .cs-corners::after, .cs-corners>.cs-cnr-tl, .cs-corners>.cs-cnr-tr, .cs-corners>.cs-cnr-bl, .cs-corners>.cs-cnr-br { content: ''; position: absolute; width: 18px; height: 18px; border-color: hsl(var(--cs-primary) / .4); pointer-events: none; }
+    .cs-corners::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; border-top-left-radius: 12px; }
+    .cs-corners::after { top: -1px; right: -1px; border-top: 2px solid; border-right: 2px solid; border-top-right-radius: 12px; }
+    .cs-corners>.cs-cnr-bl { bottom: -1px; left: -1px; border-bottom: 2px solid; border-left: 2px solid; border-bottom-left-radius: 12px; }
+    .cs-corners>.cs-cnr-br { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; border-bottom-right-radius: 12px; }
+    .cs-terminal {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      background: #05060d;
+      border: 1px solid hsl(var(--cs-danger) / .4);
+      border-radius: 12px;
+      padding: 18px;
+      color: hsl(150 100% 70%);
+      font-size: 13px;
+      line-height: 1.55;
+      box-shadow: inset 0 0 60px hsl(0 90% 58% / .08), var(--cs-glow-red);
+      position: relative;
+      overflow: hidden;
+    }
+    .cs-terminal::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(transparent 0 2px, hsl(0 0% 100% / .025) 2px 3px); pointer-events: none; }
+    .cs-cursor::after { content: '▋'; margin-left: 4px; animation: csBlink 1s steps(2) infinite; color: hsl(150 100% 70%); }
+    @keyframes csBlink { 50% { opacity: 0 } }
+    @keyframes csGlitch { 0%, 100% { transform: translate(0) } 20% { transform: translate(-2px, 1px) } 40% { transform: translate(2px, -1px) } 60% { transform: translate(-1px, -2px) } 80% { transform: translate(1px, 2px) } }
+    .cs-glitch { animation: csGlitch .3s infinite; }
+    .cs-meter { height: 12px; border-radius: 999px; background: hsl(var(--cs-muted) / .6); overflow: hidden; position: relative; }
+    .cs-meter>span { display: block; height: 100%; border-radius: 999px; transition: width .6s cubic-bezier(.22, 1, .36, 1), background .4s ease; position: relative; }
+    .cs-meter>span::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, hsl(0 0% 100% / .35), transparent); animation: csShimmer 2.4s linear infinite; }
+    @keyframes csShimmer { from { transform: translateX(-100%) } to { transform: translateX(100%) } }
+    .cs-input { width: 100%; background: hsl(var(--cs-bg-deep) / .7); border: 1px solid hsl(var(--cs-border)); color: hsl(var(--cs-fg)); border-radius: 10px; padding: 12px 14px; font-family: 'Fredoka', sans-serif; font-size: 15px; transition: border-color .2s, box-shadow .2s; }
+    .cs-input:focus { outline: none; border-color: hsl(var(--cs-primary)); box-shadow: 0 0 0 3px hsl(185 100% 50% / .15), var(--cs-glow-cyan); }
+    .cs-label { font-family: 'Orbitron', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: hsl(var(--cs-primary)); margin-bottom: 6px; display: block; }
+    .cs-particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .cs-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: hsl(185 100% 60%); opacity: .6; box-shadow: 0 0 8px hsl(185 100% 60%); animation: csFloat linear infinite; }
+    @keyframes csFloat { from { transform: translateY(100vh) translateX(0); opacity: 0 } 10% { opacity: .8 } 90% { opacity: .8 } to { transform: translateY(-10vh) translateX(40px); opacity: 0 } }
+    .cs-chip { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: .18em; font-size: 10px; padding: 6px 12px; border-radius: 999px; border: 1px solid hsl(var(--cs-primary) / .4); background: hsl(var(--cs-primary) / .1); color: hsl(var(--cs-primary)); }
+    .cs-divider { height: 1px; width: 100%; background: linear-gradient(90deg, transparent, hsl(var(--cs-primary) / .5), transparent); }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.3.1",
+        "react/": "https://esm.sh/react@18.3.1/",
+        "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+        "framer-motion": "https://esm.sh/framer-motion@11.11.17?external=react",
+        "lucide-react": "https://esm.sh/lucide-react@0.469.0?external=react",
+        "canvas-confetti": "https://esm.sh/canvas-confetti@1.9.3"
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <link rel="stylesheet" href="../components/cyber-background.css">
+</head>
+<body>
+  <script src="../components/navbar.js"></script>
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module" data-presets="react">
+    import React, { useEffect, useMemo, useRef, useState } from "react";
+    import { createRoot } from "react-dom/client";
+    import { AnimatePresence, motion } from "framer-motion";
+    import confetti from "canvas-confetti";
+    import {
+      Shield, ShieldCheck, Lock, KeyRound, Terminal, Eye, EyeOff,
+      ChevronLeft, ChevronRight, Sparkles, Bot, X, Send, Trophy, Zap,
+      AlertTriangle, CheckCircle2, Skull, Home, Users, Award, Cpu, Wand2,
+    } from "lucide-react";
+
+    /* ========== passwordUtils ========== */
+    function calcEntropy(password){
+      let pool=0;
+      if(/[a-z]/.test(password)) pool+=26;
+      if(/[A-Z]/.test(password)) pool+=26;
+      if(/[0-9]/.test(password)) pool+=10;
+      if(/[^A-Za-z0-9]/.test(password)) pool+=32;
+      if(pool===0) return 0;
+      return Math.log2(pool)*password.length;
+    }
+    function isPersonal(password, info){
+      const p=password.toLowerCase();
+      const parts=[info.name,info.username,info.birthYear,info.hobby,info.pet]
+        .map(s=>(s||"").toLowerCase().trim()).filter(s=>s.length>=3);
+      return parts.some(s=>p.includes(s));
+    }
+    function humanTime(seconds){
+      if(!isFinite(seconds)||seconds>1e15) return "Centuries";
+      if(seconds<1) return "Instant";
+      if(seconds<60) return Math.round(seconds)+" seconds";
+      if(seconds<3600) return Math.round(seconds/60)+" minutes";
+      if(seconds<86400) return Math.round(seconds/3600)+" hours";
+      if(seconds<2592000) return Math.round(seconds/86400)+" days";
+      if(seconds<31536000) return Math.round(seconds/2592000)+" months";
+      const years=seconds/31536000;
+      if(years<1000) return Math.round(years)+" years";
+      if(years<1e6) return Math.round(years/1000)+"k years";
+      return Math.round(years/1e6)+"M years";
+    }
+    function evaluatePassword(password, info){
+      const entropy=calcEntropy(password);
+      const personal=isPersonal(password, info);
+      const feedback=[];
+      const commons=["123456","password","qwerty","111111","abc123","iloveyou"];
+      const isCommon=commons.some(c=>password.toLowerCase().includes(c));
+      let eff=entropy;
+      if(personal) eff=Math.min(eff,18);
+      if(isCommon) eff=Math.min(eff,12);
+      if(password.length<8) feedback.push("Make it at least 12 characters long.");
+      if(!/[A-Z]/.test(password)) feedback.push("Add uppercase letters.");
+      if(!/[a-z]/.test(password)) feedback.push("Add lowercase letters.");
+      if(!/[0-9]/.test(password)) feedback.push("Mix in some numbers.");
+      if(!/[^A-Za-z0-9]/.test(password)) feedback.push("Add a symbol like ! @ # $ %.");
+      if(personal) feedback.push("Remove personal info (name, year, pet, hobby).");
+      if(isCommon) feedback.push("Avoid common passwords like 'password' or '123456'.");
+      const guesses=Math.pow(2,eff)/2;
+      const seconds=guesses/1e10;
+      const crackTime=humanTime(seconds);
+      let score=0;
+      if(eff>28) score=1;
+      if(eff>45) score=2;
+      if(eff>60) score=3;
+      if(eff>80) score=4;
+      const labels=["Critical","Weak","Fair","Strong","Fortress"];
+      const colors=["hsl(0 90% 58%)","hsl(15 95% 58%)","hsl(45 100% 55%)","hsl(150 100% 45%)","hsl(185 100% 50%)"];
+      return {score,label:labels[score],color:colors[score],crackTime,percent:Math.min(100,(eff/90)*100),entropy:eff,feedback:feedback.slice(0,3)};
+    }
+    function generateGuesses(info, target){
+      const tokens=[info.name,info.username,info.pet,info.hobby,info.birthYear,"123","2024","!"]
+        .map(s=>(s||"").trim()).filter(Boolean);
+      const guesses=new Set(["password","123456","qwerty","111111","abc123"]);
+      for(const t of tokens){
+        guesses.add(t.toLowerCase());
+        guesses.add(t+"123");
+        guesses.add(t+info.birthYear);
+        guesses.add(t.toLowerCase()+"!");
+        for(const u of tokens) if(u!==t) guesses.add(t.toLowerCase()+u.toLowerCase());
+      }
+      return Array.from(guesses).slice(0,14);
+    }
+    const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+
+    /* ========== Background ========== */
+    function CyberBackground(){
+      const canvasRef=useRef(null);
+      useEffect(()=>{
+        const canvas=canvasRef.current; if(!canvas) return;
+        const ctx=canvas.getContext("2d"); if(!ctx) return;
+        let raf=0;
+        const resize=()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;};
+        resize(); window.addEventListener("resize",resize);
+        const nodes=Array.from({length:55},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4}));
+        const tick=()=>{
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          for(const n of nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>canvas.width)n.vx*=-1;if(n.y<0||n.y>canvas.height)n.vy*=-1;}
+          for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+            const a=nodes[i],b=nodes[j];const dx=a.x-b.x,dy=a.y-b.y;const d=Math.hypot(dx,dy);
+            if(d<140){ctx.strokeStyle=`hsla(185,100%,60%,${0.18*(1-d/140)})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+          }
+          for(const n of nodes){ctx.fillStyle="hsla(185,100%,70%,0.85)";ctx.beginPath();ctx.arc(n.x,n.y,1.6,0,Math.PI*2);ctx.fill();}
+          raf=requestAnimationFrame(tick);
+        };
+        tick();
+        return ()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);};
+      },[]);
+      const particles=useMemo(()=>Array.from({length:22},(_,i)=>({left:Math.random()*100,delay:Math.random()*12,duration:10+Math.random()*14,size:2+Math.random()*3,hue:Math.random()>.5?185:280,key:i})),[]);
+      return (<>
+        <div className="cs-bg" /><div className="cs-grid" />
+        <div className="cs-orb" style={{width:520,height:520,top:"-120px",right:"-80px",background:"hsl(270 100% 55% / .35)"}}/>
+        <div className="cs-orb" style={{width:480,height:480,bottom:"-140px",left:"-100px",background:"hsl(185 100% 50% / .3)",animationDelay:"2s"}}/>
+        <canvas ref={canvasRef} className="cs-particles" style={{zIndex:0,opacity:.55}}/>
+        <div className="cs-particles">
+          {particles.map(p=>(<span key={p.key} className="cs-particle" style={{left:`${p.left}%`,bottom:0,width:p.size,height:p.size,background:`hsl(${p.hue} 100% 60%)`,boxShadow:`0 0 8px hsl(${p.hue} 100% 60%)`,animationDuration:`${p.duration}s`,animationDelay:`${p.delay}s`}}/>))}
+        </div>
+      </>);
+    }
+
+    /* ========== Main App ========== */
+    const phaseOrder=["briefing","flashcards","builder","attack","challenge","complete"];
+
+    function LevelPage(){
+      const [phase,setPhase]=useState("briefing");
+      const [xp,setXp]=useState(0);
+      const [badges,setBadges]=useState([]);
+      const [info,setInfo]=useState({name:"",username:"",birthYear:"",hobby:"",pet:""});
+      const [password,setPassword]=useState("");
+      const [backendResult, setBackendResult] = useState(null);
+      const startTimeRef = useRef(Date.now());
+      const strength=useMemo(()=>evaluatePassword(password,info),[password,info]);
+      const phaseIndex=phaseOrder.indexOf(phase);
+      const progress=((phaseIndex+1)/phaseOrder.length)*100;
+      const addXp=(n)=>setXp(x=>x+n);
+      const addBadge=(b)=>setBadges(bs=>bs.includes(b)?bs:[...bs,b]);
+
+      const handleComplete = async () => {
+        const endTime = Date.now();
+        const duration = Math.round((endTime - startTimeRef.current) / 1000);
+        const score = Math.round(strength.percent);
+        
+        try {
+          const result = await window.api.submitProgress(1, score, duration);
+          if (result.success) {
+            setBackendResult(result.data);
+          }
+        } catch (e) {
+          console.error("Failed to submit Level 1 progress:", e);
+        }
+        
+        addBadge("🏆");
+        addBadge("🦾");
+        setPhase("complete");
+      };
+
+      return (
+        <div className="cs-shell">
+          <CyberBackground />
+          <ProgressBar progress={progress} phase={phase} />
+          <main className="relative z-10 px-4 sm:px-8 pt-6 pb-24 max-w-6xl mx-auto">
+            <AnimatePresence mode="wait">
+              {phase==="briefing" && <Briefing key="briefing" onStart={()=>setPhase("flashcards")}/>}
+              {phase==="flashcards" && <FlashCards key="flashcards" onDone={()=>{addXp(50);setPhase("builder");}}/>}
+              {phase==="builder" && <Builder key="builder" info={info} setInfo={setInfo} password={password} setPassword={setPassword} strength={strength} onContinue={()=>{addXp(75);if(strength.score>=3) addBadge("🛡️");setPhase("attack");}}/>}
+              {phase==="attack" && <Attack key="attack" info={info} password={password} onContinue={()=>{addXp(50);setPhase("challenge");}}/>}
+              {phase==="challenge" && <Challenge key="challenge" onScore={(n)=>addXp(n)} onDone={handleComplete}/>}
+              {phase==="complete" && <Complete key="complete" xp={xp} badges={badges} strength={strength} backendResult={backendResult} onRestart={()=>{setPhase("briefing");setXp(0);setBadges([]);setPassword("");setBackendResult(null);startTimeRef.current=Date.now();}}/>}
+            </AnimatePresence>
+          </main>
+        </div>
+      );
+    }
+
+    function ProgressBar({progress,phase}){
+      const labels={briefing:"Mission Briefing",flashcards:"Intel Cards",builder:"Password Forge",attack:"Hacker Simulation",challenge:"Field Challenge",complete:"Mission Complete"};
+      return (
+        <div className="relative z-20 mt-4 mx-4 sm:mx-8">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] font-display tracking-[0.3em] uppercase text-cyan-300/70">Phase · {labels[phase]}</span>
+            <span className="text-[10px] font-display tracking-[0.3em] uppercase text-cyan-300/70">{Math.round(progress)}%</span>
+          </div>
+          <div className="cs-meter"><span style={{width:`${progress}%`,background:"linear-gradient(90deg, hsl(185 100% 50%), hsl(270 100% 65%), hsl(320 100% 60%))"}}/></div>
+        </div>
+      );
+    }
+
+    function Briefing({onStart}){
+      const objectives=["Learn what makes passwords weak","Understand brute force and guessing attacks","Forge stronger, harder-to-crack passwords","Protect your personal accounts forever"];
+      return (
+        <motion.section initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} transition={{duration:.5}} className="grid lg:grid-cols-2 gap-8 items-center mt-8">
+          <div>
+            <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:"spring",delay:.2}} className="cs-chip mb-5 inline-flex items-center gap-2">
+              <Sparkles className="w-3 h-3"/> Level 02 · Cyber Defense
+            </motion.div>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold cs-text-glow-cyan leading-tight">
+              Strong Password<br/>
+              <span style={{color:"hsl(320 100% 65%)"}} className="cs-text-glow-pink">Defense Mission</span>
+            </h1>
+            <p className="mt-5 text-cyan-100/70 text-lg max-w-md">Learn how hackers guess weak passwords and build secure digital protection that even AI brute-force engines can't crack.</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button onClick={onStart} className="cs-btn cs-btn-primary"><Zap className="w-4 h-4"/> Start Mission</button>
+              <div className="cs-chip flex items-center gap-2"><Trophy className="w-3 h-3"/> 175 XP Available</div>
+            </div>
+          </div>
+          <motion.div initial={{opacity:0,scale:.9}} animate={{opacity:1,scale:1}} transition={{delay:.3}} className="cs-glass cs-glass-purple cs-corners p-7 relative">
+            <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{background:"linear-gradient(135deg, hsl(270 100% 65% / .25), hsl(320 100% 60% / .25))",boxShadow:"var(--cs-glow-purple)"}}>
+                <ShieldCheck className="w-6 h-6" style={{color:"hsl(320 100% 70%)"}}/>
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-xl">Mission Objectives</h3>
+                <p className="text-xs text-cyan-200/60 uppercase tracking-widest">Briefing · Classified</p>
+              </div>
+            </div>
+            <ul className="space-y-3">
+              {objectives.map((o,i)=>(
+                <motion.li key={i} initial={{x:-20,opacity:0}} animate={{x:0,opacity:1}} transition={{delay:.45+i*.1}} className="flex items-start gap-3 text-cyan-50/90">
+                  <CheckCircle2 className="w-5 h-5 mt-0.5 shrink-0" style={{color:"hsl(150 100% 55%)"}}/><span>{o}</span>
+                </motion.li>
+              ))}
+            </ul>
+            <div className="cs-divider my-5"/>
+            <div className="flex items-center gap-3 text-sm text-yellow-200/90 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2">
+              <AlertTriangle className="w-4 h-4 shrink-0"/><span>Educational simulation only — no real attacks performed.</span>
+            </div>
+          </motion.div>
+        </motion.section>
+      );
+    }
+
+    const flashCards=[
+      {icon:KeyRound,title:"What is a Password?",body:"A password is the secret key that locks down your online accounts and personal information. Like a digital fingerprint — only you should know it.",accent:"cyan"},
+      {icon:AlertTriangle,title:"What Makes a Password Weak?",body:"Using your name, birth year, pet's name, or simple patterns like 123456 or qwerty. Hackers' first guesses are exactly these.",accent:"red"},
+      {icon:Eye,title:"How Hackers Guess Passwords",body:"They scrape your social media, then try combinations of your name, birthday, pets, and hobbies before anything else. Personal = predictable.",accent:"pink"},
+      {icon:Cpu,title:"What is a Brute Force Attack?",body:"Computers blast through millions of password combinations per second. Short or simple? Cracked in seconds. Long + random? Cracked in centuries.",accent:"purple"},
+      {icon:ShieldCheck,title:"How to Create Strong Passwords",body:"Use 12+ characters. Mix uppercase, lowercase, numbers AND symbols. Avoid personal info. Make it random and unique for every account.",accent:"green"},
+    ];
+
+    function FlashCards({onDone}){
+      const [i,setI]=useState(0);
+      const isLast=i===flashCards.length-1;
+      const card=flashCards[i];
+      const accentMap={cyan:"cs-glass-cyan",red:"cs-glass-red",pink:"cs-glass-pink",purple:"cs-glass-purple",green:"cs-glass-green"};
+      return (
+        <motion.section initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="mt-8">
+          <div className="text-center mb-8">
+            <div className="cs-chip inline-flex items-center gap-2 mb-3"><Sparkles className="w-3 h-3"/> Intel Briefing</div>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold cs-text-glow-cyan">Decrypt the Knowledge</h2>
+            <p className="text-cyan-100/60 mt-2">Swipe through the intel cards</p>
+          </div>
+          <div className="relative max-w-2xl mx-auto">
+            <div className="relative h-[360px] sm:h-[320px]">
+              <AnimatePresence mode="wait">
+                <motion.div key={i} initial={{opacity:0,x:80,rotateY:25}} animate={{opacity:1,x:0,rotateY:0}} exit={{opacity:0,x:-80,rotateY:-25}} transition={{duration:.4}} className={`absolute inset-0 cs-glass ${accentMap[card.accent]} cs-corners p-8 flex flex-col`}>
+                  <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{background:"hsl(185 100% 50% / .15)",boxShadow:"var(--cs-glow-cyan)"}}>
+                      <card.icon className="w-7 h-7" style={{color:"hsl(185 100% 70%)"}}/>
+                    </div>
+                    <div>
+                      <div className="text-[10px] tracking-[0.3em] uppercase text-cyan-300/60 font-display">Card {i+1} of {flashCards.length}</div>
+                      <h3 className="font-display font-bold text-2xl">{card.title}</h3>
+                    </div>
+                  </div>
+                  <p className="text-cyan-50/85 text-lg leading-relaxed flex-1">{card.body}</p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            <div className="flex justify-center gap-2 mt-6">
+              {flashCards.map((_,idx)=>(
+                <button key={idx} onClick={()=>setI(idx)} className="h-2 rounded-full transition-all" style={{width:idx===i?28:8,background:idx===i?"hsl(185 100% 50%)":"hsl(185 100% 50% / .25)",boxShadow:idx===i?"var(--cs-glow-cyan)":"none"}}/>
+              ))}
+            </div>
+            <div className="flex justify-between items-center mt-6">
+              <button onClick={()=>setI(v=>Math.max(0,v-1))} disabled={i===0} className="cs-btn cs-btn-ghost"><ChevronLeft className="w-4 h-4"/> Prev</button>
+              {isLast ? (
+                <button onClick={onDone} className="cs-btn cs-btn-primary">Continue <ChevronRight className="w-4 h-4"/></button>
+              ) : (
+                <button onClick={()=>setI(v=>v+1)} className="cs-btn cs-btn-secondary">Next <ChevronRight className="w-4 h-4"/></button>
+              )}
+            </div>
+          </div>
+        </motion.section>
+      );
+    }
+
+    function Builder({info,setInfo,password,setPassword,strength,onContinue}){
+      const [reveal,setReveal]=useState(false);
+      const fields=[
+        {key:"name",label:"Name",placeholder:"Alex"},
+        {key:"username",label:"Username",placeholder:"shadowfox"},
+        {key:"birthYear",label:"Birth Year",placeholder:"2010"},
+        {key:"hobby",label:"Favorite Hobby",placeholder:"skating"},
+        {key:"pet",label:"Pet Name (optional)",placeholder:"coco"},
+      ];
+      return (
+        <motion.section initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} className="mt-8 grid lg:grid-cols-2 gap-8">
+          <div className="cs-glass cs-glass-cyan cs-corners p-7">
+            <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+            <div className="flex items-center gap-3 mb-5">
+              <Wand2 className="w-6 h-6" style={{color:"hsl(185 100% 70%)"}}/>
+              <div>
+                <h2 className="font-display text-2xl font-bold">Agent Profile</h2>
+                <p className="text-xs text-cyan-300/60 uppercase tracking-widest">Local-only · Never sent</p>
+              </div>
+            </div>
+            <div className="space-y-3.5">
+              {fields.map(f=>(
+                <div key={f.key}>
+                  <label className="cs-label">{f.label}</label>
+                  <input className="cs-input" value={info[f.key]} onChange={e=>setInfo({...info,[f.key]:e.target.value})} placeholder={f.placeholder}/>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="cs-glass cs-glass-purple cs-corners p-7">
+            <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+            <div className="flex items-center gap-3 mb-5">
+              <Lock className="w-6 h-6" style={{color:"hsl(320 100% 70%)"}}/>
+              <div>
+                <h2 className="font-display text-2xl font-bold">Forge Your Password</h2>
+                <p className="text-xs text-pink-300/70 uppercase tracking-widest">Live strength analysis</p>
+              </div>
+            </div>
+            <label className="cs-label">Password</label>
+            <div className="relative">
+              <input type={reveal?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Type your masterpiece…" className="cs-input pr-12 font-mono"/>
+              <button onClick={()=>setReveal(r=>!r)} className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-200/70 hover:text-cyan-200" aria-label="Toggle visibility">
+                {reveal ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+              </button>
+            </div>
+            <div className="mt-5">
+              <div className="flex justify-between text-xs font-display tracking-widest uppercase mb-2">
+                <span style={{color:strength.color}}>{strength.label}</span>
+                <span className="text-cyan-200/60">Crack time · <span style={{color:strength.color}}>{strength.crackTime}</span></span>
+              </div>
+              <div className="cs-meter">
+                <motion.span animate={{width:`${strength.percent}%`}} transition={{duration:.5}} style={{background:`linear-gradient(90deg, ${strength.color}, ${strength.color}cc)`,boxShadow:`0 0 18px ${strength.color}`}}/>
+              </div>
+            </div>
+            <div className="grid grid-cols-5 gap-2 mt-4">
+              {[0, 1, 2, 3, 4].map(n=>(
+                <div key={n} className="h-1.5 rounded-full transition-all" style={{background:n<=strength.score?strength.color:"hsl(230 40% 22%)",boxShadow:n<=strength.score?`0 0 10px ${strength.color}`:"none"}}/>
+              ))}
+            </div>
+            <div className="mt-5 space-y-2 min-h-[80px]">
+              {password==="" ? (
+                <p className="text-cyan-100/50 text-sm italic">Start typing to see live feedback…</p>
+              ) : strength.feedback.length===0 ? (
+                <div className="flex items-center gap-2 text-green-300"><CheckCircle2 className="w-4 h-4"/> Looks tight, agent. Nothing to improve.</div>
+              ) : (
+                strength.feedback.map((fb,i)=>(
+                  <motion.div key={fb} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:i*.05}} className="flex items-center gap-2 text-sm text-yellow-200/90">
+                    <AlertTriangle className="w-4 h-4 shrink-0"/><span>{fb}</span>
+                  </motion.div>
+                ))
+              )}
+            </div>
+            <div className="mt-5 flex justify-end">
+              <button disabled={password.length<6} onClick={onContinue} className="cs-btn cs-btn-primary">Run Hacker Simulation <ChevronRight className="w-4 h-4"/></button>
+            </div>
+          </div>
+        </motion.section>
+      );
+    }
+
+    function Attack({info,password,onContinue}){
+      const guesses=useMemo(()=>generateGuesses(info,password),[info,password]);
+      const [lines,setLines]=useState([]);
+      const [done,setDone]=useState(null);
+      const counter=useRef(0);
+      useEffect(()=>{
+        let cancelled=false;
+        const run=async()=>{
+          const target=password.toLowerCase();
+          for(let i=0;i<guesses.length;i++){
+            if(cancelled) return;
+            const g=guesses[i];
+            counter.current++;
+            setLines(l=>[...l,{text:`> trying  ${g}`,status:"try",key:counter.current}]);
+            await sleep(380);
+            if(cancelled) return;
+            const hit=g===target;
+            counter.current++;
+            setLines(l=>[...l,{text:hit?`✓ MATCH FOUND → ${g}`:`✗ ${g}  denied`,status:hit?"hit":"fail",key:counter.current}]);
+            if(hit){setDone("cracked");return;}
+            await sleep(220);
+          }
+          if(!cancelled) setDone("safe");
+        };
+        run();
+        return ()=>{cancelled=true;};
+      },[guesses,password]);
+      return (
+        <motion.section initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="mt-8 max-w-3xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="cs-chip inline-flex items-center gap-2 mb-3 border-red-500/40 bg-red-500/10 text-red-300"><Skull className="w-3 h-3"/> SIMULATION · Educational Only</div>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-red-400 cs-glitch">INCOMING ATTACK</h2>
+            <p className="text-cyan-100/60 mt-2">Watch how a brute-force engine uses your personal info first.</p>
+          </div>
+          <div className="cs-terminal min-h-[340px]">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-red-500/30">
+              <div className="flex items-center gap-2"><Terminal className="w-4 h-4 text-red-400"/><span className="text-red-300 text-xs uppercase tracking-widest font-display">brute-force.exe — target: agent.local</span></div>
+              <div className="flex gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500/70"/><span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70"/><span className="w-2.5 h-2.5 rounded-full bg-green-500/70"/></div>
+            </div>
+            <div className="space-y-0.5 relative z-10">
+              {lines.map(l=>((
+                <motion.div key={l.key} initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}} transition={{duration:.15}} style={{color:l.status==="hit"?"hsl(0 100% 65%)":l.status==="try"?"hsl(150 100% 70%)":"hsl(220 20% 55%)"}}>{l.text}</motion.div>
+              )))}
+              {!done && <div className="cs-cursor"/>}
+              {done==="cracked" && (
+                <motion.div initial={{scale:.8,opacity:0}} animate={{scale:1,opacity:1}} className="mt-4 p-3 border-2 border-red-500 rounded-md text-red-300 font-display text-lg cs-glitch">⚠ PASSWORD CRACKED — your account is breached</motion.div>
+              )}
+              {done==="safe" && (
+                <motion.div initial={{scale:.8,opacity:0}} animate={{scale:1,opacity:1}} className="mt-4 p-3 border-2 border-green-500 rounded-md text-green-300 font-display text-lg">✓ ATTACK FAILED — fortress held strong</motion.div>
+              )}
+            </div>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <button disabled={!done} onClick={onContinue} className="cs-btn cs-btn-primary">Continue to Challenge <ChevronRight className="w-4 h-4"/></button>
+          </div>
+        </motion.section>
+      );
+    }
+
+    const challengeItems=[
+      {pw:"password123",answer:"weak"},
+      {pw:"qwerty2024!",answer:"medium"},
+      {pw:"Tr0ub4dor&3xLion!",answer:"strong"},
+      {pw:"mariam2005",answer:"weak"},
+      {pw:"Sunset#River42",answer:"strong"},
+    ];
+
+    function Challenge({onScore,onDone}){
+      const [i,setI]=useState(0);
+      const [result,setResult]=useState(null);
+      const [score,setScore]=useState(0);
+      const item=challengeItems[i];
+      const isLast=i===challengeItems.length-1;
+      const choose=(c)=>{
+        if(result) return;
+        if(c===item.answer){setResult("right");setScore(s=>s+1);onScore(20);} else setResult("wrong");
+        setTimeout(()=>{setResult(null);if(isLast) onDone(); else setI(v=>v+1);},1100);
+      };
+      return (
+        <motion.section initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-20}} className="mt-8 max-w-2xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="cs-chip inline-flex items-center gap-2 mb-3"><Trophy className="w-3 h-3"/> Mini Challenge · {i+1}/{challengeItems.length}</div>
+            <h2 className="font-display text-3xl font-bold cs-text-glow-cyan">Classify the Password</h2>
+            <p className="text-cyan-100/60 mt-2">Score: <span className="text-yellow-300 font-bold">{score}</span></p>
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div key={i} initial={{opacity:0,scale:.92}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:.92}} className={`cs-glass cs-corners p-8 text-center ${result==="right"?"cs-glass-green":result==="wrong"?"cs-glass-red":"cs-glass-cyan"}`}>
+              <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+              <div className="text-cyan-200/60 text-xs uppercase tracking-widest font-display mb-3">Target sample</div>
+              <div className="font-mono text-3xl sm:text-4xl py-6 px-4 rounded-xl" style={{background:"hsl(230 60% 5% / .7)",boxShadow:"inset 0 0 30px hsl(185 100% 50% / .15)"}}>{item.pw}</div>
+              <div className="grid grid-cols-3 gap-3 mt-6">
+                {["weak","medium","strong"].map(opt=>(
+                  <button key={opt} onClick={()=>choose(opt)} className={`cs-btn ${opt==="weak"?"cs-btn-danger":opt==="medium"?"cs-btn-ghost":"cs-btn-primary"}`} style={opt==="medium"?{background:"hsl(45 100% 55% / .25)",color:"hsl(45 100% 70%)"}:undefined}>{opt}</button>
+                ))}
+              </div>
+              {result && (
+                <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} className={`mt-5 font-display tracking-widest uppercase ${result==="right"?"text-green-300":"text-red-300"}`}>
+                  {result==="right"?"+20 XP · Correct":`Wrong — answer: ${item.answer}`}
+                </motion.div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </motion.section>
+      );
+    }
+
+    function Complete({xp,badges,strength,backendResult,onRestart}){
+      useEffect(()=>{
+        const burst=(origin)=>confetti({particleCount:80,spread:80,origin,colors:["#00e5ff","#a855f7","#ec4899","#22d3ee","#fde047"]});
+        burst({x:.3,y:.6});burst({x:.7,y:.6});
+        const t=setTimeout(()=>burst({x:.5,y:.4}),600);
+        return ()=>clearTimeout(t);
+      },[]);
+      const earnedBadges=[{emoji:"🛡️",label:"Password Defender"},{emoji:"🦾",label:"Cyber Guardian"},{emoji:"🏆",label:"Secure Agent"}];
+      return (
+        <motion.section initial={{opacity:0,scale:.95}} animate={{opacity:1,scale:1}} exit={{opacity:0}} className="mt-10 max-w-3xl mx-auto text-center">
+          <motion.div initial={{scale:0,rotate:-45}} animate={{scale:1,rotate:0}} transition={{type:"spring",stiffness:200,damping:14}} className="inline-flex items-center justify-center w-28 h-28 rounded-full mb-6" style={{background:"radial-gradient(circle, hsl(185 100% 50% / .3), hsl(270 100% 65% / .2), transparent)",boxShadow:"var(--cs-glow-cyan)"}}>
+            <ShieldCheck className="w-16 h-16" style={{color:"hsl(185 100% 70%)"}}/>
+          </motion.div>
+          <h2 className="font-display text-4xl sm:text-5xl font-bold cs-text-glow-cyan">Mission Complete</h2>
+          <p className="text-cyan-100/80 mt-3 text-lg">
+            Excellent Agent 🔥 — you created a password that is <span style={{color:strength.color}}>{strength.label.toLowerCase()}</span> and would take <span style={{color:strength.color}} className="font-bold">{strength.crackTime}</span> to crack.
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4 mt-8">
+            <div className="cs-glass cs-glass-cyan cs-corners p-5"><span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+              <div className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-display">Total XP</div>
+              <div className="font-display text-4xl font-bold mt-1" style={{color:"hsl(45 100% 60%)"}}>{xp}</div>
+            </div>
+            <div className="cs-glass cs-glass-purple cs-corners p-5"><span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+              <div className="text-[10px] uppercase tracking-widest text-pink-300/70 font-display">Security Score</div>
+              <div className="font-display text-4xl font-bold mt-1" style={{color:strength.color}}>{Math.round(strength.percent)}</div>
+            </div>
+            <div className="cs-glass cs-glass-green cs-corners p-5"><span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+              <div className="text-[10px] uppercase tracking-widest text-green-300/70 font-display">Crack Time</div>
+              <div className="font-display text-2xl font-bold mt-2" style={{color:strength.color}}>{strength.crackTime}</div>
+            </div>
+          </div>
+
+          {backendResult && (
+            <div className="mt-8 cs-glass cs-glass-cyan cs-corners p-6 max-w-xl mx-auto text-left space-y-3 font-display">
+              <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+              <h3 className="text-center font-bold text-base text-cyan-300 uppercase tracking-widest border-b border-cyan-500/30 pb-2">Mission Evaluation Report</h3>
+              <div className="grid grid-cols-2 gap-4 text-xs mt-3">
+                <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg">
+                  <span className="text-slate-400">Result Status:</span>
+                  <span className={`font-bold ${backendResult.status === 'passed' ? 'text-green-400' : 'text-red-400'}`}>{backendResult.status.toUpperCase()}</span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg">
+                  <span className="text-slate-400">Stars Earned:</span>
+                  <span className="text-yellow-400 font-bold">
+                    {Array.from({length: 3}, (_, i) => i < backendResult.stars ? '⭐' : '☆').join('')}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg">
+                  <span className="text-slate-400">Final Grade:</span>
+                  <span className="text-cyan-400 font-bold text-sm">{backendResult.grade}</span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg">
+                  <span className="text-slate-400">Highest Score:</span>
+                  <span className="text-emerald-400 font-bold">{backendResult.highestScore} / 100</span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg">
+                  <span className="text-slate-400">Attempts Taken:</span>
+                  <span className="text-purple-400 font-bold">{backendResult.attempts}</span>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900/60 p-3 rounded-lg">
+                  <span className="text-slate-400">Completion Time:</span>
+                  <span className="text-pink-400 font-bold">{backendResult.completionTime}s</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8">
+            <div className="text-[10px] uppercase tracking-[0.3em] text-cyan-300/60 font-display mb-3">Badges Unlocked</div>
+            <div className="flex justify-center gap-4">
+              {earnedBadges.map((b,i)=>(
+                <motion.div key={b.label} initial={{scale:0,rotate:-180}} animate={{scale:1,rotate:0}} transition={{delay:.3+i*.15,type:"spring"}} className="cs-glass cs-corners p-4 w-28">
+                  <span className="cs-cnr-bl"/><span className="cs-cnr-br"/>
+                  <div className="text-4xl">{b.emoji}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-cyan-200/80 font-display mt-1">{b.label}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <button onClick={onRestart} className="cs-btn cs-btn-ghost">Replay Mission</button>
+            <button onClick={() => window.location.href = '../map.html'} className="cs-btn cs-btn-ghost">Go to Map</button>
+            <button onClick={() => window.location.href = 'level2.html'} className="cs-btn cs-btn-primary">Next Level <ChevronRight className="w-4 h-4"/></button>
+          </div>
+        </motion.section>
+      );
+    }
+
+    createRoot(document.getElementById("root")).render(<LevelPage/>);
+  </script>
+  <script src="../chatbot.js"></script>
+  <script src="../components/cyber-background.js"></script>
+</body>
+</html>

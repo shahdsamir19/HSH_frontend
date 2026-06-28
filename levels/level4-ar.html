@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>أبطال حماية الاختراق - المستوى الرابع: التصفح الآمن</title>
+<meta name="description" content="تعلم سلوكيات التصفح الآمن من خلال محاكاة وتدريبات تفاعلية."/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<!-- Chatbot -->
+<link rel="stylesheet" href="../chatbot.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:235,52%,8%;
+  --fg:210,40%,96%;
+  --card:223,61%,18%;
+  --primary:192,100%,50%;
+  --secondary:300,100%,50%;
+  --muted:230,30%,15%;
+  --muted-fg:215,20%,55%;
+  --destructive:340,100%,50%;
+  --success:152,100%,50%;
+  --warning:40,90%,55%;
+  --surface-dark:0,0%,0%;
+  --nav-bg:223,61%,18%;
+  --radius:0.75rem;
+
+  --safe:hsl(152,100%,50%);
+  --danger:hsl(340,100%,50%);
+  --border:hsla(192,100%,50%,0.25);
+  --browser-chrome:hsl(223,61%,14%);
+  --browser-bar:hsl(223,61%,18%);
+  --browser-content:hsl(228,20%,95%);
+  --input-bg:hsl(230,30%,15%);
+  --font-mono:'Courier New',monospace;
+}
+
+body{
+  color:hsl(var(--fg));
+  font-family:'Cairo', 'Fredoka',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  min-height:100vh;
+  line-height:1.5;
+}
+
+.font-cyber{font-family:'Cairo', 'Orbitron',monospace}
+.neon-blue{text-shadow:0 0 10px hsl(192,100%,50%),0 0 20px hsl(192,100%,50%),0 0 30px hsl(192,100%,50%);color:hsl(192,100%,50%)}
+.neon-green{text-shadow:0 0 10px hsl(152,100%,50%),0 0 20px hsl(152,100%,50%),0 0 30px hsl(152,100%,50%);color:hsl(152,100%,50%)}
+.neon-red{text-shadow:0 0 10px hsl(340,100%,50%),0 0 20px hsl(340,100%,50%),0 0 30px hsl(340,100%,50%);color:hsl(340,100%,50%)}
+
+.bg-gradient-game{
+  background-color:hsl(var(--bg));
+  background-image:
+    radial-gradient(circle at 20% 30%,hsla(192,100%,50%,0.1) 0%,transparent 50%),
+    radial-gradient(circle at 80% 70%,hsla(300,100%,50%,0.1) 0%,transparent 50%),
+    linear-gradient(90deg,transparent 48%,hsla(192,100%,50%,0.12) 49%,hsla(192,100%,50%,0.12) 51%,transparent 52%),
+    linear-gradient(0deg,transparent 48%,hsla(192,100%,50%,0.12) 49%,hsla(192,100%,50%,0.12) 51%,transparent 52%);
+  background-size:100% 100%,100% 100%,50px 50px,50px 50px;
+}
+
+.bg-decor{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.bg-decor .circle{position:absolute;border:2px solid;border-radius:50%}
+.bg-decor .dot{position:absolute;width:8px;height:8px;border-radius:50%}
+
+.glass-card{background:hsla(var(--surface-dark),0.6);border:4px solid hsl(var(--primary));border-radius:1rem}
+.glass-card-glow{background:hsla(var(--surface-dark),0.6);border:4px solid hsl(var(--primary));border-radius:1rem;box-shadow:0 0 15px hsla(192,100%,50%,0.5),0 0 30px hsla(192,100%,50%,0.3),inset 0 0 15px hsla(192,100%,50%,0.15)}
+.glass-card-fuchsia{background:hsla(var(--surface-dark),0.6);border:4px solid hsl(var(--secondary));border-radius:1rem;box-shadow:0 0 15px hsla(300,100%,50%,0.3)}
+.glow-green{box-shadow:0 0 15px hsla(152,100%,50%,0.5),0 0 30px hsla(152,100%,50%,0.3),inset 0 0 15px hsla(152,100%,50%,0.15)}
+.glow-cyan{box-shadow:0 0 15px hsla(192,100%,50%,0.5),0 0 30px hsla(192,100%,50%,0.3),inset 0 0 15px hsla(192,100%,50%,0.15)}
+.glow-safe{box-shadow:0 0 15px hsla(152,100%,50%,0.5),0 0 30px hsla(152,100%,50%,0.3)}
+.glow-warning{box-shadow:0 0 20px hsla(40,90%,55%,0.4)}
+
+.progress-bar-wrap{max-width:28rem;margin:0 auto}
+.progress-bar-wrap .info{display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;flex-direction:row-reverse;}
+.progress-bar-wrap .info .scene-label{color:hsl(var(--muted-fg))}
+.progress-bar-wrap .info .pct{color:hsl(var(--primary));font-weight:700;font-family:'Orbitron',monospace}
+.progress-track{width:100%;height:12px;background:hsl(var(--muted));border-radius:999px;overflow:hidden;border:1px solid hsla(192,100%,50%,0.3)}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(to right,hsl(192,100%,50%),hsl(300,100%,50%));box-shadow:0 0 10px hsla(192,100%,50%,0.5);transition:width .5s ease-out}
+
+.progress-bar{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-direction:row-reverse;}
+.progress-bar .seg{height:8px;flex:1;border-radius:4px;transition:all 0.5s;background:hsl(var(--muted))}
+.progress-bar .seg.done{background:hsl(152,100%,50%)}
+.progress-bar .seg.active{background:hsl(192,100%,50%);box-shadow:0 0 8px hsla(192,100%,50%,0.6)}
+
+button{cursor:pointer;border:none;font-family:'Cairo', 'Fredoka',sans-serif;font-size:inherit}
+input{font-family:'Cairo', 'Fredoka',sans-serif}
+
+.btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 24px;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;font-size:16px;
+  border:none;cursor:pointer;transition:all .3s;user-select:none;
+}
+.btn:active{transform:scale(0.95)}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+.btn-primary{
+  background:linear-gradient(to right,hsl(192,100%,37%),hsl(300,100%,37%));
+  color:#fff;
+  box-shadow:0 0 15px hsla(192,100%,50%,0.5),0 0 30px hsla(192,100%,50%,0.3);
+}
+.btn-primary:hover:not(:disabled){background:linear-gradient(to right,hsl(192,100%,45%),hsl(300,100%,45%));transform:scale(1.05)}
+
+.btn-secondary{
+  background:linear-gradient(to right,hsl(220,70%,40%),hsl(270,60%,45%));
+  color:hsl(var(--fg));
+  border:2px solid hsla(300,100%,50%,0.3);
+}
+.btn-secondary:hover:not(:disabled){transform:scale(1.05)}
+
+.btn-danger{
+  background:linear-gradient(to right,hsl(340,100%,40%),hsl(0,80%,45%));
+  color:#fff;
+  box-shadow:0 0 10px hsla(340,100%,50%,0.3);
+}
+.btn-danger:hover:not(:disabled){transform:scale(1.05)}
+
+.btn-warning{
+  background:linear-gradient(to right,hsl(40,90%,45%),hsl(30,90%,45%));
+  color:hsl(var(--bg));
+  font-weight:700;
+}
+.btn-warning:hover:not(:disabled){transform:scale(1.05)}
+
+.btn-success{background:linear-gradient(to right,hsl(var(--success)),hsl(var(--primary)));color:hsl(var(--fg));border:2px solid hsla(152,100%,50%,0.3)}
+.btn-success:hover:not(:disabled){transform:scale(1.05)}
+
+.btn-ghost{background:transparent;color:hsl(var(--muted-fg));border:1px solid hsla(215,20%,55%,0.2)}
+.btn-ghost:hover:not(:disabled){color:hsl(var(--fg));background:hsla(var(--muted),0.5)}
+
+.btn-lg{padding:16px 32px;font-size:18px;border-radius:14px}
+
+.quiz-btn{
+  width:100%;text-align:right;padding:16px;border-radius:12px;font-family:'Cairo',sans-serif;
+  transition:all .3s;border:2px solid hsla(192,100%,50%,0.3);background:hsla(var(--surface-dark),0.4);
+  color:hsl(var(--fg));cursor:pointer;font-size:16px;margin-bottom:8px;
+}
+.quiz-btn:hover:not(:disabled){border-color:hsla(192,100%,50%,0.6)}
+.quiz-btn.correct{border-color:hsla(152,100%,50%,0.5);background:hsla(152,100%,50%,0.1);color:hsl(var(--success))}
+.quiz-btn.wrong{border-color:hsla(var(--warning),0.5);background:hsla(var(--warning),0.1)}
+.quiz-btn.dimmed{border-color:hsla(215,20%,55%,0.2);background:hsla(var(--muted),0.3);color:hsl(var(--muted-fg))}
+.quiz-btn:disabled{cursor:default}
+
+.check-btn{
+  width:100%;text-align:right;padding:20px;border-radius:12px;font-family:'Cairo',sans-serif;
+  transition:all .3s;border:2px solid hsla(192,100%,50%,0.3);background:hsla(var(--surface-dark),0.4);
+  color:hsla(var(--fg),0.8);cursor:pointer;display:flex;align-items:center;gap:16px;font-size:16px;margin-bottom:12px;
+  flex-direction:row-reverse;
+}
+.check-btn:hover{border-color:hsla(192,100%,50%,0.6)}
+.check-btn.checked{border-color:hsla(152,100%,50%,0.5);background:hsla(152,100%,50%,0.1);color:hsl(var(--fg))}
+.checkbox{width:24px;height:24px;border-radius:8px;border:2px solid hsl(var(--muted-fg));display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0}
+.checked .checkbox{border-color:hsl(var(--success));background:hsl(var(--success));color:hsl(var(--bg))}
+
+.wifi-item{
+  width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;
+  border:2px solid hsla(192,100%,50%,0.2);text-align:right;background:hsla(var(--surface-dark),0.4);
+  transition:all .2s;color:hsl(var(--fg));
+  flex-direction:row-reverse;
+}
+.wifi-item:hover:not(:disabled){border-color:hsla(192,100%,50%,0.5);background:hsla(192,100%,50%,0.05)}
+.wifi-item.selected-safe{border-color:hsl(152,100%,50%);background:hsla(152,100%,50%,0.1)}
+.wifi-item.selected-danger{border-color:hsl(340,100%,50%);background:hsla(340,100%,50%,0.1)}
+
+.info-box{border-radius:12px;padding:14px 16px;margin-top:12px;font-size:15px;animation:fadeIn .3s ease-out;display:flex;align-items:center;gap:10px;flex-direction:row-reverse;text-align:right;}
+.info-safe{background:hsla(152,100%,50%,0.1);border:2px solid hsla(152,100%,50%,0.3);color:hsl(152,100%,50%)}
+.info-danger{background:hsla(340,100%,50%,0.1);border:2px solid hsla(340,100%,50%,0.3);color:hsl(340,100%,50%)}
+.info-warning{background:hsla(40,90%,55%,0.1);border:2px solid hsla(40,90%,55%,0.3);color:hsl(40,90%,55%)}
+
+.warning-box{background:hsla(var(--warning),0.1);border-right:4px solid hsl(var(--warning));border-left:0;padding:16px;border-radius:8px;text-align:right;}
+.warning-box p{color:hsla(var(--warning),0.9);font-size:14px}
+
+.hint-box{
+  background:hsla(40,90%,55%,0.08);border:1px solid hsla(40,90%,55%,0.25);
+  border-radius:10px;padding:12px 14px;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;font-size:14px;color:hsl(40,90%,55%);
+  flex-direction:row-reverse;text-align:right;
+}
+
+.browser{
+  width:100%;max-width:42rem;margin:0 auto;border-radius:12px;overflow:hidden;
+  border:2px solid hsla(192,100%,50%,0.4);
+  box-shadow:0 0 20px hsla(192,100%,50%,0.2),0 25px 50px -12px rgba(0,0,0,0.5);
+  animation:fadeInScale .4s ease-out;
+}
+.browser-tabs{background:var(--browser-chrome);display:flex;align-items:center;padding:.5rem .75rem 0;gap:.5rem;flex-direction:row-reverse;}
+.browser-tab{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--browser-bar);border-radius:8px 8px 0 0;font-size:12px;color:hsl(var(--fg));max-width:180px;flex-direction:row-reverse;}
+.browser-tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wifi-btn{margin-right:auto;margin-left:0;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:4px;font-size:12px;background:transparent;transition:background .2s;color:inherit;flex-direction:row-reverse;}
+.wifi-btn:hover{background:hsla(192,100%,50%,0.1)}
+.browser-nav{background:var(--browser-chrome);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-direction:row-reverse;}
+.browser-nav .nav-btn{padding:6px;border-radius:6px;background:transparent;color:hsl(var(--muted-fg));transition:all .2s;border:none;cursor:pointer}
+.browser-nav .nav-btn:hover{background:hsla(192,100%,50%,0.1);color:hsl(var(--fg))}
+.url-bar{flex:1;display:flex;align-items:center;gap:8px;background:var(--browser-bar);border-radius:9999px;padding:6px 12px;border:1px solid hsla(192,100%,50%,0.2);flex-direction:row;}
+.url-bar .url-text{flex:1;font-size:12px;font-family:var(--font-mono);color:hsl(var(--muted-fg));overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;}
+.browser-content{background:var(--browser-content);min-height:280px;max-height:400px;overflow-y:auto;position:relative}
+.browser-content-inner{padding:1.25rem}
+
+.card{
+  background:hsla(var(--surface-dark),0.4);
+  border:2px solid hsla(192,100%,50%,0.2);
+  border-radius:12px;padding:16px;
+}
+.score-card{text-align:center;padding:16px;background:hsla(var(--surface-dark),0.4);border:2px solid hsla(192,100%,50%,0.2);border-radius:12px}
+.score-card .val{font-size:1.5rem;font-weight:700}
+.score-card .lbl{font-size:12px;color:hsl(var(--muted-fg))}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem}
+
+.score-badge{
+  width:7rem;height:7rem;margin:0 auto 1.5rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:hsla(192,100%,50%,0.1);
+  border:3px solid hsl(192,100%,50%);
+  box-shadow:0 0 20px hsla(192,100%,50%,0.4);
+  animation:badgeSpin .8s cubic-bezier(.34,1.56,.64,1);
+}
+
+.stars{display:flex;gap:4px;justify-content:center;margin-top:12px}
+.star{font-size:1.25rem;color:hsl(var(--muted))}
+.star.filled{color:hsl(var(--warning));text-shadow:0 0 6px hsla(40,90%,55%,0.5)}
+
+.bar-track{width:100%;height:12px;background:hsl(var(--muted));border-radius:999px;overflow:hidden;border:1px solid hsla(192,100%,50%,0.2)}
+.bar-fill{height:100%;background:linear-gradient(to right,hsl(192,100%,50%),hsl(152,100%,50%));border-radius:999px;animation:barFill 1s ease-out .5s both;box-shadow:0 0 8px hsla(192,100%,50%,0.4)}
+
+.action-buttons{display:flex;flex-direction:column;gap:12px;max-width:24rem;margin:0 auto}
+@media(min-width:640px){.action-buttons{flex-direction:row}}
+.action-buttons .btn{flex:1;padding:16px;font-size:16px}
+
+.sim-input{
+  width:100%;padding:10px 14px;border-radius:10px;
+  background:hsl(var(--muted));border:2px solid hsla(192,100%,50%,0.2);
+  font-size:14px;color:hsl(var(--fg));
+  text-align:right;
+}
+.sim-input::placeholder{color:hsl(var(--muted-fg))}
+.sim-input:disabled{opacity:.5}
+.sim-input:focus{outline:none;border-color:hsla(192,100%,50%,0.6)}
+
+.popup-overlay{
+  position:absolute;inset:1rem;
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeInScale .3s ease-out;
+}
+.popup-card{
+  background:hsl(var(--card));border:2px solid hsl(var(--warning));border-radius:12px;
+  padding:1.5rem;box-shadow:0 25px 50px rgba(0,0,0,.5);text-align:center;max-width:18rem;
+  color:hsl(var(--fg));
+}
+.popup-bg-blur{
+  background:hsla(235,52%,8%,0.5);backdrop-filter:blur(4px);
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+}
+
+.skel{height:12px;background:hsl(var(--muted));border-radius:4px}
+
+.end-trophy{display:inline-flex;align-items:center;justify-content:center;width:128px;height:128px;border-radius:50%;background:linear-gradient(135deg,hsl(var(--success)),hsl(var(--primary)));border:4px solid hsl(var(--success))}
+.end-trophy svg{width:56px;height:56px;fill:none;stroke:hsl(var(--fg));stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.end-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+
+.phase{
+  min-height:calc(100vh - 160px);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:2rem 0;position:relative;
+}
+.container{max-width:42rem;margin:0 auto;padding:0 1rem}
+
+.sound-toggle{
+  position:fixed;top:1rem;left:1rem;right:auto;z-index:100;
+  padding:10px;border-radius:10px;
+  background:hsla(var(--card),0.8);backdrop-filter:blur(8px);
+  color:hsl(var(--muted-fg));transition:color .2s;
+  border:1px solid hsla(192,100%,50%,0.2);
+}
+.sound-toggle:hover{color:hsl(var(--primary))}
+
+.hidden{display:none!important}
+.text-center{text-align:center}
+.flex-center{display:flex;align-items:center;justify-content:center}
+.flex{display:flex}.flex-col{flex-direction:column}
+.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}
+.gap-1{gap:4px}.gap-2{gap:8px}.gap-3{gap:12px}
+.mx-auto{margin-left:auto;margin-right:auto}.w-full{width:100%}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shrink-0{flex-shrink:0}.flex-1{flex:1}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}.mb-6{margin-bottom:24px}.mb-8{margin-bottom:32px}
+.mt-2{margin-top:8px}.mt-4{margin-top:16px}
+
+.fade-in{animation:fadeIn .6s ease-out forwards}
+.fade-in-up{animation:fadeInUp .6s ease-out forwards}
+.float-anim{animation:floatA 3s ease-in-out infinite}
+.animate-float{animation:floatA 3s ease-in-out infinite}
+.animate-fade{animation:fadeIn .4s ease-out forwards}
+.animate-fade-scale{animation:fadeInScale .3s ease-out forwards}
+.animate-pulse{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+.pulse-glow-dot{animation:pulseGlow 1s ease-in-out infinite}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInScale{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes pulseGlow{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+@keyframes barFill{from{width:0}}
+@keyframes badgeSpin{from{transform:scale(0) rotate(-180deg)}to{transform:scale(1) rotate(0)}}
+@keyframes scaleIn{from{transform:scale(0) rotate(-180deg)}to{transform:scale(1) rotate(0)}}
+
+@media(max-width:640px){
+  .browser{border-radius:8px}
+  .browser-content{min-height:220px}
+}
+
+[x-cloak] { display: none !important; }
+</style>
+<link rel="stylesheet" href="../components/cyber-background.css">
+</head>
+
+<body id="level-shell" x-data="levelShell()" :class="{'circuit-bg': scene === 'video' || scene === 'game', 'circuit-bg-green': scene === 'success'}" class="flex flex-col min-h-screen transition-all duration-500 relative overflow-x-hidden" style="min-height:100vh;">
+
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-10 right-10 w-32 h-32 border-2 border-cyan-500/20 rounded-full" :class="{'border-green-500/30': scene === 'success'}"></div>
+    <div class="absolute bottom-20 left-20 w-48 h-48 border-2 border-fuchsia-500/20 rounded-full" :class="{'border-cyan-500/30': scene === 'success'}"></div>
+    <div class="absolute top-1/2 right-1/4 w-2 h-2 bg-cyan-400 rounded-full pulse-glow" :class="{'bg-green-400': scene === 'success'}"></div>
+    <div class="absolute top-1/3 left-1/3 w-2 h-2 bg-fuchsia-400 rounded-full pulse-glow" :class="{'bg-cyan-400': scene === 'success'}" style="animation-delay: 0.5s;"></div>
+  </div>
+
+  <!-- Chatbot -->
+  <link rel="stylesheet" href="../chatbot.css">
+
+  <!-- Unified Navbar -->
+  <script src="../components/navbar.js"></script>
+
+  <main class="flex-1 flex items-center justify-center relative p-4 sm:p-8">
+
+    <!-- SCENE: VIDEO BRIEFING -->
+    <div x-show="scene === 'video'" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="w-full max-w-6xl mt-12 text-right">
+      <div class="text-center mb-10">
+        <h2 class="text-3xl sm:text-5xl font-cyber font-bold neon-blue mb-4">شرح المهمة الأمنية</h2>
+        <p class="text-lg text-gray-300">شاهد الفيديو بعناية قبل بدء مهمتك للحفاظ على أمان تصفحك</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-black/60 border-4 border-cyan-500 glow-blue rounded-2xl p-4">
+          <video controls class="w-full rounded-xl" @ended="videoWatched = true">
+            <source src="videos/level1-password.mp4">
+          </video>
+          <p class="text-sm text-gray-400 mt-3 text-center">⏱️ المدة: ١–٢ دقيقة</p>
+        </div>
+
+        <div class="bg-black/60 border-4 border-fuchsia-500 glow-purple rounded-2xl p-6 text-right">
+          <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2 flex-row-reverse">
+            <i class="fas fa-shield-alt text-fuchsia-400"></i>
+            أهداف المهمة
+          </h3>
+          <ul class="space-y-4 text-gray-300">
+            <li class="flex items-start gap-3 flex-row-reverse">
+              <i class="fas fa-check-circle text-green-400 mt-1"></i>
+              <span>تعلم قراءة عناوين المواقع (URLs)، بروتوكول HTTPS، وأيقونة القفل</span>
+            </li>
+            <li class="flex items-start gap-3 flex-row-reverse">
+              <i class="fas fa-check-circle text-green-400 mt-1"></i>
+              <span>كشف المواقع المزيفة وخداع التصيد الاحتيالي عبر الإنترنت</span>
+            </li>
+            <li class="flex items-start gap-3 flex-row-reverse">
+              <i class="fas fa-check-circle text-green-400 mt-1"></i>
+              <span>ممارسة الخيارات والتصرفات الآمنة في تحديات عملية موجهة</span>
+            </li>
+            <li class="flex items-start gap-3 flex-row-reverse">
+              <i class="fas fa-check-circle text-green-400 mt-1"></i>
+              <span>إكمال المحاكاة بنجاح للحصول على شارة المتصفح الآمن</span>
+            </li>
+          </ul>
+          <div class="mt-6 bg-yellow-900/30 border-r-4 border-yellow-400 p-4 rounded text-right">
+            <p class="text-yellow-200 text-sm">⚠️ <strong>هام جداً:</strong> ستتمرن أولاً بالدروس والمحاكاة التوضيحية قبل تسجيل نتيجتك النهائية!</p>
+          </div>
+          <button @click="startGame()" :disabled="!videoWatched" :class="{'opacity-50 cursor-not-allowed': !videoWatched}" class="mt-8 w-full py-4 bg-gradient-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+            <span x-show="videoWatched"><i class="fas fa-play mr-2"></i>ابدأ التدريب</span>
+            <span x-show="!videoWatched"><i class="fas fa-lock mr-2"></i>شاهد الفيديو لتتمكن من المتابعة</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE: GAME -->
+    <div x-show="scene === 'game'" x-cloak class="w-full">
+      <header style="padding:0 0 16px;position:relative;z-index:10">
+        <div style="max-width:64rem;margin:0 auto;text-align:center">
+          <h1 class="font-cyber neon-blue" style="font-size:clamp(18px,4vw,32px);font-weight:700;margin-bottom:4px">التصفح الآمن</h1>
+          <p style="font-size:16px;color:hsl(215,20%,55%)">المستوى الأول – تدريب تفاعلي على الأمان الرقمي</p>
+          <div class="progress-bar-wrap" style="margin-top:16px">
+            <div class="info">
+              <span class="scene-label" id="phase-label">الدرس</span>
+              <span class="pct font-cyber" id="pct-label">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </header>
+      <div id="app"></div>
+    </div>
+
+    <!-- SCENE: SUCCESS -->
+    <div x-show="scene === 'success'" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="w-full max-w-4xl expand-center mt-12 text-center" x-init="finishLevel()">
+      
+      <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="confetti bg-green-400" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="confetti bg-cyan-400" style="left: 20%; animation-delay: 0.2s;"></div>
+        <div class="confetti bg-yellow-400" style="left: 30%; animation-delay: 0.4s;"></div>
+        <div class="confetti bg-fuchsia-400" style="left: 40%; animation-delay: 0.6s;"></div>
+        <div class="confetti bg-green-400" style="left: 50%; animation-delay: 0.8s;"></div>
+        <div class="confetti bg-cyan-400" style="left: 60%; animation-delay: 1s;"></div>
+        <div class="confetti bg-yellow-400" style="left: 70%; animation-delay: 1.2s;"></div>
+        <div class="confetti bg-fuchsia-400" style="left: 80%; animation-delay: 1.4s;"></div>
+        <div class="confetti bg-green-400" style="left: 90%; animation-delay: 1.6s;"></div>
+      </div>
+
+      <div class="text-center mb-8">
+        <div class="inline-block mb-4 float-up">
+          <i class="fas fa-shield-alt text-8xl text-green-400 drop-shadow-[0_0_30px_rgba(0,255,136,0.8)]"></i>
+        </div>
+        <h2 class="text-4xl sm:text-6xl font-cyber font-bold neon-green mb-4">اكتملت المهمة بنجاح!</h2>
+        <p class="text-xl sm:text-2xl text-green-300">لقد تصفحت الويب بأمان وذكاء يا بطل!</p>
+      </div>
+
+      <div class="bg-black/60 border-4 border-green-500 glow-green rounded-2xl p-6 sm:p-8 mb-8 text-right">
+        <div class="flex flex-col sm:flex-row-reverse items-center justify-around gap-6 mb-6">
+          <div>
+            <div class="text-7xl mb-3">🦸‍♂️</div>
+            <div class="bg-white/20 rounded-xl p-4 backdrop-blur-sm">
+              <p class="text-lg font-bold text-white mb-2">البطل ريان يقول:</p>
+              <p class="text-xl text-green-100">"عمل رائع ومذهل! لقد تجنبت جميع فخاخ الاحتيال بنجاح! 🎉"</p>
+            </div>
+          </div>
+          <div class="text-9xl">✨</div>
+          <div>
+            <div class="text-7xl mb-3">🦹‍♂️</div>
+            <div class="bg-red-500/30 rounded-xl p-4 backdrop-blur-sm text-right">
+              <p class="text-lg font-bold text-white mb-2">المخترق الغاضب يقول:</p>
+              <p class="text-xl text-red-200">"لا توجد عمليات تصيد ناجحة اليوم! 😤"</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Score -->
+        <div class="bg-yellow-900/30 border-2 border-yellow-400 rounded-xl p-6 mb-6 text-center">
+          <h4 class="text-2xl font-bold text-yellow-300 mb-4">🏆 النتيجة النهائية</h4>
+          <p class="text-5xl font-bold text-yellow-400 mb-4" x-text="totalScore"></p>
+          <div class="flex gap-2 justify-center text-4xl mb-4">
+            <template x-for="badge in badges" :key="badge">
+              <span x-text="badge" class="bounce-in"></span>
+            </template>
+          </div>
+          <p class="text-cyan-200">لقد أتقنت أساسيات التصفح الآمن!</p>
+        </div>
+
+        <!-- Backend Report Card -->
+        <template x-if="backendResult">
+            <div class="mt-6 mb-6 bg-slate-900/80 border-2 border-slate-700 rounded-xl p-5 text-right max-w-md mx-auto font-cyber">
+                <h4 class="text-center text-cyan-400 font-bold text-sm tracking-wider mb-4">تقرير تقييم المهمة</h4>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                        <span class="text-gray-400">النجوم المكتسبة:</span>
+                        <span class="text-yellow-400 font-bold" x-text="'⭐'.repeat(backendResult.stars) + '☆'.repeat(3 - backendResult.stars)"></span>
+                    </div>
+                    <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                        <span class="text-gray-400">التقييم النهائي:</span>
+                        <span class="text-cyan-400 font-bold text-lg" x-text="backendResult.grade"></span>
+                    </div>
+                    <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                        <span class="text-gray-400">أعلى درجة:</span>
+                        <span class="text-emerald-400 font-bold" x-text="backendResult.highestScore + ' / 100'"></span>
+                    </div>
+                    <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                        <span class="text-gray-400">المحاولات المستغرقة:</span>
+                        <span class="text-purple-400 font-bold" x-text="backendResult.attempts"></span>
+                    </div>
+                    <div class="flex justify-between items-center bg-black/40 p-3 rounded-lg border border-slate-800 flex-row-reverse">
+                        <span class="text-gray-400">زمن الإنجاز:</span>
+                        <span class="text-pink-400 font-bold" x-text="backendResult.completionTime + ' ثانية'"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div class="bg-cyan-900/30 border-r-4 border-cyan-400 p-4 rounded mb-6 text-right">
+          <div class="flex items-start gap-3 flex-row-reverse">
+            <i class="fas fa-lightbulb text-3xl text-cyan-400 mt-1"></i>
+            <div>
+              <h4 class="text-cyan-400 font-bold text-lg mb-2">💡 نصيحة البطل</h4>
+              <p class="text-cyan-200 text-sm">تحقق دائماً من شريط العنوان للبحث عن HTTPS وقفل الأمان. احذر من التهجئة الخاطئة للمواقع، والنوافذ المنبثقة المفاجئة، والشبكات العامة غير المحمية. عندما تشك في شيء، تراجع فوراً!</p>
+            </div>
+          </div>
+        </div>
+
+        <button @click="playAgain()" class="w-full py-4 bg-gradient-to-r from-green-600 to-cyan-600 hover:from-green-500 hover:to-cyan-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg mb-4">
+          <i class="fas fa-redo mr-2"></i>
+          العب مجدداً
+        </button>
+
+        <div class="grid grid-cols-2 gap-4">
+          <button @click="goToNextLevel()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl font-bold text-white text-xl transition-all transform hover:scale-105 shadow-lg">
+            <i class="fas fa-arrow-right mr-2"></i>
+            المستوى التالي ٥
+          </button>
+          <button @click="goToMap()" class="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 rounded-xl font-bold text-black text-xl transition-all transform hover:scale-105 shadow-lg">
+            <i class="fas fa-map-marked-alt mr-2"></i>
+            الذهاب للخريطة
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+<script>
+
+function startLevelGame() {
+  state.phase = 'explanation';
+  state.explanationStep = 0;
+  state.guidedChallenge = 0;
+  state.simulationScenario = 0;
+  state.actions = [];
+  state.sub = {};
+  render();
+}
+function resetLevelGame() {
+  state.phase = 'explanation';
+  state.explanationStep = 0;
+  state.guidedChallenge = 0;
+  state.simulationScenario = 0;
+  state.actions = [];
+  state.sub = {};
+  render();
+}
+function getLevelScore() {
+  const safeActions = state.actions.filter(a => a.type === 'safe').length;
+  const pts = safeActions * 20;
+  return { score: pts, badges: pts > 0 ? ['🛡️'] : [] };
+}
+function syncNavScore(pts) {
+  const shell = document.getElementById('level-shell');
+  if (shell && window.Alpine) {
+    const data = Alpine.$data(shell);
+    data.totalScore = pts;
+    if (pts > 0 && !data.badges.includes('🛡️')) data.badges = ['🛡️'];
+  }
+}
+function showLevelSuccess() {
+  const shell = document.getElementById('level-shell');
+  if (shell && window.Alpine) {
+    const data = Alpine.$data(shell);
+    syncLevelScore(data);
+    data.scene = 'success';
+    data.finishLevel();
+  }
+}
+function levelShell() {
+  return {
+    scene: 'video',
+    videoWatched: false,
+    totalScore: 0,
+    badges: [],
+    storageKey: 'safe_browsing_level_1',
+    startTime: Date.now(),
+    backendResult: null,
+    startGame() {
+      this.scene = 'game';
+      this.startTime = Date.now();
+      this.backendResult = null;
+      startLevelGame();
+    },
+    async finishLevel() {
+      syncLevelScore(this);
+      localStorage.setItem(this.storageKey, 'completed');
+      const score = Math.min(100, this.totalScore);
+      const duration = Math.round((Date.now() - this.startTime) / 1000);
+      this.submitPromise = window.api.submitProgress(4, score, duration)
+        .then(res => {
+          if (res.success) {
+            this.backendResult = res.data;
+          }
+          return res;
+        })
+        .catch(e => {
+          console.error("Failed to submit Level 4 progress:", e);
+        });
+    },
+    playAgain() {
+      this.scene = 'video';
+      this.videoWatched = false;
+      this.totalScore = 0;
+      this.badges = [];
+      this.startTime = Date.now();
+      this.backendResult = null;
+      resetLevelGame();
+    },
+    async goToNextLevel() {
+      if (this.submitPromise) await this.submitPromise;
+      window.location.href = 'level5-ar.html';
+    },
+    async goToMap() {
+      if (this.submitPromise) await this.submitPromise;
+      window.location.href = '../map-ar.html';
+    }
+  };
+}
+function showSideBar() { document.querySelector('.side-bar').style.transform = 'translateX(0)'; }
+function hideSideBar() { document.querySelector('.side-bar').style.transform = 'translateX(500px)'; }
+function syncLevelScore(shell) {
+  const s = getLevelScore();
+  shell.totalScore = s.score;
+  shell.badges = s.badges;
+}
+
+// ─── STATE ───
+const state = {
+  phase: 'explanation',
+  explanationStep: 0,
+  guidedChallenge: 0,
+  simulationScenario: 0,
+  actions: [],
+  soundEnabled: true,
+  sub: {}
+};
+
+const EXPLANATION_STEPS = 5;
+const GUIDED_CHALLENGES = 3;
+const TOTAL_SCENARIOS = 5;
+
+// Navigation Helpers
+function nextExplanationStep() {
+  playClick();
+  if (state.explanationStep === EXPLANATION_STEPS - 1) {
+    state.phase = 'guided';
+    state.sub = {};
+    state.guidedChallenge = 0;
+  } else {
+    state.explanationStep++;
+    state.sub = {};
+  }
+  render();
+}
+
+function prevExplanationStep() {
+  playClick();
+  if (state.explanationStep > 0) {
+    state.explanationStep--;
+    state.sub = {};
+  }
+  render();
+}
+
+function nextGuidedChallenge() {
+  playClick();
+  const c = state.guidedChallenge;
+  if (c >= GUIDED_CHALLENGES - 1) {
+    state.phase = 'simulation';
+    state.sub = {};
+    state.simulationScenario = 0;
+  } else {
+    state.guidedChallenge++;
+    state.sub = {};
+  }
+  render();
+}
+
+function nextSimulationScenario() {
+  playClick();
+  const sc = state.simulationScenario;
+  if (sc >= TOTAL_SCENARIOS - 1) {
+    showLevelSuccess();
+  } else {
+    state.simulationScenario++;
+    state.sub = {};
+  }
+  render();
+}
+
+// ─── HEADER PROGRESS ───
+const phaseNames = { explanation:'الدرس', guided:'الممارسة', simulation:'المحاكاة', results:'النتائج' };
+const phaseWeights = { explanation:40, guided:70, simulation:90, results:100 };
+
+function updateHeader() {
+  const phasePct = phaseWeights[state.phase] || 0;
+  let pct = phasePct;
+  if (state.phase === 'explanation') pct = Math.round(10 + (state.explanationStep / EXPLANATION_STEPS) * 30);
+  if (state.phase === 'guided')      pct = Math.round(40 + (state.guidedChallenge / GUIDED_CHALLENGES) * 30);
+  if (state.phase === 'simulation')  pct = Math.round(70 + (state.simulationScenario / TOTAL_SCENARIOS) * 20);
+  const lbl = phaseNames[state.phase] || '';
+  document.getElementById('phase-label').textContent = lbl;
+  document.getElementById('pct-label').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+  const pts = state.actions.filter(a=>a.type==='safe').length * 20;
+  syncNavScore(pts);
+}
+
+// ─── AUDIO ───
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, dur, type='sine', vol=0.08) {
+  if (!state.soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+function playClick()   { playTone(800, 0.08, 'sine', 0.05); }
+function playWarning() { playTone(400, 0.25, 'triangle', 0.06); setTimeout(() => playTone(300, 0.25, 'triangle', 0.06), 120); }
+function playSuccess() { playTone(523, 0.12, 'sine', 0.06); setTimeout(() => playTone(659, 0.12, 'sine', 0.06), 80); setTimeout(() => playTone(784, 0.18, 'sine', 0.06), 160); }
+
+// ─── SVG ICONS ───
+const icons = {
+  shield:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>`,
+  lock:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  unlock:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`,
+  arrowLeft:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`, // Arrow Right for RTL nav
+  refresh:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>`,
+  x:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+  wifi:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.86a10 10 0 0 1 14 0"/><path d="M8.5 16.9a5 5 0 0 1 7 0"/></svg>`,
+  chevronRight:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`, // Swapped chevrons for RTL
+  chevronLeft:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
+  check:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>`,
+  alertTri:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`,
+  trophy:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
+  trophyBig:`<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
+  rotateCw:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>`,
+  map:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>`,
+  volume:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg>`,
+  volumeX:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`,
+  lightbulb:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`,
+  eye:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>`,
+  xCircle:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
+  shieldBig:`<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>`,
+};
+
+function icon(name, extra='') {
+  return `<span style="display:inline-flex;align-items:center;${extra}">${icons[name]||''}</span>`;
+}
+
+// ─── FAKE BROWSER ───
+function fakeBrowser(opts, content) {
+  const { url, isSecure, tabTitle='علامة تبويب المتصفح', wifiStatus='secured' } = opts;
+  const lockIcon = isSecure
+    ? `<span style="color:hsl(152,100%,50%)">${icons.lock}</span>`
+    : `<span style="color:hsl(340,100%,50%)">${icons.unlock}</span>`;
+  const wifiColor = wifiStatus==='public' ? 'hsl(40,90%,55%)' : wifiStatus==='disconnected' ? 'hsl(var(--muted-fg))' : 'hsl(152,100%,50%)';
+  const wifiLabel = wifiStatus==='public' ? 'عامة' : wifiStatus==='disconnected' ? 'مغلق' : 'آمنة';
+  return `
+    <div class="browser">
+      <div class="browser-tabs">
+        <div class="browser-tab">
+          <span style="color:hsl(var(--muted-fg));display:flex">${icons.shield.replace(/24/g,'12')}</span>
+          <span>${tabTitle}</span>
+        </div>
+        <div class="wifi-btn" style="color:${wifiColor}">
+          ${icons.wifi} <span>شبكة: ${wifiLabel}</span>
+        </div>
+      </div>
+      <div class="browser-nav">
+        <button class="nav-btn">${icons.arrowLeft}</button>
+        <button class="nav-btn">${icons.refresh}</button>
+        <div class="url-bar">
+          ${lockIcon}
+          <span class="url-text">${url}</span>
+        </div>
+        <button class="nav-btn">${icons.x}</button>
+      </div>
+      <div class="browser-content">
+        <div class="browser-content-inner">${content}</div>
+      </div>
+    </div>`;
+}
+
+// ─── SEGMENTED PROGRESS ───
+function segProgress(total, current, done='done', active='active') {
+  let h = '<div class="progress-bar">';
+  for (let i = 0; i < total; i++) {
+    h += `<div class="seg ${i < current ? done : i === current ? active : ''}"></div>`;
+  }
+  return h + '</div>';
+}
+
+// ─── RENDER ───
+function render() {
+  const app = document.getElementById('app');
+  let html = `<button class="sound-toggle" onclick="state.soundEnabled=!state.soundEnabled;render();">${state.soundEnabled ? icons.volume : icons.volumeX}</button>`;
+
+  switch(state.phase) {
+    case 'intro':       html += renderIntro(); break;
+    case 'explanation': html += renderExplanation(); break;
+    case 'guided':      html += renderGuided(); break;
+    case 'simulation':  html += renderSimulation(); break;
+    case 'results':     html += renderResults(); break;
+  }
+  app.innerHTML = html;
+  updateHeader();
+  bindEvents();
+}
+
+// ─── EXPLANATION ───
+function renderExplanation() {
+  const s = state.explanationStep;
+  const sub = state.sub;
+
+  let content = '';
+  if (s === 0) content = explStep1(sub);
+  else if (s === 1) content = explStep2(sub);
+  else if (s === 2) content = explStep3(sub);
+  else if (s === 3) content = explStep4(sub);
+  else if (s === 4) content = explStep5(sub);
+
+  const nav = `
+    <div style="display:flex;justify-content:space-between;margin-top:1.5rem;flex-direction:row-reverse;">
+      <button class="btn btn-secondary" ${s===0?'disabled':''} onclick="prevExplanationStep()">
+         السابق ${icons.chevronRight}
+      </button>
+      <button class="btn btn-primary glow-safe" onclick="nextExplanationStep()">
+        ${s === EXPLANATION_STEPS-1 ? 'بدء الممارسة' : 'التالي'} ${icons.chevronLeft}
+      </button>
+    </div>`;
+
+  return `
+    <div class="phase">
+      <div class="container animate-fade">
+        ${segProgress(EXPLANATION_STEPS, s)}
+        <div class="glass-card" style="padding:24px">
+          ${content}
+        </div>
+        ${nav}
+      </div>
+    </div>`;
+}
+
+function explStep1(sub) {
+  const lockDone = sub.lock;
+  const httpsDone = sub.https;
+  const lockClass = lockDone ? 'background:hsla(152,100%,50%,0.2);color:hsl(152,100%,50%);outline:1px solid hsla(152,100%,50%,0.4)' : 'background:hsl(var(--muted));color:hsl(var(--muted-fg))';
+  const httpsClass = httpsDone ? 'background:hsla(152,100%,50%,0.2);color:hsl(152,100%,50%);outline:1px solid hsla(152,100%,50%,0.4)' : 'background:hsl(var(--muted));color:hsl(var(--muted-fg))';
+  const pulseL = lockDone ? '' : 'animation:pulse 2s infinite;';
+  const pulseH = httpsDone ? '' : 'animation:pulse 2s infinite;';
+
+  let tips = '';
+  if (lockDone) tips += `<div class="info-box info-safe">${icon('lock')} رمز <strong>القفل المغلق</strong> يعني أن اتصالك مشفر وآمن ولا يمكن التنصت عليه.</div>`;
+  if (httpsDone) tips += `<div class="info-box info-safe">${icon('eye')} بروتوكول <strong>HTTPS</strong> يضمن تشفير البيانات بينك وبين الموقع. ابحث عنه دائماً!</div>`;
+
+  return `
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:8px">${icon('lock','color:hsl(152,100%,50%);margin-left:8px')} فحص شريط العنوان (URL)</h2>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:16px">اضغط على <span style="color:hsl(152,100%,50%);font-weight:600">رمز القفل</span> وعلى كلمة <span style="color:hsl(152,100%,50%);font-weight:600">https</span> لتتعرف على معانيهما.</p>
+    ${fakeBrowser({url:'https://example.com',isSecure:true,tabTitle:'موقع آمن مثال'}, `
+      <div class="card" style="margin-bottom:1rem">
+        <p style="font-size:12px;color:hsl(var(--muted-fg));margin-bottom:12px;font-weight:600">👇 اضغط على العناصر الملونة:</p>
+        <div style="display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:1rem;flex-wrap:wrap;direction:ltr;justify-content:flex-end">
+          <button onclick="playSuccess();state.sub.lock=true;render();" style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;${lockClass};${pulseL}">${icons.lock}</button>
+          <button onclick="playSuccess();state.sub.https=true;render();" style="padding:4px 8px;border-radius:6px;border:none;cursor:pointer;${httpsClass};${pulseH}">https://</button>
+          <span style="color:hsl(var(--fg))">example.com</span>
+        </div>
+      </div>
+      ${tips}
+    `)}`;
+}
+
+function explStep2(sub) {
+  const domainDone = sub.domain;
+  const tldDone = sub.tld;
+  const dStyle = domainDone ? 'background:hsla(340,100%,50%,0.2);color:hsl(340,100%,50%);outline:1px solid hsla(340,100%,50%,0.4)' : 'background:hsla(40,90%,55%,0.1);color:hsl(40,90%,55%)';
+  const tStyle = tldDone ? 'background:hsla(340,100%,50%,0.2);color:hsl(340,100%,50%);outline:1px solid hsla(340,100%,50%,0.4)' : 'background:hsla(40,90%,55%,0.1);color:hsl(40,90%,55%)';
+  const pulseD = domainDone ? '' : 'animation:pulse 2s infinite;';
+  const pulseT = tldDone ? '' : 'animation:pulse 2s infinite;';
+
+  let tips = '';
+  if (domainDone) tips += `<div class="info-box info-danger">⚠️ اسم النطاق <strong>"faceb00k"</strong> يحتوي على صفرين بدلاً من حرفي "o". يغير المحتالون الحروف لخداعك!</div>`;
+  if (tldDone) tips += `<div class="info-box info-danger">⚠️ النطاق <strong>".help"</strong> غير مألوف. النطاق الأصلي لفيسبوك هو <strong>facebook.com</strong>.</div>`;
+
+  return `
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:8px">${icon('alertTri','color:hsl(40,90%,55%);margin-left:8px')} كشف المواقع المزيفة</h2>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:16px">يبدو عنوان الموقع (URL) هذا مشبوهاً. اضغط على <span style="color:hsl(40,90%,55%);font-weight:600">الأجزاء المحددة</span> لمعرفة السبب.</p>
+    ${fakeBrowser({url:'https://faceb00k-login.help',isSecure:false,tabTitle:'تسجيل دخول مزيف'}, `
+      <div class="card" style="margin-bottom:1rem">
+        <p style="font-size:12px;color:hsl(var(--muted-fg));margin-bottom:12px;font-weight:600">🔍 ابحث عن العلامات المشبوهة:</p>
+        <div style="display:flex;align-items:center;gap:2px;font-family:var(--font-mono);font-size:1rem;flex-wrap:wrap;direction:ltr;justify-content:flex-end">
+          <span style="color:hsl(var(--muted-fg))">https://</span>
+          <button onclick="playWarning();state.sub.domain=true;render();" style="padding:2px 6px;border-radius:6px;border:none;cursor:pointer;${dStyle};${pulseD}">faceb00k-login</button>
+          <span style="color:hsl(var(--muted-fg))">.</span>
+          <button onclick="playWarning();state.sub.tld=true;render();" style="padding:2px 6px;border-radius:6px;border:none;cursor:pointer;${tStyle};${pulseT}">help</button>
+        </div>
+      </div>
+      ${tips}
+    `)}`;
+}
+
+function explStep3(sub) {
+  const ps = sub.popupState || 'showing';
+  let popupHtml = '';
+  if (ps === 'showing') {
+    popupHtml = `
+      <div class="popup-overlay">
+        <div class="popup-card glow-warning">
+          <p style="font-size:1.875rem;margin-bottom:8px">🎁</p>
+          <h3 style="font-size:1.1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:4px">لقد فزت بجائزة مجانية!</h3>
+          <p style="font-size:14px;color:hsl(var(--muted-fg));margin-bottom:16px">اضغط للمطالبة بمكافأتك الآن!</p>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <button class="btn btn-warning" onclick="playWarning();state.sub.popupState='clicked';render();">المطالبة بالجائزة</button>
+            <button class="btn btn-secondary" onclick="playSuccess();state.sub.popupState='closed';render();">✕ إغلاق</button>
+          </div>
+        </div>
+      </div>`;
+  }
+  let result = '';
+  if (ps === 'clicked') result = `<div class="info-box info-danger">⚠️ <strong>الجوائز غير المتوقعة هي خدعة شائعة جداً</strong> للمحتالين. لا تضغط على هذه النوافذ مطلقاً! <button onclick="state.sub.popupState='showing';render();" style="display:block;font-size:12px;color:hsl(var(--muted-fg));text-decoration:underline;margin-top:8px;background:none;border:none;cursor:pointer">حاول مجدداً</button></div>`;
+  if (ps === 'closed') result = `<div class="info-box info-safe">✅ <strong>قرار ذكي جداً!</strong> أغلق دائماً النوافذ المنبثقة المفاجئة. العروض الحقيقية لا تأتي هكذا.</div>`;
+
+  return `
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:8px">🎁 تنبيهات النوافذ المنبثقة</h2>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:16px">ظهرت لك نافذة منبثقة فجأة! ماذا ستفعل؟</p>
+    ${fakeBrowser({url:'https://cool-games.net',isSecure:true,tabTitle:'ألعاب رائعة'}, `
+      <div style="opacity:0.5;margin-bottom:8px"><div class="skel" style="width:75%;margin-bottom:8px"></div><div class="skel" style="width:50%;margin-bottom:8px"></div><div class="skel" style="width:85%"></div></div>
+      <div style="position:relative;min-height:180px">
+        ${popupHtml}
+        ${result}
+      </div>
+    `)}`;
+}
+
+function explStep4(sub) {
+  const attempted = sub.attempted;
+  let result = '';
+  if (attempted) result = `<div class="info-box info-danger" style="margin-top:16px">🚫 قد يسرق هذا الموقع بياناتك الحساسة! عنوان الموقع "account-verify-now.net" غير معروف وغير موثوق.</div>`;
+
+  return `
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:8px">👤 سلامة البيانات الشخصية</h2>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:16px">يطلب منك هذا الموقع المجهول تسجيل الدخول وتأكيد حسابك. هل تدخل بياناتك؟</p>
+    ${fakeBrowser({url:'https://account-verify-now.net',isSecure:false,tabTitle:'تأكيد الحساب'}, `
+      <div style="max-width:18rem;margin:0 auto">
+        <div class="card">
+          <h3 style="font-size:1rem;font-weight:700;text-align:center;margin-bottom:1rem;color:hsl(var(--fg))">تأكيد حسابك الشخصي</h3>
+          <div style="margin-bottom:12px" class="text-right">
+            <label style="font-size:12px;color:hsl(var(--muted-fg));display:block;margin-bottom:4px">اسم المستخدم</label>
+            <input class="sim-input" placeholder="أدخل اسم المستخدم..." ${attempted?'disabled':''} />
+          </div>
+          <div style="margin-bottom:12px" class="text-right">
+            <label style="font-size:12px;color:hsl(var(--muted-fg));display:block;margin-bottom:4px">كلمة المرور</label>
+            <input type="password" class="sim-input" placeholder="أدخل كلمة المرور..." ${attempted?'disabled':''} />
+          </div>
+          <button class="btn btn-danger" style="width:100%" onclick="playWarning();state.sub.attempted=true;render();" ${attempted?'disabled':''}>تسجيل الدخول</button>
+          <div class="info-box info-warning" style="margin-top:12px">
+            ${icon('alertTri','color:hsl(40,90%,55%);margin-left:8px')} <strong>لا تدخل بياناتك الحساسة أبداً</strong> في مواقع غير رسمية أو غير موثوقة. تأكد من العنوان أولاً!
+          </div>
+        </div>
+      </div>
+      ${result}
+    `)}`;
+}
+
+function explStep5(sub) {
+  const sel = sub.selectedWifi;
+  const networks = [
+    { name: 'شبكة_المقهى_المجانية', icon: '☕', secured: false },
+    { name: 'شبكة_المنزل_الخاصة', icon: '🏠', secured: true },
+  ];
+
+  let items = '';
+  networks.forEach(n => {
+    let cls = 'wifi-item';
+    if (sel === n.name) cls += n.secured ? ' selected-safe' : ' selected-danger';
+    items += `
+      <button class="${cls}" onclick="${n.secured?'playSuccess()':'playWarning()'};state.sub.selectedWifi='${n.name}';render();">
+        <span style="font-size:1.25rem">${n.icon}</span>
+        <div style="flex:1;text-align:right">
+          <p style="font-size:15px;font-weight:600;color:hsl(var(--fg))">${n.name}</p>
+          <p style="font-size:12px;color:${n.secured?'hsl(152,100%,50%)':'hsl(40,90%,55%)'}">${n.secured?'🔒 شبكة محمية':'⚠️ بدون كلمة مرور (مفتوحة)'}</p>
+        </div>
+        <div style="display:flex;gap:2px">${[1,2,3].map(i=>`<div style="width:4px;border-radius:2px;background:hsl(var(--muted-fg));height:${4+i*4}px"></div>`).join('')}</div>
+      </button>`;
+  });
+
+  let tip = '';
+  if (sel === 'شبكة_المقهى_المجانية') tip = `<div class="info-box info-danger">⚠️ <strong>شبكات الويفاي المفتوحة</strong> قد لا تكون آمنة وعرضة للمراقبة من المخترقين. تجنب استخدامها للبيانات الحساسة!</div>`;
+  if (sel === 'شبكة_المنزل_الخاصة') tip = `<div class="info-box info-safe">✅ <strong>خيار ممتاز!</strong> الشبكات المحمية بكلمات مرور تشفر بياناتك وتكون أكثر أماناً للتصفح.</div>`;
+
+  return `
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:8px">${icon('wifi','color:hsl(40,90%,55%);margin-left:8px')} أمان شبكات الويفاي</h2>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:16px">اختر شبكة للاتصال بها. أي الشبكتين هي الأكثر أماناً؟</p>
+    <div style="max-width:28rem;margin:0 auto" class="card text-right">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-direction:row-reverse">
+        ${icon('wifi','color:hsl(var(--fg))')}
+        <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg))">الشبكات المتاحة</h3>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">${items}</div>
+      ${tip}
+    </div>`;
+}
+
+// ─── GUIDED ───
+function renderGuided() {
+  const c = state.guidedChallenge;
+  const sub = state.sub;
+  const fb = sub.feedback;
+  const done = sub.challengeDone;
+
+  let header = `
+    <div style="display:flex;align-items:center;margin-bottom:16px;flex-direction:row-reverse;">
+      ${icon('lightbulb','color:hsl(40,90%,55%)')}
+      <h2 class="font-cyber" style="font-size:1.1rem;font-weight:700;color:hsl(var(--primary));margin-right:8px">ممارسة عملية موجهة</h2>
+      <span style="margin-right:auto;margin-left:0;font-size:14px;color:hsl(var(--muted-fg));background:hsl(var(--muted));padding:4px 12px;border-radius:999px">${c+1} / 3</span>
+    </div>`;
+
+  let content = '';
+  if (c === 0) content = guidedChallenge1(sub);
+  else if (c === 1) content = guidedChallenge2(sub);
+  else if (c === 2) content = guidedChallenge3(sub);
+
+  let feedbackHtml = '';
+  if (fb) {
+    const cls = fb.type === 'safe' ? 'info-safe' : 'info-danger';
+    const ic = fb.type === 'safe' ? icons.check : icons.xCircle;
+    feedbackHtml = `<div class="info-box ${cls}"><span style="color:${fb.type==='safe'?'hsl(152,100%,50%)':'hsl(340,100%,50%)'};flex-shrink:0">${ic}</span><span>${fb.message}</span></div>`;
+  }
+
+  let nextBtn = '';
+  if (done) {
+    const label = c >= 2 ? 'بدء المحاكاة' : 'التحدي التالي';
+    nextBtn = `<div style="margin-top:16px;display:flex;justify-content:flex-end"><button class="btn btn-primary glow-safe" onclick="nextGuidedChallenge()">${label} ${icons.chevronLeft}</button></div>`;
+  }
+
+  return `
+    <div class="phase">
+      <div class="container animate-fade">
+        ${header}
+        ${segProgress(GUIDED_CHALLENGES, c)}
+        <div class="glass-card" style="padding:24px">
+          ${content}
+          ${feedbackHtml}
+          ${nextBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+function guidedSafeAction(msg) {
+  state.sub.feedback = { type: 'safe', message: msg };
+  state.sub.challengeDone = true;
+  playSuccess();
+  render();
+}
+function guidedRiskyAction(msg) {
+  state.sub.feedback = { type: 'risky', message: msg };
+  playWarning();
+  render();
+}
+
+function guidedChallenge1(sub) {
+  const dis = sub.challengeDone ? 'disabled' : '';
+  return `
+    <div class="hint-box">${icon('lightbulb','color:hsl(40,90%,55%)')} <span><strong>تلميح:</strong> تفحص شريط العنوان (URL) بعناية. ابحث عن الأخطاء الإملائية والامتدادات الغريبة.</span></div>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">هل تعتقد أن هذا الموقع آمن للاستخدام؟</p>
+    ${fakeBrowser({url:'https://amaz0n-deals.shop',isSecure:false,tabTitle:'عروض مذهلة!'}, `
+      <div style="text-align:center">
+        <h3 style="font-size:1.1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:8px">🛒 عروض مذهلة اليوم!</h3>
+        <p style="font-size:14px;color:hsl(var(--muted-fg));margin-bottom:16px">سجل دخولك الآن لتستلم خصمك الحصري!</p>
+        <div style="display:flex;gap:12px;justify-content:center">
+          <button class="btn btn-danger" ${dis} onclick="guidedRiskyAction(&quot;العنوان يحتوي على صفر في 'amaz0n' وامتداد '.shop' غير رسمي — إنه موقع تصيد مزيف! جيد أنك انتبهت.&quot;)">تسجيل الدخول</button>
+          <button class="btn btn-secondary" ${dis} onclick="guidedSafeAction(&quot;ممتاز! لقد كشفت الرابط المزيف. موقع 'amaz0n-deals.shop' ليس موقع أمازون الأصلي.&quot;)">← مغادرة الموقع</button>
+        </div>
+      </div>
+    `)}`;
+}
+
+function guidedChallenge2(sub) {
+  const dis = sub.challengeDone ? 'disabled' : '';
+  return `
+    <div class="hint-box">${icon('lightbulb','color:hsl(40,90%,55%)')} <span><strong>تلميح:</strong> احذر من النوافذ المنبثقة المفاجئة. الجوائز الحقيقية لا تأتي بهذه الطرق العشوائية.</span></div>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">ظهرت لك هذه النافذة فجأة أثناء قراءة الأخبار. ماذا ستفعل؟</p>
+    ${fakeBrowser({url:'https://news-daily.com',isSecure:true,tabTitle:'أخبار يومية'}, `
+      <div style="position:relative;min-height:200px">
+        <div style="opacity:0.3"><div class="skel" style="width:75%;margin-bottom:8px"></div><div class="skel" style="width:50%"></div></div>
+        <div class="popup-overlay">
+          <div class="popup-card" style="padding:1.25rem">
+            <p style="font-size:1.5rem;margin-bottom:8px">🎰</p>
+            <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:4px">أنت الزائر رقم ١,٠٠٠,٠٠٠!</h3>
+            <p style="font-size:12px;color:hsl(var(--muted-fg));margin-bottom:12px">اضغط هنا للمطالبة بهاتف آيفون مجاناً!</p>
+            <div style="display:flex;gap:8px;justify-content:center">
+              <button class="btn btn-warning" style="font-size:14px" ${dis} onclick="guidedRiskyAction(&quot;هذه نافذة منبثقة احتيالية! لا توجد مواقع رسمية توزع جوائز قيمة لزوار عشوائيين.&quot;)">احصل عليه الآن!</button>
+              <button class="btn btn-secondary" style="font-size:14px" ${dis} onclick="guidedSafeAction(&quot;أحسنت! قمت بإغلاق النافذة الاحتيالية. كن دائماً متشككاً بالجوائز المفاجئة.&quot;)">✕ إغلاق</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `)}`;
+}
+
+function guidedChallenge3(sub) {
+  const dis = sub.challengeDone ? 'disabled' : '';
+  return `
+    <div class="hint-box">${icon('lightbulb','color:hsl(40,90%,55%)')} <span><strong>تلميح:</strong> تجنب شبكات الويفاي المفتوحة بدون كلمات مرور. اختر شبكة آمنة برمز القفل.</span></div>
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">تحتاج للاتصال بشبكة ويفاي لتصفح حسابك البنكي. أي الشبكات تختار؟</p>
+    <div class="card text-right">
+      <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:16px">📶 اختر شبكة للاتصال</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="wifi-item" ${dis} onclick="guidedRiskyAction(&quot;شبكات الويفاي المفتوحة بدون كلمة مرور تعرض بياناتك للتجسس. اختر دائماً شبكة محمية!&quot;)">
+          <span style="font-size:1.125rem">☕</span>
+          <div style="flex:1;text-align:right">
+            <p style="font-size:15px;font-weight:600;color:hsl(var(--fg))">ويفاي_المول_المجاني</p>
+            <p style="font-size:12px;color:hsl(40,90%,55%)">⚠️ شبكة مفتوحة بدون تشفير</p>
+          </div>
+        </button>
+        <button class="wifi-item" ${dis} onclick="guidedSafeAction(&quot;خيار رائع وموفق! الشبكات المشفرة والمحمية تمنع المتنصتين من رؤية بياناتك.&quot;)">
+          <span style="font-size:1.125rem">🏠</span>
+          <div style="flex:1;text-align:right">
+            <p style="font-size:15px;font-weight:600;color:hsl(var(--fg))">شبكة_منزلي_الآمنة</p>
+            <p style="font-size:12px;color:hsl(152,100%,50%)">🔒 محمية بتشفير WPA2</p>
+          </div>
+        </button>
+      </div>
+    </div>`;
+}
+
+// ─── SIMULATION ───
+function renderSimulation() {
+  const sc = state.simulationScenario;
+  const sub = state.sub;
+  const result = sub.result;
+
+  let header = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-direction:row-reverse;">
+      <div class="text-right">
+        <h2 class="font-cyber" style="font-size:1.1rem;font-weight:700;color:hsl(var(--secondary))">🎮 وضع المحاكاة والاختبار</h2>
+        <p style="font-size:12px;color:hsl(var(--muted-fg))">بدون تلميحات — ثق بذكائك الأمني!</p>
+      </div>
+      <span style="font-size:14px;color:hsl(var(--muted-fg));background:hsl(var(--muted));padding:4px 12px;border-radius:999px;border:1px solid hsla(192,100%,50%,0.2)">${sc+1} / ${TOTAL_SCENARIOS}</span>
+    </div>`;
+
+  let content = '';
+  const dis = result ? 'disabled' : '';
+  if (sc === 0) content = simScenario1(dis);
+  else if (sc === 1) content = simScenario2(sub, dis);
+  else if (sc === 2) content = simScenario3(dis);
+  else if (sc === 3) content = simScenario4(dis);
+  else if (sc === 4) content = simScenario5(dis);
+
+  let feedbackHtml = '';
+  if (result) {
+    const cls = result.type === 'safe' ? 'info-safe' : 'info-danger';
+    feedbackHtml = `<div class="info-box ${cls}">${result.message}</div>`;
+  }
+
+  let nextBtn = '';
+  if (result) {
+    const label = sc style="direction:rtl;" >= TOTAL_SCENARIOS - 1 ? 'عرض النتائج' : 'المحاكاة التالية';
+    nextBtn = `<div style="margin-top:16px;display:flex;justify-content:flex-end"><button class="btn btn-primary glow-safe" onclick="nextSimulationScenario()">${label} ${icons.chevronLeft}</button></div>`;
+  }
+
+  return `
+    <div class="phase">
+      <div class="container animate-fade">
+        ${header}
+        ${segProgress(TOTAL_SCENARIOS, sc)}
+        <div class="glass-card" style="padding:24px">
+          ${content}
+          ${feedbackHtml}
+          ${nextBtn}
+        </div>
+      </div>
+    </div>`;
+}
+
+function simAction(type, desc, feedback) {
+  state.actions.push({ type, description: desc });
+  state.sub.result = { type, message: feedback };
+  if (type === 'safe') playSuccess(); else playWarning();
+  render();
+}
+
+function simScenario1(dis) {
+  return `
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">أنت تزور موقعاً لقراءة الأخبار اليومية.</p>
+    ${fakeBrowser({url:'https://daily-news.com',isSecure:true,tabTitle:'الأخبار اليومية'}, `
+      <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:8px;text-align:right">📰 أهم عناوين اليوم</h3>
+      <p style="font-size:14px;color:hsl(var(--muted-fg));margin-bottom:16px;text-align:right">اكتشف العلماء مصدراً جديداً للطاقة النظيفة والمتجددة يمكنه إمداد ملايين المنازل بالكهرباء.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+        <button class="btn btn-secondary" ${dis} onclick="simAction('safe','Continued browsing a safe site','✅ هذا الموقع آمن ومحمي باتصال HTTPS مشفر. تصفح ممتع وآمن!')">متابعة القراءة</button>
+        <button class="btn btn-secondary" ${dis} onclick="simAction('safe','Left a safe site (cautious)',&quot;✅ الحذر دائماً مفيد، لكن هذا الموقع آمن بالفعل. من الجيد أنك يقظ.&quot;)">مغادرة الموقع</button>
+      </div>
+    `)}`;
+}
+
+function simScenario2(sub, dis) {
+  const showPopup = sub.popupShown;
+  if (!showPopup && !sub.result) {
+    setTimeout(() => { if (state.simulationScenario === 1 && !state.sub.result) { state.sub.popupShown = true; render(); } }, 1500);
+  }
+
+  let popupHtml = '';
+  if (showPopup && !sub.result) {
+    popupHtml = `
+      <div class="popup-bg-blur" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div class="popup-card glow-warning">
+          <p style="font-size:1.5rem;margin-bottom:8px">🎁</p>
+          <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg))">تهانينا الحارة!</h3>
+          <p style="font-size:12px;color:hsl(var(--muted-fg));margin-bottom:12px">لقد ربحت بطاقة هدايا بقيمة ٥٠٠ دولار!</p>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <button class="btn btn-warning" style="font-size:14px" onclick="simAction('risky','Clicked on a fake prize pop-up','⚠️ النوافذ المنبثقة التي تدعي توزيع جوائز أو بطاقات هدايا هي احتيال وتصيد! لا تصدقها.')">المطالبة</button>
+            <button class="btn btn-secondary" style="font-size:14px" onclick="simAction('safe','Closed a fake pop-up','✅ قرار حكيم! قمت بإغلاق النافذة المنبثقة الاحتيالية بنجاح.')">✕ إغلاق</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  return `
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">تتصفح موقع ألعاب وفجأة يظهر لك شيء...</p>
+    ${fakeBrowser({url:'https://free-games.net',isSecure:true,tabTitle:'ألعاب مجانية'}, `
+      <div style="position:relative;min-height:280px">
+        <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:8px;text-align:right">🎮 ألعاب شائعة</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          ${['مغامرة الفضاء','ألغاز سيبرانية','صائد الكلمات','مطابقة الألوان'].map(g=>`<div style="background:hsl(var(--muted));border-radius:8px;padding:8px;text-align:center;font-size:12px;color:hsl(var(--muted-fg))">${g}</div>`).join('')}
+        </div>
+        ${popupHtml}
+      </div>
+    `)}`;
+}
+
+function simScenario3(dis) {
+  return `
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">ظهر لك إعلان به رابط أثناء البحث. ماذا تفعل؟</p>
+    ${fakeBrowser({url:'https://search-results.com',isSecure:true,tabTitle:'نتائج البحث'}, `
+      <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:12px;text-align:right">نتائج البحث</h3>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:hsl(var(--muted));border-radius:8px;padding:12px;text-align:right">
+          <p style="font-size:14px;color:hsl(var(--fg));font-weight:600">ويكيبيديا - أمن الإنترنت</p>
+          <p style="font-size:12px;color:hsl(152,100%,50%)" dir="ltr">https://en.wikipedia.org/wiki/Internet_safety</p>
+        </div>
+        <div style="background:hsla(40,90%,55%,0.08);border:1px solid hsla(40,90%,55%,0.3);border-radius:8px;padding:12px;text-align:right">
+          <p style="font-size:14px;color:hsl(var(--fg));font-weight:600">🏆 اربح جوائز نقدية فوراً — اضغط هنا!</p>
+          <p style="font-size:12px;color:hsl(340,100%,50%);font-family:var(--font-mono)" dir="ltr">http://win-prizes-now.xyz</p>
+          <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+            <button class="btn btn-warning" style="font-size:12px;padding:6px 12px" ${dis} onclick="simAction('risky','Clicked a suspicious link','⚠️ الموقع win-prizes-now.xyz مشبوه ومخادع! لا قفل أمان ومكافآت وهمية ونطاق رخيص.')">زيارة الرابط</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px" ${dis} onclick="simAction('safe','Avoided a suspicious link','✅ أحسنت! لقد تجنبت الرابط المشبوه ذي الامتداد غير الآمن.')">تجاهل</button>
+          </div>
+        </div>
+      </div>
+    `)}`;
+}
+
+function simScenario4(dis) {
+  return `
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">يطلب منك موقع ويب مجهول تسجيل الدخول وتأكيد الحساب فجأة.</p>
+    ${fakeBrowser({url:'https://secure-verify-account.net',isSecure:false,tabTitle:'تأكيد الحساب'}, `
+      <div style="max-width:18rem;margin:0 auto;text-align:center" class="card">
+        <div style="color:hsl(40,90%,55%);margin-bottom:8px">${icons.alertTri.replace(/20/g,'32')}</div>
+        <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:4px">انتهت صلاحية الجلسة</h3>
+        <p style="font-size:12px;color:hsl(var(--muted-fg));margin-bottom:16px">يرجى تسجيل الدخول مجدداً للمتابعة.</p>
+        <div style="margin-bottom:8px"><input class="sim-input" placeholder="البريد الإلكتروني" disabled /></div>
+        <div style="margin-bottom:16px"><input type="password" class="sim-input" placeholder="كلمة المرور" disabled /></div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn btn-danger" ${dis} onclick="simAction('risky','Entered data on suspicious login page','⚠️ هذه صفحة تصيد احتيالي! موقع secure-verify-account.net مزيف لسرقة بياناتك.')">تسجيل الدخول</button>
+          <button class="btn btn-secondary" ${dis} onclick="simAction('safe','Navigated away from phishing page','✅ حدس رائع! طلبات تسجيل الدخول المفاجئة وغير المتوقعة غالباً ما تكون فخاً.')">← العودة للخلف</button>
+        </div>
+      </div>
+    `)}`;
+}
+
+function simScenario5(dis) {
+  return `
+    <p style="font-size:15px;color:hsl(var(--muted-fg));margin-bottom:12px;text-align:right">أنت متصل بشبكة ويفاي عامة في المطار ويطلب منك موقع بريد إلكتروني تسجيل دخولك.</p>
+    ${fakeBrowser({url:'https://email-login.com',isSecure:true,tabTitle:'تسجيل دخول البريد',wifiStatus:'public'}, `
+      <div class="info-box info-warning" style="margin-top:0;margin-bottom:16px;font-size:13px;flex-direction:row-reverse">📶 متصل حالياً بـ: <strong>ويفاي_المطار_المجاني</strong></div>
+      <div style="max-width:18rem;margin:0 auto;text-align:center" class="card">
+        <h3 style="font-size:1rem;font-weight:700;color:hsl(var(--fg));margin-bottom:12px">تسجيل الدخول لبريدك</h3>
+        <div style="margin-bottom:8px"><input class="sim-input" placeholder="البريد الإلكتروني" disabled /></div>
+        <div style="margin-bottom:16px"><input type="password" class="sim-input" placeholder="كلمة المرور" disabled /></div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn btn-danger" ${dis} onclick="simAction('risky','Entered credentials on public Wi-Fi','⚠️ شبكات الويفاي العامة قد تعرض بياناتك للتنصت والسرقة من مهاجمين على نفس الشبكة.')">تسجيل الدخول</button>
+          <button class="btn btn-secondary" ${dis} onclick="simAction('safe','Avoided login on public Wi-Fi','✅ قرار ذكي! تجنبت إدخال كلمات المرور عبر شبكة مفتوحة. انتظر لشبكة آمنة.')">الانتظار لشبكة آمنة</button>
+        </div>
+      </div>
+    `)}`;
+}
+
+// ─── RESULTS ───
+function renderResults() {
+  const safeActions = state.actions.filter(a => a.type === 'safe').length;
+  const riskyActions = state.actions.filter(a => a.type === 'risky').length;
+  const totalPoints = safeActions * 20;
+  const total = safeActions + riskyActions;
+  const pct = total > 0 ? Math.round((safeActions / total) * 100) : 0;
+  const stars = Math.ceil(pct / 20);
+
+  let encouragement = '';
+  if (pct >= 80) encouragement = "🌟 عمل من الدرجة الأولى! أنت خبير تصفح آمن حقيقي! استمر في تفحص العناوين والنوافذ والشبكات!";
+  else if (pct >= 50) encouragement = "👍 عمل جيد! أنت تتعلم كيف تحمي نفسك وتتصفح بأمان! استمر في فحص العناوين والنوافذ والشبكات!";
+  else encouragement = "💪 أنت تتعلم! الممارسة تؤدي للاحتراف. احرص دائماً على فحص العناوين والنوافذ والشبكات المفتوحة!";
+
+  let starsHtml = '';
+  for (let i = 1; i <= 5; i++) {
+    starsHtml += `<span class="star ${i <= stars ? 'filled' : ''}">★</span>`;
+  }
+
+  return `
+    <div class="phase">
+      <div class="container text-center animate-fade" style="max-width:32rem">
+        <div class="glass-card-glow" style="padding:40px 24px">
+          <div style="margin-bottom:24px;animation:scaleIn .8s ease-out .3s both">
+            <div class="end-trophy float-anim">${icons.trophyBig}</div>
+          </div>
+
+          <div class="fade-in" style="animation-delay:.3s">
+            <h2 class="font-cyber neon-green" style="font-size:clamp(22px,5vw,34px);font-weight:700;margin-bottom:8px">اكتمل المستوى!</h2>
+            <p class="font-cyber" style="color:hsl(var(--warning));font-weight:700;font-size:18px;margin-bottom:4px">+${totalPoints} نقطة</p>
+            <p style="color:hsl(var(--primary));font-weight:700;font-size:16px;margin-bottom:24px">
+              🛡️ حصلت على شارة المتصفح الآمن - المستوى الأول!
+            </p>
+          </div>
+
+          <div class="score-grid fade-in" style="animation-delay:.5s">
+            <div class="score-card">
+              <div style="color:hsl(152,100%,50%);margin-bottom:8px">${icons.check}</div>
+              <p class="val" style="color:hsl(152,100%,50%)">${safeActions}</p>
+              <p class="lbl">قرارات آمنة</p>
+            </div>
+            <div class="score-card">
+              <div style="color:hsl(40,90%,55%);margin-bottom:8px">${icons.alertTri}</div>
+              <p class="val" style="color:hsl(40,90%,55%)">${riskyActions}</p>
+              <p class="lbl">قرارات خطرة</p>
+            </div>
+            <div class="score-card">
+              <div style="color:hsl(var(--primary));margin-bottom:8px">${icons.trophy}</div>
+              <p class="val" style="color:hsl(var(--primary))">${totalPoints}</p>
+              <p class="lbl">إجمالي النقاط</p>
+            </div>
+          </div>
+
+          <div class="card fade-in text-right" style="animation-delay:.7s;margin-bottom:1.5rem;padding:16px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;flex-direction:row-reverse;">
+              <span style="font-size:14px;color:hsl(var(--muted-fg))">درجة تصفحك الآمن</span>
+              <span class="font-cyber" style="font-size:14px;font-weight:700;color:hsl(var(--primary))">${pct}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${pct}%"></div>
+            </div>
+            <div class="stars">${starsHtml}</div>
+          </div>
+
+          <div class="fade-in warning-box" style="animation-delay:1s;margin-bottom:1.5rem">
+            <p>💡 <strong>${encouragement}</strong></p>
+          </div>
+
+          <div class="end-grid fade-in" style="animation-delay:1.2s">
+            <button class="btn btn-primary glow-safe" onclick="playSuccess();resetGame();">
+              ${icons.rotateCw} العب مجدداً
+            </button>
+            <button class="btn btn-secondary" onclick="playSuccess();window.location.href = '../map-ar.html';">
+              ${icons.map} العودة للخريطة
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function resetGame() {
+  state.phase = 'explanation';
+  state.explanationStep = 0;
+  state.guidedChallenge = 0;
+  state.simulationScenario = 0;
+  state.actions = [];
+  state.sub = {};
+  render();
+}
+
+function bindEvents() {}
+
+// ─── INIT ───
+render();
+</script>
+<script src="../chatbot.js"></script>
+<script src="../components/cyber-background.js"></script>
+</body>
+</html>

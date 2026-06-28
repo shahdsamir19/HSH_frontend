@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>مستوى التوعية بالبرمجيات الخبيثة - درع الحماية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Fredoka:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: 'hsl(230 60% 10%)',
+          foreground: 'hsl(200 20% 95%)',
+          card: 'hsl(230 50% 12%)',
+          primary: { DEFAULT: 'hsl(190 100% 50%)', foreground: 'hsl(230 60% 10%)' },
+          secondary: { DEFAULT: 'hsl(230 40% 18%)', foreground: 'hsl(200 20% 95%)' },
+          muted: { DEFAULT: 'hsl(230 30% 16%)', foreground: 'hsl(220 15% 60%)' },
+          accent: { DEFAULT: 'hsl(190 90% 45%)', foreground: 'hsl(230 60% 10%)' },
+          destructive: { DEFAULT: 'hsl(0 85% 55%)', foreground: 'hsl(0 0% 100%)' },
+          warning: { DEFAULT: 'hsl(45 100% 50%)', foreground: 'hsl(230 60% 10%)' },
+          success: { DEFAULT: 'hsl(155 100% 45%)', foreground: 'hsl(230 60% 10%)' },
+          fuchsia: { DEFAULT: 'hsl(300 100% 50%)', foreground: 'hsl(230 60% 10%)' },
+          border: 'hsl(230 30% 20%)',
+        },
+        fontFamily: {
+          display: ['Cairo', 'Orbitron', 'sans-serif'],
+          body: ['Cairo', 'Fredoka', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'Cairo', 'Fredoka', sans-serif; background: hsl(230 60% 10%); color: hsl(200 20% 95%); margin: 0; }
+  h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Cairo', 'Orbitron', sans-serif; }
+  code,.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  .text-glow-cyan { text-shadow: 0 0 10px hsl(190 100% 50% / .8), 0 0 30px hsl(190 100% 50% / .4), 0 0 50px hsl(190 100% 50% / .2); }
+  .text-glow-red { text-shadow: 0 0 10px hsl(0 85% 55% / .8), 0 0 30px hsl(0 85% 55% / .4); }
+  .text-glow-green { text-shadow: 0 0 10px hsl(155 100% 45% / .8), 0 0 30px hsl(155 100% 45% / .4); }
+  .text-glow-yellow { text-shadow: 0 0 10px hsl(45 100% 50% / .8), 0 0 30px hsl(45 100% 50% / .4); }
+  .text-glow-fuchsia { text-shadow: 0 0 10px hsl(300 100% 50% / .8), 0 0 30px hsl(300 100% 50% / .4); }
+
+  .box-glow-cyan { box-shadow: 0 0 20px hsl(190 100% 50% / .3), 0 0 40px hsl(190 100% 50% / .15), inset 0 1px 0 hsl(190 100% 50% / .1); }
+  .box-glow-red { box-shadow: 0 0 20px hsl(0 85% 55% / .4), 0 0 40px hsl(0 85% 55% / .2); }
+  .box-glow-green { box-shadow: 0 0 20px hsl(155 100% 45% / .4), 0 0 40px hsl(155 100% 45% / .2); }
+  .box-glow-yellow { box-shadow: 0 0 20px hsl(45 100% 50% / .4), 0 0 40px hsl(45 100% 50% / .2); }
+  .box-glow-fuchsia { box-shadow: 0 0 20px hsl(300 100% 50% / .4), 0 0 40px hsl(300 100% 50% / .2); }
+
+  .cyber-circuit-bg {
+    background-image:
+      radial-gradient(circle at 20% 30%, hsl(190 100% 50% / .08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, hsl(300 100% 50% / .06) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, hsl(155 100% 45% / .04) 0%, transparent 60%),
+      linear-gradient(hsl(190 100% 50% / .03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(190 100% 50% / .03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+  }
+  .cyber-grid {
+    background-image:
+      linear-gradient(hsl(190 100% 50% / .03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(190 100% 50% / .03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .scanline {
+    background: linear-gradient(transparent 50%, hsl(190 100% 50% / .02) 50%);
+    background-size: 100% 4px; pointer-events: none;
+  }
+  .gradient-cyan-fuchsia { background: linear-gradient(135deg, hsl(190 100% 50%) 0%, hsl(300 100% 50%) 100%); }
+
+  @keyframes glitch {
+    0%,90%,100% { transform: translate(0); filter: hue-rotate(0); }
+    92% { transform: translate(-2px,1px); filter: hue-rotate(20deg); }
+    94% { transform: translate(2px,-1px); filter: hue-rotate(-20deg); }
+    96% { transform: translate(-1px,-1px); filter: hue-rotate(10deg); }
+    98% { transform: translate(1px,1px); filter: hue-rotate(-10deg); }
+  }
+  .glitch-text { animation: glitch 3s infinite; }
+
+  @keyframes pulse-glow { 0%,100% { opacity:.6; filter: brightness(1);} 50% { opacity:1; filter: brightness(1.2);} }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+  @keyframes shield-pulse { 0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px hsl(190 100% 50% / .4));} 50% { transform: scale(1.05); filter: drop-shadow(0 0 25px hsl(190 100% 50% / .8));} }
+  .animate-shield-pulse { animation: shield-pulse 2s ease-in-out infinite; }
+
+  @keyframes shake { 0%,100%{transform:translateX(0);} 10%,30%,50%,70%,90%{transform:translateX(-5px);} 20%,40%,60%,80%{transform:translateX(5px);} }
+  .animate-shake { animation: shake .5s ease-in-out; }
+
+  @keyframes confetti-fall { 0%{transform:translateY(-10vh) rotate(0); opacity:1;} 100%{transform:translateY(100vh) rotate(720deg); opacity:0;} }
+
+  @keyframes float-particle { 0%,100% { transform: translate(0,0);} 50% { transform: translate(var(--dx), var(--dy));} }
+</style>
+<link rel="stylesheet" href="../chatbot.css">
+<link rel="stylesheet" href="../components/cyber-background.css">
+</head>
+<body>
+  <script src="../components/navbar.js"></script>
+<div id="root"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "framer-motion": "https://esm.sh/framer-motion@11.11.17?deps=react@18.3.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.462.0?deps=react@18.3.1"
+  }
+}
+</script>
+
+<script type="text/babel" data-type="module" data-presets="react">
+import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Shield, Menu, X, Trophy, Award, Facebook, Linkedin, Twitter,
+  Play, AlertTriangle, Eye, CheckCircle2,
+  Bug, FileWarning, ChevronLeft, ChevronRight,
+  Download, ShieldAlert, ShieldCheck, Star,
+  Usb, FolderOpen, Search, Sparkles
+} from 'lucide-react';
+
+/* ============ Sounds (Web Audio synth) ============ */
+let audioCtx;
+const getCtx = () => {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+};
+const tone = (freq, dur=0.15, type='sine', gain=0.05) => {
+  try {
+    const ctx = getCtx();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + dur);
+  } catch(e){}
+};
+const sounds = {
+  swipe: () => tone(600, 0.08, 'triangle', 0.04),
+  alertBeep: () => { tone(880, 0.1, 'square', 0.04); setTimeout(()=>tone(880,0.1,'square',0.04),140); },
+  error: () => { tone(200, 0.2, 'sawtooth', 0.05); setTimeout(()=>tone(160,0.25,'sawtooth',0.05),100); },
+  shieldActivate: () => { tone(440,0.1,'sine',0.05); setTimeout(()=>tone(660,0.1,'sine',0.05),80); setTimeout(()=>tone(880,0.15,'sine',0.05),160); },
+  digitalHum: () => tone(120, 0.4, 'sawtooth', 0.025),
+  threatBlocked: () => { tone(523,0.1); setTimeout(()=>tone(659,0.1),100); setTimeout(()=>tone(784,0.2),200); },
+  success: () => { [523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,0.18,'sine',0.05), i*100)); },
+};
+
+/* ============ Floating Particles ============ */
+function FloatingParticles({ count = 30 }) {
+  const particles = React.useMemo(() => Array.from({length: count}, (_,i) => ({
+    id: i,
+    x: Math.random()*100, y: Math.random()*100,
+    size: Math.random()*3 + 1,
+    duration: Math.random()*10 + 8,
+    delay: Math.random()*5,
+    color: ['hsl(190 100% 50%)','hsl(300 100% 50%)','hsl(155 100% 45%)'][Math.floor(Math.random()*3)],
+  })), [count]);
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0">
+      {particles.map(p => (
+        <motion.div key={p.id}
+          className="absolute rounded-full"
+          style={{ left:`${p.x}%`, top:`${p.y}%`, width:p.size, height:p.size, background:p.color, boxShadow:`0 0 ${p.size*3}px ${p.color}` }}
+          animate={{ y:[0,-30,0], opacity:[0.3,1,0.3] }}
+          transition={{ duration:p.duration, delay:p.delay, repeat:Infinity, ease:'easeInOut' }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ============ Confetti ============ */
+function ConfettiEffect({ active }) {
+  if (!active) return null;
+  const pieces = Array.from({length:60}, (_,i)=>({
+    id:i, x:Math.random()*100, delay:Math.random()*2, duration:Math.random()*2+2,
+    color:['hsl(190 100% 50%)','hsl(300 100% 50%)','hsl(155 100% 45%)','hsl(45 100% 50%)'][Math.floor(Math.random()*4)],
+    size: Math.random()*8+4,
+  }));
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50">
+      {pieces.map(p => (
+        <div key={p.id}
+          style={{
+            position:'absolute', left:`${p.x}%`, top:0,
+            width:p.size, height:p.size, background:p.color,
+            animation:`confetti-fall ${p.duration}s ease-in ${p.delay}s forwards`,
+            borderRadius:'2px'
+          }} />
+      ))}
+    </div>
+  );
+}
+
+/* ============ Navbar ============ */
+function Navbar({ score, badges }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navLinks = [
+    { label:'من نحن', href:'#about' },
+    { label:'المهمات', href:'#quests' },
+    { label:'الرئيسية', href:'#home' },
+    { label:'المجتمع', href:'#community' },
+    { label:'اتصل بنا', href:'#contact' },
+  ];
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between flex-row-reverse">
+        <motion.div className="flex items-center gap-2 flex-row-reverse" initial={{opacity:0,x:20}} animate={{opacity:1,x:0}}>
+          <Shield className="w-8 h-8 text-primary animate-pulse-glow" />
+          <span className="font-display text-lg font-bold text-primary text-glow-cyan">درع الحماية</span>
+        </motion.div>
+        <div className="hidden md:flex items-center gap-6 flex-row-reverse">
+          {navLinks.map((l,i) => (
+            <motion.a key={l.label} href={l.href}
+              initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}} transition={{delay:i*0.1}}
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{l.label}</motion.a>
+          ))}
+        </div>
+        <div className="flex items-center gap-4 flex-row-reverse">
+          <motion.div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 border border-warning/30 flex-row-reverse"
+            initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}}>
+            <Trophy className="w-4 h-4 text-warning" />
+            <span className="font-display text-sm font-bold text-warning text-glow-yellow">{score}</span>
+          </motion.div>
+          <motion.div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 border border-primary/30 flex-row-reverse"
+            initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{delay:0.1}}>
+            <Award className="w-4 h-4 text-primary" />
+            <span className="font-display text-sm font-bold text-primary">{badges}</span>
+          </motion.div>
+          <div className="hidden lg:flex items-center gap-2 mr-2 pr-4 border-r border-border flex-row-reverse">
+            <a href="#" className="p-2 rounded-lg hover:bg-secondary/50 text-muted-foreground hover:text-primary transition-all"><Facebook className="w-4 h-4"/></a>
+            <a href="#" className="p-2 rounded-lg hover:bg-secondary/50 text-muted-foreground hover:text-primary transition-all"><Linkedin className="w-4 h-4"/></a>
+            <a href="#" className="p-2 rounded-lg hover:bg-secondary/50 text-muted-foreground hover:text-primary transition-all"><Twitter className="w-4 h-4"/></a>
+          </div>
+          <button onClick={()=>setMobileOpen(!mobileOpen)} className="md:hidden p-2 rounded-lg hover:bg-secondary/50 text-foreground">
+            {mobileOpen ? <X className="w-5 h-5"/> : <Menu className="w-5 h-5"/>}
+          </button>
+        </div>
+      </div>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div initial={{opacity:0,height:0}} animate={{opacity:1,height:'auto'}} exit={{opacity:0,height:0}}
+            className="md:hidden bg-card border-b border-border overflow-hidden">
+            <div className="px-4 py-4 space-y-3 text-right">
+              {navLinks.map(l => <a key={l.label} href={l.href} className="block py-2 text-muted-foreground hover:text-primary transition-colors" onClick={()=>setMobileOpen(false)}>{l.label}</a>)}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
+
+/* ============ Briefing ============ */
+function BriefingSection({ onComplete }) {
+  const objectives = [
+    { icon: Eye, text: 'كشف السلوكيات المشبوهة للبرمجيات' },
+    { icon: AlertTriangle, text: 'تمييز العلامات التحذيرية للبرمجيات الخبيثة' },
+    { icon: Shield, text: 'ممارسة عادات الحماية الرقمية الآمنة' },
+  ];
+  const handleStart = () => { sounds.shieldActivate(); onComplete(); };
+  return (
+    <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+      className="min-h-screen pt-24 pb-12 px-4 flex items-center justify-center text-right">
+      <div className="w-full max-w-5xl">
+        <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-8">
+          <span className="font-mono text-xs text-primary/70 tracking-[0.3em] uppercase">المستوى السابع</span>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2 text-glow-cyan">التوعية بالبرمجيات الخبيثة</h1>
+          <p className="text-muted-foreground mt-2 max-w-md mx-auto">تعلم كيفية كشف البرمجيات الخبيثة والدفاع عنها لحماية جهازك</p>
+        </motion.div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <motion.div initial={{opacity:0,x:-30}} animate={{opacity:1,x:0}} transition={{delay:0.2}}
+            className="rounded-2xl border-2 border-primary/40 bg-card/80 backdrop-blur-sm overflow-hidden box-glow-cyan">
+            <div className="aspect-video bg-secondary/50 relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-fuchsia/10" />
+              <div className="absolute inset-0 cyber-grid opacity-30" />
+              <motion.button whileHover={{scale:1.1}} whileTap={{scale:0.95}}
+                className="relative z-10 w-20 h-20 rounded-full gradient-cyan-fuchsia flex items-center justify-center box-glow-cyan">
+                <Play className="w-8 h-8 text-background mr-1" fill="currentColor" />
+              </motion.button>
+              <div className="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-background/80 backdrop-blur-sm">
+                <span className="font-mono text-xs text-primary">شرح المهمة</span>
+              </div>
+              <div className="absolute bottom-4 left-4 px-2 py-1 rounded bg-background/80 backdrop-blur-sm">
+                <span className="font-mono text-xs text-muted-foreground">2:45</span>
+              </div>
+            </div>
+          </motion.div>
+          <motion.div initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} transition={{delay:0.3}}
+            className="rounded-2xl border-2 border-fuchsia/40 bg-card/80 backdrop-blur-sm p-6 box-glow-fuchsia">
+            <div className="flex items-center gap-3 mb-6 flex-row-reverse">
+              <div className="w-10 h-10 rounded-xl gradient-cyan-fuchsia flex items-center justify-center"><Shield className="w-5 h-5 text-background"/></div>
+              <h2 className="font-display text-lg font-bold text-foreground">أهداف المهمة</h2>
+            </div>
+            <div class="space-y-4">
+              {objectives.map((o,i)=>(
+                <motion.div key={i} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{delay:0.4+i*0.1}}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30 border border-border flex-row-reverse">
+                  <div className="w-8 h-8 rounded-lg bg-fuchsia/20 flex items-center justify-center flex-shrink-0">
+                    <o.icon className="w-4 h-4 text-fuchsia"/>
+                  </div>
+                  <div className="flex-1"><p className="text-sm text-foreground">{o.text}</p></div>
+                  <CheckCircle2 className="w-5 h-5 text-muted-foreground/30"/>
+                </motion.div>
+              ))}
+            </div>
+            <motion.button onClick={handleStart} initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.7}}
+              whileHover={{scale:1.02, boxShadow:'0 0 30px hsl(190 100% 50% / 0.4)'}} whileTap={{scale:0.98}}
+              className="w-full mt-6 py-4 rounded-xl gradient-cyan-fuchsia font-display text-base font-bold text-background box-glow-cyan transition-all">
+              بدء المهمة ←
+            </motion.button>
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ============ Explanation Cards ============ */
+const cards = [
+  { icon: Bug, title:'ما هي البرمجيات الخبيثة؟', description:'برامج ضارة صممت خصيصاً لإلحاق الضرر بجهازك أو تعطيله أو الحصول على وصول غير مصرح به لملفاتك ومعلوماتك.', accent:'cyan' },
+  { icon: FileWarning, title:'كيف تخترق جهازك؟', description:'من خلال التنزيلات المزيفة للملفات، المرفقات المشبوهة بالبريد، الفلاشات المصابة، والمواقع غير الآمنة.', accent:'fuchsia' },
+  { icon: AlertTriangle, title:'علامات التحذير', description:'بطء الأداء المفاجئ للجهاز، النوافذ المنبثقة غير المتوقعة، ظهور برامج غريبة، والنشاط غير الطبيعي للشبكة.', accent:'yellow' },
+  { icon: Shield, title:'لماذا هي خطيرة جداً؟', description:'قد تسرق البرمجيات الخبيثة بياناتك الحساسة، تتجسس عليك، تقفل ملفاتك تماماً، أو تسلم التحكم في جهازك للهاكر.', accent:'red' },
+  { icon: Shield, title:'ماذا يجب أن تفعل؟', description:'حافظ على برنامج الحماية نشطاً، لا تفتح ملفات أو روابط مجهولة، حدث نظامك وبرامجك، وأبلغ عن الأنشطة المريبة.', accent:'green' },
+];
+const accentMap = {
+  cyan: { border:'border-primary/50', glow:'box-glow-cyan', text:'text-primary', icon:'text-primary', bg:'bg-primary/10', dot:'hsl(190 100% 50%)' },
+  fuchsia: { border:'border-fuchsia/50', glow:'box-glow-fuchsia', text:'text-fuchsia', icon:'text-fuchsia', bg:'bg-fuchsia/10', dot:'hsl(300 100% 50%)' },
+  yellow: { border:'border-warning/50', glow:'box-glow-yellow', text:'text-warning', icon:'text-warning', bg:'bg-warning/10', dot:'hsl(45 100% 50%)' },
+  red: { border:'border-destructive/50', glow:'box-glow-red', text:'text-destructive', icon:'text-destructive', bg:'bg-destructive/10', dot:'hsl(0 85% 55%)' },
+  green: { border:'border-success/50', glow:'box-glow-green', text:'text-success', icon:'text-success', bg:'bg-success/10', dot:'hsl(155 100% 45%)' },
+};
+function ExplanationCards({ onComplete }) {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const goTo = idx => { setDirection(idx > current ? 1 : -1); setCurrent(idx); sounds.swipe(); };
+  const next = () => { if (current < cards.length-1) goTo(current+1); else onComplete(); };
+  const prev = () => { if (current > 0) goTo(current-1); };
+  const card = cards[current]; const style = accentMap[card.accent]; const Icon = card.icon;
+  const variants = {
+    enter: d => ({ x: d>0?300:-300, opacity:0, scale:0.9 }),
+    center: { x:0, opacity:1, scale:1 },
+    exit: d => ({ x: d>0?-300:300, opacity:0, scale:0.9 }),
+  };
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4 text-center">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-6">
+        <span className="font-mono text-xs text-fuchsia/70 tracking-[0.3em] uppercase">قاعدة المعرفة</span>
+        <h2 className="font-display text-xl font-bold text-foreground mt-1 text-glow-fuchsia">فهم البرمجيات الخبيثة</h2>
+      </motion.div>
+      <div className="flex gap-2 mb-8 flex-row-reverse">
+        {cards.map((c,i)=>(
+          <button key={i} onClick={()=>goTo(i)}
+            className={`h-2.5 rounded-full transition-all duration-300 ${i===current ? `w-10 ${accentMap[c.accent].glow}` : i<current ? 'w-2.5 bg-primary/60' : 'w-2.5 bg-muted'}`}
+            style={{ backgroundColor: i===current ? accentMap[c.accent].dot : undefined }}/>
+        ))}
+      </div>
+      <div className="relative w-full max-w-md h-80">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div key={current} custom={direction} variants={variants}
+            initial="enter" animate="center" exit="exit"
+            transition={{ type:'spring', stiffness:300, damping:30 }}
+            drag="x" dragConstraints={{left:0,right:0}} dragElastic={0.4}
+            onDragEnd={(e,info)=>{ if (info.offset.x < -80) next(); else if (info.offset.x > 80) prev(); }}
+            className={`absolute inset-0 rounded-2xl border-2 ${style.border} ${style.glow} bg-card/90 backdrop-blur-sm p-8 flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing`}>
+            <motion.div initial={{scale:0,rotate:-20}} animate={{scale:1,rotate:0}} transition={{delay:0.15,type:'spring',stiffness:200}}
+              className={`w-20 h-20 rounded-2xl ${style.bg} flex items-center justify-center mb-6`}>
+              <Icon className={`w-10 h-10 ${style.icon}`} strokeWidth={1.5}/>
+            </motion.div>
+            <h3 className={`font-display text-xl font-bold mb-3 ${style.text}`}>{card.title}</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">{card.description}</p>
+            <div className="absolute top-4 left-4 px-2 py-1 rounded-lg bg-secondary/50">
+              <span className="font-mono text-xs text-muted-foreground">{current+1}/{cards.length}</span>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <div className="flex items-center gap-6 mt-8 flex-row-reverse">
+        <motion.button onClick={prev} disabled={current===0}
+          whileHover={{scale: current===0?1:1.05}} whileTap={{scale: current===0?1:0.95}}
+          className="p-3 rounded-full border-2 border-border bg-card/50 hover:border-primary/50 hover:bg-secondary transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+          <ChevronRight className="w-5 h-5"/>
+        </motion.button>
+        <span className="text-muted-foreground font-mono text-sm w-16 text-center">{current+1} / {cards.length}</span>
+        <motion.button onClick={next} whileHover={{scale:1.05}} whileTap={{scale:0.95}}
+          className="p-3 rounded-full gradient-cyan-fuchsia box-glow-cyan">
+          <ChevronLeft className="w-5 h-5 text-background"/>
+        </motion.button>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Simulation: Cracked Download ============ */
+function SimulationCracked({ onComplete }) {
+  const [phase, setPhase] = useState('download');
+  const [choice, setChoice] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [shake, setShake] = useState(false);
+  const startDownload = () => {
+    sounds.digitalHum();
+    let p = 0;
+    const interval = setInterval(()=>{
+      p += Math.random()*15;
+      if (p >= 72) {
+        clearInterval(interval); setProgress(72);
+        setTimeout(()=>{ sounds.alertBeep(); setPhase('popup'); }, 400);
+        return;
+      }
+      setProgress(Math.min(p,72));
+    }, 200);
+  };
+  const handleChoice = c => {
+    setChoice(c);
+    if (c==='cancel') sounds.shieldActivate();
+    else { sounds.error(); setShake(true); setTimeout(()=>setShake(false),500); }
+    setTimeout(()=>setPhase('feedback'), 800);
+  };
+  const isCorrect = choice==='cancel';
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4 text-center">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-6">
+        <span className="font-mono text-xs text-warning/70 tracking-[0.3em] uppercase">المحاكاة الأولى</span>
+        <h2 className="font-display text-xl font-bold text-foreground mt-1 text-glow-yellow">التحميلات المشبوهة</h2>
+      </motion.div>
+      <div className="relative w-full max-w-lg">
+        <AnimatePresence mode="wait">
+          {phase==='download' && (
+            <motion.div key="d" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.95}}
+              className="rounded-2xl border-2 border-primary/30 bg-card/90 backdrop-blur-sm overflow-hidden box-glow-cyan">
+              <div className="flex items-center justify-between px-4 py-3 bg-secondary/50 border-b border-border flex-row-reverse">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-destructive/60"/>
+                  <div className="w-3 h-3 rounded-full bg-warning/60"/>
+                  <div className="w-3 h-3 rounded-full bg-success/60"/>
+                </div>
+                <div className="px-3 py-1 rounded-lg bg-background/50 border border-border">
+                  <span className="font-mono text-xs text-destructive glitch-text" dir="ltr">🔓 fr33-s0ftware.xyz</span>
+                </div>
+                <div className="w-16"/>
+              </div>
+              <div className="p-6">
+                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center bg-secondary/20">
+                  <motion.div animate={{y:[0,-5,0]}} transition={{repeat:Infinity,duration:2}}>
+                    <Download className="w-16 h-16 text-primary mx-auto mb-4" strokeWidth={1.5}/>
+                  </motion.div>
+                  <h3 className="font-display text-lg font-bold text-foreground mb-2">برنامج احترافي كامل</h3>
+                  <p className="text-sm text-muted-foreground mb-1">نسخة مجانية مكركة v9.0</p>
+                  <div className="flex items-center justify-center gap-1 mb-4">
+                    {[...Array(5)].map((_,i)=><Star key={i} className="w-4 h-4 text-warning fill-warning"/>)}
+                    <span className="text-xs text-muted-foreground mr-1">(٢,٨٤٧ تقييم)</span>
+                  </div>
+                  <p className="text-xs text-destructive font-mono mb-4 glitch-text">⚡ آمن ومفحوص ١٠٠٪ ⚡</p>
+                  {progress>0 && (
+                    <div className="w-full h-3 bg-muted rounded-full mb-4 overflow-hidden">
+                      <motion.div className="h-full rounded-full gradient-cyan-fuchsia" initial={{width:0}} animate={{width:`${progress}%`}}/>
+                    </div>
+                  )}
+                  <motion.button onClick={startDownload} disabled={progress>0}
+                    whileHover={{scale: progress>0?1:1.02}} whileTap={{scale: progress>0?1:0.98}}
+                    className="px-8 py-3 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background box-glow-cyan">
+                    {progress>0 ? `جاري التنزيل... ${Math.round(progress)}%` : '⬇ تنزيل الآن - مجاناً'}
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          {phase==='popup' && (
+            <motion.div key="p" initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale: shake?[1,0.98,1.02,0.98,1]:1}} exit={{opacity:0,scale:0.8}}
+              transition={{type:'spring',stiffness:400,damping:25}}
+              className={`rounded-2xl border-2 border-destructive/60 bg-card/95 backdrop-blur-sm p-6 box-glow-red text-right ${shake?'animate-shake':''}`}>
+              <div className="flex items-center gap-3 mb-4 flex-row-reverse text-right">
+                <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-warning animate-pulse-glow"/>
+                </div>
+                <div>
+                  <h3 className="font-display text-base font-bold text-foreground">تثبيت البرنامج مطلوب</h3>
+                  <p className="text-xs text-muted-foreground font-mono" dir="ltr">setup_v9.exe wants to make changes</p>
+                </div>
+              </div>
+              <div className="border-2 border-destructive/30 rounded-xl p-4 bg-destructive/10 mb-6 text-center">
+                <p className="text-sm text-foreground">⚠️ يرجى <span className="text-destructive font-bold">تعطيل برنامج الحماية (المكافح)</span> لديك لمتابعة التثبيت.</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <motion.button onClick={()=>handleChoice('disable')} whileHover={{scale:1.01}} whileTap={{scale:0.99}}
+                  className="w-full py-3 rounded-xl bg-destructive/20 border-2 border-destructive/50 text-destructive font-medium text-sm hover:bg-destructive/30 transition-all">
+                  <ShieldAlert className="w-4 h-4 inline ml-2"/>تعطيل برنامج مكافحة الفيروسات
+                </motion.button>
+                <motion.button onClick={()=>handleChoice('continue')} whileHover={{scale:1.01}} whileTap={{scale:0.99}}
+                  className="w-full py-3 rounded-xl bg-warning/15 border-2 border-warning/50 text-warning font-medium text-sm hover:bg-warning/25 transition-all">
+                  المتابعة على أي حال
+                </motion.button>
+                <motion.button onClick={()=>handleChoice('cancel')}
+                  whileHover={{scale:1.02, boxShadow:'0 0 25px hsl(155 100% 45% / 0.4)'}} whileTap={{scale:0.98}}
+                  className="w-full py-3 rounded-xl bg-success/15 border-2 border-success/50 text-success font-bold text-sm hover:bg-success/25 transition-all box-glow-green">
+                  <X className="w-4 h-4 inline ml-2"/>إلغاء وحذف الملف فوراً
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+          {phase==='feedback' && (
+            <motion.div key="f" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}}
+              className={`rounded-2xl border-2 ${isCorrect?'border-success/50 box-glow-green':'border-destructive/50 box-glow-red'} bg-card/95 backdrop-blur-sm p-8 text-center`}>
+              {isCorrect ? (<>
+                <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',stiffness:200,delay:0.2}}
+                  className="w-24 h-24 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
+                  <ShieldCheck className="w-14 h-14 text-success animate-shield-pulse" strokeWidth={1.5}/>
+                </motion.div>
+                <h3 className="font-display text-xl font-bold text-success mb-2 text-glow-green">تم حظر التهديد بنجاح!</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">البرامج الرسمية والموثوقة <span className="text-foreground font-medium">لا تطلب</span> منك إطلاقاً تعطيل نظام الحماية.</p>
+                <motion.div initial={{scale:0}} animate={{scale:1}} transition={{delay:0.5}}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/20 border border-success/30">
+                  <span className="font-display text-lg font-bold text-success">+١٠٠</span>
+                  <span className="text-xs text-success/70">نقطة</span>
+                </motion.div>
+              </>) : (<>
+                <div className="w-24 h-24 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
+                  <ShieldAlert className="w-14 h-14 text-destructive" strokeWidth={1.5}/>
+                </div>
+                <h3 className="font-display text-xl font-bold text-destructive mb-2 text-glow-red">تم اختراق الجهاز!</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">كان هذا ملفاً خبيثاً متخفياً في صورة برنامج مجاني مكرك. لا تعطل الحماية لبرامج التثبيت أبداً.</p>
+              </>)}
+              <motion.button onClick={()=>onComplete(isCorrect)} whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+                className="mt-6 px-8 py-3 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background box-glow-cyan">متابعة ←</motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Simulation: USB ============ */
+function SimulationUSB({ onComplete }) {
+  const [phase, setPhase] = useState('insert');
+  const [choice, setChoice] = useState(null);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [shake, setShake] = useState(false);
+  const handleInsert = () => { sounds.digitalHum(); setTimeout(()=>{ sounds.alertBeep(); setPhase('popup'); }, 1500); };
+  const handleChoice = c => {
+    setChoice(c);
+    if (c==='scan') { sounds.shieldActivate(); setPhase('scanning'); }
+    else { sounds.error(); setShake(true); setTimeout(()=>setShake(false),500); setTimeout(()=>setPhase('feedback'),800); }
+  };
+  useEffect(()=>{
+    if (phase==='scanning') {
+      let p = 0;
+      const interval = setInterval(()=>{
+        p += Math.random()*8 + 2;
+        if (p>=100) { clearInterval(interval); setScanProgress(100); sounds.threatBlocked(); setTimeout(()=>setPhase('feedback'),800); return; }
+        setScanProgress(Math.min(p,100));
+      }, 150);
+      return () => clearInterval(interval);
+    }
+  }, [phase]);
+  const isCorrect = choice==='scan';
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4 text-center">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} className="text-center mb-6">
+        <span className="font-mono text-xs text-fuchsia/70 tracking-[0.3em] uppercase">المحاكاة الثانية</span>
+        <h2 className="font-display text-xl font-bold text-foreground mt-1 text-glow-fuchsia">أمان الأجهزة الخارجية</h2>
+      </motion.div>
+      <div className="relative w-full max-w-lg">
+        <AnimatePresence mode="wait">
+          {phase==='insert' && (
+            <motion.div key="i" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.95}}
+              className="rounded-2xl border-2 border-fuchsia/30 bg-card/90 backdrop-blur-sm p-8 text-center box-glow-fuchsia">
+              <p className="text-sm text-muted-foreground mb-6">وجدت ذاكرة فلاش (USB) ملقاة في المكتبة العامة. ماذا ستفعل؟</p>
+              <motion.div className="relative w-32 h-32 mx-auto mb-8" animate={{y:[0,-8,0]}} transition={{repeat:Infinity,duration:2,ease:'easeInOut'}}>
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-4 bg-secondary/80 rounded-t-sm border-2 border-border border-b-0"/>
+                <motion.div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-16 h-24 bg-gradient-to-b from-muted to-secondary rounded-lg border-2 border-primary/50 box-glow-cyan flex items-center justify-center" whileHover={{scale:1.05}}>
+                  <Usb className="w-8 h-8 text-primary"/>
+                </motion.div>
+              </motion.div>
+              <motion.button onClick={handleInsert}
+                whileHover={{scale:1.02, boxShadow:'0 0 30px hsl(300 100% 50% / 0.4)'}} whileTap={{scale:0.98}}
+                className="px-8 py-3 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background box-glow-fuchsia">توصيل الفلاشة بالجهاز</motion.button>
+            </motion.div>
+          )}
+          {phase==='popup' && (
+            <motion.div key="p" initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale: shake?[1,0.98,1.02,0.98,1]:1}} exit={{opacity:0,scale:0.8}}
+              transition={{type:'spring',stiffness:400,damping:25}}
+              className={`rounded-2xl border-2 border-primary/50 bg-card/95 backdrop-blur-sm p-6 box-glow-cyan text-right ${shake?'animate-shake':''}`}>
+              <div className="flex items-center gap-3 mb-4 flex-row-reverse text-right">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0"><Usb className="w-6 h-6 text-primary"/></div>
+                <div>
+                  <h3 className="font-display text-base font-bold text-foreground">تم اكتشاف جهاز خارجي جديد</h3>
+                  <p className="text-xs text-muted-foreground font-mono">ذاكرة فلاش (١٦ جيجابايت) - مصدر مجهول</p>
+                </div>
+              </div>
+              <div className="border-2 border-border rounded-xl p-4 bg-secondary/20 mb-6 text-center">
+                <p className="text-sm text-muted-foreground">كيف ترغب في التعامل مع هذا الجهاز الخارجي؟</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <motion.button onClick={()=>handleChoice('open')} whileHover={{scale:1.01}} whileTap={{scale:0.99}}
+                  className="w-full py-3 rounded-xl bg-warning/15 border-2 border-warning/50 text-warning font-medium text-sm hover:bg-warning/25 transition-all flex items-center justify-center gap-2 flex-row-reverse">
+                  <FolderOpen className="w-4 h-4"/>فتح وتصفح الملفات مباشرة
+                </motion.button>
+                <motion.button onClick={()=>handleChoice('autorun')} whileHover={{scale:1.01}} whileTap={{scale:0.99}}
+                  className="w-full py-3 rounded-xl bg-destructive/15 border-2 border-destructive/50 text-destructive font-medium text-sm hover:bg-destructive/25 transition-all flex items-center justify-center gap-2 flex-row-reverse">
+                  <Play className="w-4 h-4"/>تشغيل ملف التثبيت التلقائي Autorun.exe
+                </motion.button>
+                <motion.button onClick={()=>handleChoice('scan')}
+                  whileHover={{scale:1.02, boxShadow:'0 0 25px hsl(155 100% 45% / 0.4)'}} whileTap={{scale:0.98}}
+                  className="w-full py-3 rounded-xl bg-success/15 border-2 border-success/50 text-success font-bold text-sm hover:bg-success/25 transition-all flex items-center justify-center gap-2 flex-row-reverse box-glow-green">
+                  <Search className="w-4 h-4"/>فحص الفلاشة بالكامل أولاً
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+          {phase==='scanning' && (
+            <motion.div key="s" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.95}}
+              className="rounded-2xl border-2 border-primary/50 bg-card/95 backdrop-blur-sm p-8 text-center box-glow-cyan">
+              <motion.div animate={{rotate:360}} transition={{repeat:Infinity,duration:2,ease:'linear'}}
+                className="w-20 h-20 mx-auto mb-6 rounded-full border-4 border-primary/30 border-t-primary"/>
+              <h3 className="font-display text-lg font-bold text-foreground mb-4">جاري فحص الفلاشة...</h3>
+              <div className="w-full h-4 bg-muted rounded-full mb-3 overflow-hidden">
+                <motion.div className="h-full rounded-full gradient-cyan-fuchsia" style={{width:`${scanProgress}%`}}/>
+              </div>
+              <div className="font-mono text-sm text-muted-foreground">
+                {scanProgress<100 ? <span>جاري تحليل الملفات... {Math.round(scanProgress)}%</span>
+                  : <motion.span initial={{opacity:0}} animate={{opacity:1}} className="text-destructive font-bold">⚠️ تم كشف تهديد: Trojan.USB.AutoRun (ملف خبيث)</motion.span>}
+              </div>
+            </motion.div>
+          )}
+          {phase==='feedback' && (
+            <motion.div key="f" initial={{opacity:0,y:30}} animate={{opacity:1,y:0}}
+              className={`rounded-2xl border-2 ${isCorrect?'border-success/50 box-glow-green':'border-destructive/50 box-glow-red'} bg-card/95 backdrop-blur-sm p-8 text-center`}>
+              {isCorrect ? (<>
+                <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',stiffness:200,delay:0.2}}
+                  className="w-24 h-24 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
+                  <ShieldCheck className="w-14 h-14 text-success animate-shield-pulse" strokeWidth={1.5}/>
+                </motion.div>
+                <h3 className="font-display text-xl font-bold text-success mb-2 text-glow-green">تم حظر التهديد بنجاح!</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-2">لقد كشفت حصان طروادة مخفياً بنجاح قبل أن يتمكن من إلحاق الضرر بنظامك.</p>
+                <p className="text-xs text-success/70 font-mono">افحص دائماً أي أجهزة خارجية قبل فتح ملفاتها.</p>
+                <motion.div initial={{scale:0}} animate={{scale:1}} transition={{delay:0.5}}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/20 border border-success/30">
+                  <span className="font-display text-lg font-bold text-success">+١٠٠</span>
+                  <span className="text-xs text-success/70">نقطة</span>
+                </motion.div>
+              </>) : (<>
+                <div className="w-24 h-24 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
+                  <ShieldAlert className="w-14 h-14 text-destructive" strokeWidth={1.5}/>
+                </div>
+                <h3 className="font-display text-xl font-bold text-destructive mb-2 text-glow-red">أصيب النظام بالفيروس!</h3>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-2">احتوت الفلاشة على برمجية خبيثة انتشرت الآن في ملفات جهازك الشخصي.</p>
+                <p className="text-xs text-destructive/70 font-mono">لا تفتح أبداً ملفات من أجهزة غير معروفة المصدر دون فحصها.</p>
+              </>)}
+              <motion.button onClick={()=>onComplete(isCorrect)} whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+                className="mt-6 px-8 py-3 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background box-glow-cyan">إكمال المهمة ←</motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Completion ============ */
+function CompletionScreen({ score, badges, backendResult }) {
+  const [showConfetti, setShowConfetti] = useState(true);
+  useEffect(()=>{ sounds.success(); const t=setTimeout(()=>setShowConfetti(false), 4000); return ()=>clearTimeout(t); }, []);
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-12 px-4 text-center">
+      <ConfettiEffect active={showConfetti}/>
+      <motion.div initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{type:'spring',stiffness:200,damping:20}}
+        className="w-full max-w-md text-center">
+        <motion.div initial={{scale:0,rotate:-180}} animate={{scale:1,rotate:0}} transition={{type:'spring',stiffness:200,delay:0.3}}
+          className="relative mx-auto mb-8">
+          <motion.div animate={{scale:[1,1.1,1],opacity:[0.3,0.6,0.3]}} transition={{repeat:Infinity,duration:2}}
+            className="absolute inset-0 w-40 h-40 mx-auto rounded-full bg-success/20 blur-xl"/>
+          <div className="relative w-40 h-40 mx-auto rounded-full bg-gradient-to-br from-success/30 to-primary/30 flex items-center justify-center border-4 border-success/50 box-glow-green">
+            <motion.div animate={{filter:['drop-shadow(0 0 10px hsl(155 100% 45% / 0.5))','drop-shadow(0 0 25px hsl(155 100% 45% / 0.8))','drop-shadow(0 0 10px hsl(155 100% 45% / 0.5))']}} transition={{repeat:Infinity,duration:2}}>
+              <Shield className="w-20 h-20 text-success" strokeWidth={1.5}/>
+            </motion.div>
+            <Sparkles className="absolute top-2 right-4 w-6 h-6 text-warning animate-pulse"/>
+            <Sparkles className="absolute bottom-4 left-2 w-4 h-4 text-primary animate-pulse"/>
+          </div>
+        </motion.div>
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.5}}>
+          <h1 className="font-display text-3xl font-bold text-success mb-2 text-glow-green">اكتمل المستوى بنجاح!</h1>
+          <p className="text-muted-foreground mb-8">لقد قمت بحماية جهازك ونظامك بنجاح</p>
+        </motion.div>
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.7}}
+          className="rounded-2xl border-2 border-success/30 bg-card/90 backdrop-blur-sm p-6 mb-6 box-glow-green">
+          <div className="flex items-center justify-center gap-2 mb-4 flex-row-reverse">
+            <Shield className="w-5 h-5 text-success"/>
+            <span className="font-display text-lg text-foreground">التهديدات المحظورة: ٢</span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',delay:0.9}}
+              className="p-4 rounded-xl bg-warning/10 border border-warning/30">
+              <Trophy className="w-8 h-8 text-warning mx-auto mb-2"/>
+              <div className="font-display text-2xl font-bold text-warning text-glow-yellow">{score}</div>
+              <div className="text-xs text-muted-foreground">النقاط المكتسبة</div>
+            </motion.div>
+            <motion.div initial={{scale:0}} animate={{scale:1}} transition={{type:'spring',delay:1.1}}
+              className="p-4 rounded-xl bg-primary/10 border border-primary/30">
+              <Award className="w-8 h-8 text-primary mx-auto mb-2"/>
+              <div className="font-display text-2xl font-bold text-primary text-glow-cyan">{badges}</div>
+              <div className="text-xs text-muted-foreground">شارة مفتوحة</div>
+            </motion.div>
+          </div>
+
+          {backendResult && (
+            <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} transition={{delay:0.2}}
+              className="mt-6 space-y-2 text-right border-t border-border pt-4 font-display">
+              <h3 className="font-display text-xs font-bold text-muted-foreground uppercase tracking-widest text-center mb-3">تقرير التقييم</h3>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border flex-row-reverse">
+                <span className="text-[11px] text-muted-foreground">النجوم المكتسبة:</span>
+                <span className="text-yellow-400 font-bold">{'⭐'.repeat(backendResult.stars) + '☆'.repeat(3 - backendResult.stars)}</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border flex-row-reverse">
+                <span className="text-[11px] text-muted-foreground">التقييم النهائي:</span>
+                <span className="text-cyan-400 font-bold">{backendResult.grade}</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border flex-row-reverse">
+                <span className="text-[11px] text-muted-foreground">أعلى درجة:</span>
+                <span className="text-success font-bold">{backendResult.highestScore} / 100</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border flex-row-reverse">
+                <span className="text-[11px] text-muted-foreground">المحاولات:</span>
+                <span className="text-primary font-bold">{backendResult.attempts}</span>
+              </div>
+              <div className="flex justify-between items-center bg-secondary/40 p-2.5 rounded-lg border border-border flex-row-reverse">
+                <span className="text-[11px] text-muted-foreground">زمن الإنجاز:</span>
+                <span className="text-fuchsia font-bold">{backendResult.completionTime} ثانية</span>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+        
+        <motion.div initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{delay:1.3}} className="mb-8">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-fuchsia/10 border-2 border-fuchsia/40 box-glow-fuchsia flex-row-reverse text-right">
+            <div className="w-10 h-10 rounded-full gradient-cyan-fuchsia flex items-center justify-center"><Shield className="w-5 h-5 text-background"/></div>
+            <div>
+              <div className="font-display text-sm font-bold text-fuchsia">مدافع البرمجيات الخبيثة</div>
+              <div className="text-xs text-muted-foreground">حصلت على الشارة</div>
+            </div>
+          </div>
+        </motion.div>
+        
+        <div className="flex flex-wrap justify-center gap-4 mt-6">
+          <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.5}}
+            whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+            onClick={()=>window.location.reload()}
+            className="px-6 py-4 rounded-xl bg-secondary border border-border font-display text-sm font-bold text-foreground flex items-center justify-center gap-2">
+            العب مجدداً
+          </motion.button>
+          
+          <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.6}}
+            whileHover={{scale:1.02}} whileTap={{scale:0.98}}
+            onClick={()=>window.location.href = '../map-ar.html'}
+            className="px-6 py-4 rounded-xl bg-secondary border border-border font-display text-sm font-bold text-foreground flex items-center justify-center gap-2">
+            الذهاب للخريطة
+          </motion.button>
+
+          <motion.button initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:1.7}}
+            whileHover={{scale:1.02, boxShadow:'0 0 40px hsl(190 100% 50% / 0.4)'}} whileTap={{scale:0.98}}
+            onClick={()=>window.location.href = 'level8-ar.html'}
+            className="px-8 py-4 rounded-xl gradient-cyan-fuchsia font-display text-sm font-bold text-background flex items-center justify-center gap-2 box-glow-cyan flex-row-reverse">
+            المستوى التالي <ChevronLeft className="w-5 h-5"/>
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+/* ============ App ============ */
+function App() {
+  const [startTime] = useState(() => Date.now());
+  const [backendResult, setBackendResult] = useState(null);
+  const [stage, setStage] = useState('briefing');
+  const [score, setScore] = useState(0);
+  const [badges, setBadges] = useState(0);
+  const addScore = p => setScore(s => s+p);
+  const addBadge = () => setBadges(b => b+1);
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="fixed inset-0 cyber-circuit-bg"/>
+      
+      <div className="fixed inset-0 scanline pointer-events-none z-40 opacity-20"/>
+      
+      <main className="relative z-10">
+        <AnimatePresence mode="wait">
+          {stage==='briefing' && <BriefingSection key="b" onComplete={()=>setStage('cards')}/>}
+          {stage==='cards' && <ExplanationCards key="c" onComplete={()=>setStage('sim1')}/>}
+          {stage==='sim1' && <SimulationCracked key="s1" onComplete={ok=>{ if(ok) addScore(100); setStage('sim2'); }}/>}
+          {stage==='sim2' && <SimulationUSB key="s2" onComplete={async ok=>{
+            const finalScore = score + (ok ? 100 : 0);
+            const finalBadges = badges + (ok ? 1 : 0);
+            if (ok) {
+              addScore(100);
+              addBadge();
+            }
+            localStorage.setItem('level_7', 'completed');
+            
+            const normalizedScore = Math.round((finalScore / 200) * 100);
+            const duration = Math.round((Date.now() - startTime) / 1000);
+            try {
+              const res = await window.api.submitProgress(7, normalizedScore, duration);
+              if (res.success) {
+                setBackendResult(res.data);
+              }
+            } catch (e) {
+              console.error("Failed to submit Level 7 progress:", e);
+            }
+            setStage('complete');
+          }}/>}
+          {stage==='complete' && <CompletionScreen key="cp" score={score} badges={badges} backendResult={backendResult}/>}
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script src="../chatbot.js"></script>
+<script src="../components/cyber-background.js"></script>
+</body>
+</html>

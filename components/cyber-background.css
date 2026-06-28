@@ -1,0 +1,112 @@
+/* ============================================================
+   HACK-SHIELD HEROES — CYBER BACKGROUND
+   Reusable animated cyberpunk background for all pages
+   (except Landing Page which keeps its own background)
+   ============================================================ */
+
+/* ── Base background ─────────────────────────────────────── */
+.cyber-bg-base {
+  background: hsl(230, 80%, 9%);
+  color: hsl(200, 100%, 95%);
+  min-height: 100vh;
+}
+
+/* ── Gradient overlay ────────────────────────────────────── */
+#cyber-bg-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#cyber-bg-container .cyber-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, hsla(270, 100%, 50%, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, hsla(185, 100%, 50%, 0.15), transparent 60%),
+    linear-gradient(to bottom, hsl(230, 80%, 9%), hsl(230, 60%, 5%));
+}
+
+/* ── Animated grid ───────────────────────────────────────── */
+#cyber-bg-container .cyber-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(hsla(185, 100%, 50%, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, hsla(185, 100%, 50%, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 90%);
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 90%);
+  animation: cyberGridShift 20s linear infinite;
+}
+
+@keyframes cyberGridShift {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 48px 48px, 48px 48px; }
+}
+
+/* ── Glowing orbs ────────────────────────────────────────── */
+#cyber-bg-container .cyber-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  animation: cyberOrbPulse 8s ease-in-out infinite;
+}
+
+#cyber-bg-container .cyber-bg-orb-purple {
+  width: 520px;
+  height: 520px;
+  top: -120px;
+  right: -80px;
+  background: hsla(270, 100%, 55%, 0.35);
+}
+
+#cyber-bg-container .cyber-bg-orb-cyan {
+  width: 480px;
+  height: 480px;
+  bottom: -140px;
+  left: -100px;
+  background: hsla(185, 100%, 50%, 0.3);
+  animation-delay: 2s;
+}
+
+@keyframes cyberOrbPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.12); }
+}
+
+/* ── Floating particles ──────────────────────────────────── */
+#cyber-bg-container .cyber-bg-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+#cyber-bg-container .cyber-bg-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: cyberParticleFloat linear infinite;
+}
+
+@keyframes cyberParticleFloat {
+  from {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  to {
+    transform: translateY(-10vh) translateX(40px);
+    opacity: 0;
+  }
+}
+
+/* ── Canvas (network nodes) ──────────────────────────────── */
+#cyber-bg-container canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+}
