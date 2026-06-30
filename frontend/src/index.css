@@ -1,0 +1,340 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Fredoka:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #0f0c20 0%, #15102a 50%, #1a0b36 100%);
+  --cyber-blue: #00f0ff;
+  --cyber-purple: #bd00ff;
+  --cyber-orange: #ff9d00;
+  --cyber-green: #39ff14;
+  --cyber-red: #ff3838;
+  --glass-bg: rgba(26, 21, 56, 0.6);
+  --glass-border: rgba(189, 0, 255, 0.2);
+  --glass-border-active: rgba(0, 240, 255, 0.5);
+  
+  --font-title: 'Fredoka', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  
+  --shadow-blue: 0 0 15px rgba(0, 240, 255, 0.3);
+  --shadow-purple: 0 0 15px rgba(189, 0, 255, 0.3);
+  --shadow-orange: 0 0 15px rgba(255, 157, 0, 0.3);
+
+  /* Cyber Detective game design tokens (from Lovable) */
+  --neon: oklch(0.78 0.18 235);
+  --neon-2: oklch(0.7 0.22 305);
+  --game-bg: oklch(0.16 0.04 265);
+  --game-card: oklch(0.21 0.05 265);
+  --game-muted: oklch(0.72 0.03 255);
+  --game-border: oklch(0.3 0.05 265 / 60%);
+  --game-primary: oklch(0.72 0.18 245);
+  --game-accent: oklch(0.65 0.22 295);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-gradient);
+  color: #f5f5fa;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.17rem; }
+h4 { font-size: 1rem; }
+
+/* Base layout */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+}
+
+@keyframes loading-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Utility Components */
+.cyber-card {
+  background: var(--glass-bg);
+  border: 2px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cyber-card:hover {
+  border-color: var(--glass-border-active);
+  box-shadow: var(--shadow-blue), 0 8px 32px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.cyber-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--cyber-blue) 0%, #0084ff 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: var(--shadow-blue);
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  gap: 8px;
+}
+
+.cyber-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+}
+
+.cyber-button:active {
+  transform: scale(0.98);
+}
+
+.cyber-button.orange {
+  background: linear-gradient(135deg, var(--cyber-orange) 0%, #ff5500 100%);
+  box-shadow: var(--shadow-orange);
+}
+
+.cyber-button.orange:hover {
+  box-shadow: 0 0 25px rgba(255, 157, 0, 0.6);
+}
+
+.cyber-button.purple {
+  background: linear-gradient(135deg, var(--cyber-purple) 0%, #8000ff 100%);
+  box-shadow: var(--shadow-purple);
+}
+
+.cyber-button.purple:hover {
+  box-shadow: 0 0 25px rgba(189, 0, 255, 0.6);
+}
+
+.cyber-button:disabled {
+  background: #332d4b;
+  box-shadow: none;
+  color: #77728a;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Neon glow texts */
+.neon-text-blue {
+  color: var(--cyber-blue);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+.neon-text-purple {
+  color: var(--cyber-purple);
+  text-shadow: 0 0 8px rgba(189, 0, 255, 0.5);
+}
+
+.neon-text-orange {
+  color: var(--cyber-orange);
+  text-shadow: 0 0 8px rgba(255, 157, 0, 0.5);
+}
+
+/* Input Fields */
+.cyber-input {
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(10, 8, 25, 0.6);
+  border: 2px solid var(--glass-border);
+  border-radius: 16px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--cyber-blue);
+  box-shadow: var(--shadow-blue);
+}
+
+/* Toast System Layout */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+  width: 100%;
+}
+
+.toast {
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: rgba(18, 14, 40, 0.9);
+  border: 2px solid var(--glass-border);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.success { border-color: var(--cyber-green); box-shadow: 0 0 15px rgba(57, 255, 20, 0.2); }
+.toast.warning { border-color: var(--cyber-orange); box-shadow: 0 0 15px rgba(255, 157, 0, 0.2); }
+.toast.error { border-color: var(--cyber-red); box-shadow: 0 0 15px rgba(255, 56, 56, 0.2); }
+.toast.info { border-color: var(--cyber-blue); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+
+@keyframes floatEmoji {
+  0% {
+    transform: translate(-50%, 0) scale(0.5);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -20px) scale(1.2);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -250px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.reaction-bubble {
+  animation: floatEmoji 2.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* ============================================================
+ * Cyber Detective Game — Design System (matched to Lovable source)
+ * ============================================================ */
+
+/* Glassmorphism panel — gradient background with blur border */
+.panel {
+  background: linear-gradient(
+    180deg,
+    oklch(0.22 0.05 265 / 0.88),
+    oklch(0.18 0.05 265 / 0.94)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid oklch(0.5 0.1 265 / 0.35);
+}
+
+/* Strong double-layer neon glow */
+.glow-neon {
+  box-shadow:
+    0 0 24px oklch(0.78 0.18 235 / 0.55),
+    0 0 60px oklch(0.78 0.18 235 / 0.25);
+  border-color: oklch(0.78 0.18 235 / 0.6) !important;
+}
+
+/* Soft single-layer glow */
+.glow-neon-soft {
+  box-shadow: 0 0 14px oklch(0.78 0.18 235 / 0.45);
+}
+
+/* Text glow effect */
+.text-glow {
+  text-shadow: 0 0 12px oklch(0.78 0.18 235 / 0.7);
+}
+
+/*
+ * hotspot-glow — applied directly as a class when the hotspot is hovered.
+ * This makes the inset border + outer glow appear as the active state.
+ * (Same approach as Lovable: className={hover === h.id ? "hotspot-glow" : ""})
+ */
+.hotspot-glow {
+  box-shadow:
+    inset 0 0 0 2px oklch(0.78 0.18 235 / 0.85),
+    0 0 28px 4px oklch(0.78 0.18 235 / 0.55);
+  background: oklch(0.78 0.18 235 / 0.08) !important;
+  border-radius: 6px;
+}
+
+/* Scanlines overlay — subtle CRT effect using ::before + mix-blend-mode */
+.scanlines {
+  position: relative;
+}
+
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    oklch(1 0 0 / 0.03) 2px,
+    oklch(1 0 0 / 0.03) 3px
+  );
+  mix-blend-mode: overlay;
+  z-index: 5;
+}
+
+/* Pulse ring — radiating neon ring animation for active/ready buttons */
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.78 0.18 235 / 0.6); }
+  50%       { box-shadow: 0 0 0 14px oklch(0.78 0.18 235 / 0); }
+}
+.pulse-ring {
+  animation: pulse-ring 1.6s ease-out infinite;
+}
+
+/* Float-up — for toast/clue pop notifications */
+@keyframes float-up {
+  0%   { transform: translateY(8px); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateY(-40px); opacity: 0; }
+}
+.float-up {
+  animation: float-up 2.2s ease-out forwards;
+}
+
+/* Transition helper for hotspot buttons */
+.hotspot-transition {
+  transition: box-shadow 0.18s ease, background 0.18s ease;
+}
