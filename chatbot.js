@@ -41,7 +41,7 @@
     botName: isArabic ? 'المرشد السيبراني' : 'CYBER MENTOR',
 
     // Bot emoji/avatar
-   botAvatar: '../images/chatbot1.png'
+     botEmoji: '🤖',
     userEmoji: '🧑‍💻',
 
     // Welcome message (shown once per level)
