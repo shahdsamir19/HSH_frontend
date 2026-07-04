@@ -32,7 +32,7 @@ export default function AdminDashboard() {
       const token = localStorage.getItem('hsh_token');
       
       // Fetch analytics
-      const resAnal = await fetch('http://localhost:5000/api/admin/analytics', {
+      const resAnal = await fetch('https://hsh-backend.vercel.app/api/admin/analytics', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resAnal.ok) {
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
       }
 
       // Fetch reports
-      const resRep = await fetch('http://localhost:5000/api/admin/reports', {
+      const resRep = await fetch('https://hsh-backend.vercel.app/api/admin/reports', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resRep.ok) {
@@ -50,7 +50,7 @@ export default function AdminDashboard() {
       }
 
       // Fetch users
-      const resUsr = await fetch('http://localhost:5000/api/admin/users', {
+      const resUsr = await fetch('https://hsh-backend.vercel.app/api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resUsr.ok) {
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
   const handleResolveReport = async (reportId, action) => {
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch(`http://localhost:5000/api/admin/reports/${reportId}/resolve`, {
+      const res = await fetch(`https://hsh-backend.vercel.app/api/admin/reports/${reportId}/resolve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch(`http://localhost:5000/api/admin/users/${targetUserId}`, {
+      const res = await fetch(`https://hsh-backend.vercel.app/api/admin/users/${targetUserId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

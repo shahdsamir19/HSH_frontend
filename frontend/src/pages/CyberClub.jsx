@@ -30,7 +30,7 @@ export default function CyberClub() {
     try {
       setLoading(true);
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch('http://localhost:5000/api/community', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/community', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -50,7 +50,7 @@ export default function CyberClub() {
 
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch('http://localhost:5000/api/community', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/community', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export default function CyberClub() {
   const handleLikePost = async (postId) => {
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch(`http://localhost:5000/api/community/${postId}/like`, {
+      const res = await fetch(`https://hsh-backend.vercel.app/api/community/${postId}/like`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -101,7 +101,7 @@ export default function CyberClub() {
 
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch(`http://localhost:5000/api/community/${postId}/comment`, {
+      const res = await fetch(`https://hsh-backend.vercel.app/api/community/${postId}/comment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ export default function CyberClub() {
 
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch(`http://localhost:5000/api/community/${postId}/report`, {
+      const res = await fetch(`https://hsh-backend.vercel.app/api/community/${postId}/report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

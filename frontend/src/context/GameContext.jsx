@@ -50,7 +50,7 @@ export const GameProvider = ({ children }) => {
       return;
     }
 
-    const s = io('http://localhost:5000', {
+    const s = io('https://hsh-backend.vercel.app', {
       auth: { token },
       query: { token }
     });

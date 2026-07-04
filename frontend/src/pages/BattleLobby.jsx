@@ -35,7 +35,7 @@ export default function BattleLobby() {
   const fetchLeaderboard = async () => {
     try {
       setLoadingLb(true);
-      const res = await fetch('http://localhost:5000/api/leaderboard');
+      const res = await fetch('https://hsh-backend.vercel.app/api/leaderboard');
       if (res.ok) {
         const data = await res.json();
         setLeaderboard(data);

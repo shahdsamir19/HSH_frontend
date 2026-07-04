@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/leaderboard/me', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/leaderboard/me', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const res = await fetch('https://hsh-backend.vercel.app/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (username, email, password) => {
-    const res = await fetch('http://localhost:5000/api/auth/register', {
+    const res = await fetch('https://hsh-backend.vercel.app/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

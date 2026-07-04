@@ -28,7 +28,7 @@ export default function Profile() {
     try {
       setLoading(true);
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch('http://localhost:5000/api/profile', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -45,7 +45,7 @@ export default function Profile() {
   const fetchFriends = async () => {
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch('http://localhost:5000/api/profile/friends', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -71,7 +71,7 @@ export default function Profile() {
   const handleUpdateAvatar = async (avatarSymbol) => {
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch('http://localhost:5000/api/profile/avatar', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/profile/avatar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export default function Profile() {
 
     try {
       const token = localStorage.getItem('hsh_token');
-      const res = await fetch('http://localhost:5000/api/profile/friends/add', {
+      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
