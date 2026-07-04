@@ -104,6 +104,7 @@ form.sign-up-form{
     font-weight: 600;
     font-size: 1.1rem;
     color: #333;
+    padding: 0 15px;
 }
 
 .input-field input::placeholder{
@@ -124,12 +125,13 @@ form.sign-up-form{
     text-transform: uppercase;
     font-weight: 600;
     margin: 10px 0;
-    transition: 0.5s;
+    transition: 0.3s;
     text-align: center;
 }
 
 .btn:hover{
-    background-color: #724da0;
+    filter: brightness(1.1);
+    box-shadow: 0 0 15px rgba(249, 81, 86, 0.4);
 }
 .social-text{
     padding: 0.7rem 0;
@@ -156,10 +158,8 @@ form.sign-up-form{
 
 }
 input:focus {
-    
   box-shadow: none;         /* remove browser focus glow */
-  background-color: #f0f0f0;
-  border-radius: 55px;
+  background-color: transparent !important;
 }
 .social-icon:hover{
     color: #4481eb;
@@ -415,5 +415,20 @@ input:focus {
       bottom: 28%;
       left: 50%;
     }
-  }  
+  }
+
+/* RTL overrides for email and password alignment */
+[dir="rtl"] .input-field input[type="email"],
+[dir="rtl"] .input-field input[type="password"] {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] .input-field input[type="email"]:focus,
+[dir="rtl"] .input-field input[type="email"]:not(:placeholder-shown),
+[dir="rtl"] .input-field input[type="password"]:focus,
+[dir="rtl"] .input-field input[type="password"]:not(:placeholder-shown) {
+    direction: ltr !important;
+    text-align: left !important;
+}
   

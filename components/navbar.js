@@ -82,7 +82,7 @@ document.head.appendChild(fa);
         this.clearToken();
         const loginUrl = window.location.pathname.includes('/levels/') 
           ? '../signin-signup/index.html' 
-          : 'signin-signup/index.html';
+          : '../signin-signup/index.html';
         window.location.href = loginUrl;
         throw new Error('Unauthorized');
       }

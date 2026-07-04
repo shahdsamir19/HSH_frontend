@@ -61,13 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const fullname = document.getElementById('signup-username').value.trim();
+      const firstName = document.getElementById('signup-firstname').value.trim();
+      const lastName = document.getElementById('signup-lastname').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const password = document.getElementById('signup-password').value.trim();
-
-      const nameParts = fullname.split(/\s+/);
-      const firstName = nameParts[0] || 'Cyber';
-      const lastName = nameParts.slice(1).join(' ') || 'Hero';
 
       try {
         Swal.fire({
