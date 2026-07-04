@@ -181,18 +181,26 @@ document.head.appendChild(fa);
     { label: 'الرئيسية', href: basePath + 'landingPage-ar.html' },
     { label: 'الخريطة', href: basePath + 'map-ar.html' },
     { label: 'لوحة الصدارة', href: basePath + 'leaderboard-ar.html' },
-    { label: 'الساحة السيبرانية', href: basePath + 'frontend/index.html#/' },
-    { label: 'النادي السيبراني', href: basePath + 'frontend/index.html#/club' },
-    { label: 'الأصدقاء', href: basePath + 'frontend/index.html#/friends' },
+<<<<<<< HEAD
+    { label: 'الساحة السيبرانية', href: basePath + 'arena.html#/' },
+    { label: 'النادي السيبراني', href: basePath + 'arena.html#/club' },
+    { label: 'الأصدقاء', href: basePath + 'arena.html#/friends' },
+=======
+   
+>>>>>>> c2eb01da9076e47a299879034018b03fe52d22a7
     { label: 'من نحن', href: '#' },
     { label: 'اتصل بنا', href: '#' },
   ] : [
     { label: 'Home', href: basePath + 'landingPage.html' },
     { label: 'Map', href: basePath + 'map.html' },
     { label: 'Leaderboard', href: basePath + 'leaderboard.html' },
-    { label: 'Cyber Arena', href: basePath + 'frontend/index.html#/' },
-    { label: 'Cyber Club', href: basePath + 'frontend/index.html#/club' },
-    { label: 'Friends', href: basePath + 'frontend/index.html#/friends' },
+<<<<<<< HEAD
+    { label: 'Cyber Arena', href: basePath + 'arena.html#/' },
+    { label: 'Cyber Club', href: basePath + 'arena.html#/club' },
+    { label: 'Friends', href: basePath + 'arena.html#/friends' },
+=======
+   
+>>>>>>> c2eb01da9076e47a299879034018b03fe52d22a7
     { label: 'About Us', href: '#' },
     { label: 'Contact Us', href: '#' },
   ];
@@ -201,9 +209,12 @@ document.head.appendChild(fa);
     { label: 'الرئيسية', href: basePath + 'landingPage-ar.html' },
     { label: 'الخريطة', href: basePath + 'map-ar.html' },
     { label: 'لوحة الصدارة', href: basePath + 'leaderboard-ar.html' },
-    { label: 'الساحة السيبرانية', href: basePath + 'frontend/index.html#/' },
-    { label: 'النادي السيبراني', href: basePath + 'frontend/index.html#/club' },
-    { label: 'الأصدقاء', href: basePath + 'frontend/index.html#/friends' },
+<<<<<<< HEAD
+    { label: 'الساحة السيبرانية', href: basePath + 'arena.html#/' },
+    { label: 'النادي السيبراني', href: basePath + 'arena.html#/club' },
+    { label: 'الأصدقاء', href: basePath + 'arena.html#/friends' },
+=======
+    
     { label: 'الملف الشخصي', href: basePath + 'profile-ar.html' },
     { label: 'من نحن', href: '#' },
     { label: 'اتصل بنا', href: '#' },
@@ -212,9 +223,12 @@ document.head.appendChild(fa);
     { label: 'Home', href: basePath + 'landingPage.html' },
     { label: 'Map', href: basePath + 'map.html' },
     { label: 'Leaderboard', href: basePath + 'leaderboard.html' },
-    { label: 'Cyber Arena', href: basePath + 'frontend/index.html#/' },
-    { label: 'Cyber Club', href: basePath + 'frontend/index.html#/club' },
-    { label: 'Friends', href: basePath + 'frontend/index.html#/friends' },
+<<<<<<< HEAD
+    { label: 'Cyber Arena', href: basePath + 'arena.html#/' },
+    { label: 'Cyber Club', href: basePath + 'arena.html#/club' },
+    { label: 'Friends', href: basePath + 'arena.html#/friends' },
+=======
+    
     { label: 'Profile', href: basePath + 'profile.html' },
     { label: 'About Us', href: '#' },
     { label: 'Contact Us', href: '#' },
