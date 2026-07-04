@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('hsh_token') || null);
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch('https://hsh-backend.vercel.app/api/leaderboard/me', {
+      const res = await fetch('http://localhost:5000/api/leaderboard/me', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const res = await fetch('https://hsh-backend.vercel.app/api/auth/login', {
+    const res = await fetch('http://localhost:5000/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -51,14 +51,14 @@ export const AuthProvider = ({ children }) => {
       throw new Error(data.message || 'Login failed');
     }
 
-    localStorage.setItem('hsh_token', data.token);
+    localStorage.setItem('token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data.user;
   };
 
   const register = async (username, email, password) => {
-    const res = await fetch('https://hsh-backend.vercel.app/api/auth/register', {
+    const res = await fetch('http://localhost:5000/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -71,14 +71,14 @@ export const AuthProvider = ({ children }) => {
       throw new Error(data.message || 'Registration failed');
     }
 
-    localStorage.setItem('hsh_token', data.token);
+    localStorage.setItem('token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data.user;
   };
 
   const logout = () => {
-    localStorage.removeItem('hsh_token');
+    localStorage.removeItem('token');
     setToken(null);
     setUser(null);
   };

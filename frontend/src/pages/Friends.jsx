@@ -39,8 +39,8 @@ export default function Friends() {
   const fetchFriends = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile/friends', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -56,8 +56,8 @@ export default function Friends() {
 
   const fetchRequests = async () => {
     try {
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/notifications', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile/notifications', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -71,8 +71,8 @@ export default function Friends() {
 
   const handleRespondRequest = async (notificationId, action) => {
     try {
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends/respond', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile/friends/respond', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,8 +98,8 @@ export default function Friends() {
     if (!searchQuery.trim()) return;
 
     try {
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends/add', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile/friends/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,10 +138,15 @@ export default function Friends() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.pageHeader}>
-        <h1 className="neon-text-blue" style={styles.title}>Network Friends</h1>
-        <p style={styles.subtext}>Manage your allies and invite them to Cyber Arena challenges.</p>
-      </div>
+      <header style={styles.header}>
+        <button onClick={() => navigate('/')} className="cyber-button purple" style={styles.backBtn}>
+          ← Back to Dashboard
+        </button>
+        <div style={styles.titleArea}>
+          <h1 className="neon-text-blue" style={styles.title}>Network Friends</h1>
+          <p style={styles.subtext}>Manage your allies and invite them to Cyber Arena challenges.</p>
+        </div>
+      </header>
 
       <div style={styles.mainContent}>
         <div className="cyber-card" style={styles.card}>
@@ -298,11 +303,27 @@ const styles = {
     minHeight: '100vh',
     background: 'var(--bg-gradient)'
   },
-  pageHeader: {
+  header: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-    marginBottom: '8px'
+    alignItems: 'center',
+    gap: '30px'
+  },
+  backBtn: {
+    padding: '10px 20px',
+    fontSize: '0.9rem'
+  },
+  titleArea: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  title: {
+    fontSize: '2.5rem',
+    margin: 0
+  },
+  subtext: {
+    color: '#8c87a5',
+    fontSize: '1rem',
+    marginTop: '4px'
   },
   mainContent: {
     display: 'flex',

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import roomImg from "../assets/room.png";
 import { HOTSPOTS, CLUE_META, REQUIRED_CLUES } from "./data";
 import { useGame, fmtTime } from "./state";
@@ -8,6 +9,7 @@ import { Laptop, Phone, Notebook, Drawer } from "./devices";
 type Open = null | "laptop" | "phone" | "notebook" | "drawer";
 
 export function Room() {
+  const { user } = useContext(AuthContext);
   const { setPhase, status, setStatus, clues, progress, toasts, elapsedMs, addClue, opponent, activeGame } = useGame();
   const [open, setOpen] = useState<Open>(null);
   const [hover, setHover] = useState<string | null>(null);
@@ -91,9 +93,9 @@ export function Room() {
       {/* Right panel - opponent live status */}
       <div className="absolute right-3 top-20 z-20 w-64 panel rounded-lg p-3 space-y-3 hidden md:block">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[oklch(0.7_0.2_245)] to-[oklch(0.6_0.22_300)] grid place-items-center font-bold">Y</div>
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[oklch(0.7_0.2_245)] to-[oklch(0.6_0.22_300)] grid place-items-center font-bold">{user?.username?.[0]?.toUpperCase() || 'Y'}</div>
           <div className="text-xs">
-            <div className="font-semibold">You</div>
+            <div className="font-semibold">{user?.username || 'You'}</div>
             <div className="text-white/60">{status}</div>
           </div>
         </div>
@@ -118,7 +120,7 @@ export function Room() {
             <div className="h-full bg-rose-500" style={{ width: `${activeGame?.opponentScore || 0}%` }} />
           </div>
           <div className="text-[10px] text-right text-white/50">
-            {Math.round((activeGame?.opponentScore || 0) / 20)} / 5 Clues Found
+            {Math.round(((activeGame?.opponentScore || 0) / 100) * REQUIRED_CLUES.length)} / {REQUIRED_CLUES.length} Clues
           </div>
         </div>
       </div>

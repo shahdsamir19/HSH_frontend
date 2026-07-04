@@ -5,27 +5,29 @@ import { Board } from '../game/Board';
 import { Recovery } from '../game/Recovery';
 import { Intro, Countdown, Result } from '../game/Phases';
 
+import LeaveGameButton from '../components/LeaveGameButton';
+
 function CyberDetectiveInner() {
   const { phase, startInvestigationReady, forceRoomEntry } = useGame();
 
-  console.log("[CyberDetectiveInner] phase:", phase);
+  const renderPhase = () => {
+    switch (phase) {
+      case "intro": return <Intro onStart={startInvestigationReady} />;
+      case "countdown": return <Countdown onGo={forceRoomEntry} />;
+      case "room": return <Room />;
+      case "board": return <Board />;
+      case "recovery": return <Recovery />;
+      case "result": return <Result />;
+      default: return <Intro onStart={startInvestigationReady} />;
+    }
+  };
 
-  switch (phase) {
-    case "intro":
-      return <Intro onStart={startInvestigationReady} />;
-    case "countdown":
-      return <Countdown onGo={forceRoomEntry} />;
-    case "room":
-      return <Room />;
-    case "board":
-      return <Board />;
-    case "recovery":
-      return <Recovery />;
-    case "result":
-      return <Result />;
-    default:
-      return <Intro onStart={startInvestigationReady} />;
-  }
+  return (
+    <>
+      <LeaveGameButton />
+      {renderPhase()}
+    </>
+  );
 }
 
 export default function CyberDetectiveView({ 

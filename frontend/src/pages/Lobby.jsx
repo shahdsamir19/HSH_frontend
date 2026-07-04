@@ -106,10 +106,10 @@ export default function Lobby() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.pageHeader}>
+      <header style={styles.header}>
         <h1 className="neon-text-blue" style={styles.title}>Cyber Arena Lobby</h1>
         <p style={styles.subtext}>Waiting for all players to be ready...</p>
-      </div>
+      </header>
 
       <div style={styles.content}>
         <div className="cyber-card" style={styles.lobbyCard}>
@@ -163,12 +163,14 @@ const styles = {
     padding: '40px',
     maxWidth: '800px',
     margin: '0 auto',
+    minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '40px'
+    gap: '40px',
+    background: 'var(--bg-gradient)'
   },
-  pageHeader: {
+  header: {
     textAlign: 'center'
   },
   title: {

@@ -8,15 +8,21 @@ export default function BattleLobby() {
   const { 
     onlinePlayers, 
     joinMatchmaking, 
-    triggerMockChallenge, 
     matchmaking, 
     roomCode, 
-    activeGame 
+    activeGame,
+    sendGameInvite,
+    addToast
   } = useContext(GameContext);
 
   const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState([]);
   const [loadingLb, setLoadingLb] = useState(true);
+  
+  // Friends Modal state
+  const [showFriendsModal, setShowFriendsModal] = useState(false);
+  const [friends, setFriends] = useState([]);
+  const [loadingFriends, setLoadingFriends] = useState(false);
 
   useEffect(() => {
     // Fetch global leaderboard
@@ -35,7 +41,7 @@ export default function BattleLobby() {
   const fetchLeaderboard = async () => {
     try {
       setLoadingLb(true);
-      const res = await fetch('https://hsh-backend.vercel.app/api/leaderboard');
+      const res = await fetch('http://localhost:5000/api/leaderboard');
       if (res.ok) {
         const data = await res.json();
         setLeaderboard(data);
@@ -45,6 +51,46 @@ export default function BattleLobby() {
     } finally {
       setLoadingLb(false);
     }
+  };
+
+  const fetchFriends = async () => {
+    try {
+      setLoadingFriends(true);
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile/friends', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFriends(data);
+      }
+    } catch (err) {
+      console.error('Error fetching friends:', err);
+    } finally {
+      setLoadingFriends(false);
+    }
+  };
+
+  const handleOpenInviteModal = () => {
+    setShowFriendsModal(true);
+    fetchFriends();
+  };
+
+  const handleInviteFriend = (friendId, username) => {
+    // Check if friend is online
+    const onlineFriend = onlinePlayers.find(p => p.userId.toString() === friendId.toString());
+    if (!onlineFriend || onlineFriend.status === 'Offline') {
+      addToast('Cannot invite offline players.', 'warning');
+      return;
+    }
+    if (onlineFriend.status === 'InMatch' || onlineFriend.status === 'Battle' || onlineFriend.status === 'Lobby') {
+      addToast('Player is already in a match or lobby.', 'warning');
+      return;
+    }
+    // Emit invite through GameContext
+    sendGameInvite(friendId, username);
+    addToast(`🎮 Invitation sent to ${username}! Waiting for them to accept...`, 'success');
+    setShowFriendsModal(false);
   };
 
   const handleFindMatch = async () => {
@@ -63,27 +109,42 @@ export default function BattleLobby() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.pageHeader}>
-        <h1 className="neon-text-blue" style={styles.title}>Cyber Arena</h1>
-        <p style={styles.subtext}>Compete against players around the world in live cybersecurity battles!</p>
-      </div>
+      {/* Header */}
+      <header style={styles.header}>
+        <button onClick={() => navigate('/')} className="cyber-button purple" style={styles.backBtn}>
+          ← Back to Dashboard
+        </button>
+        <div style={styles.titleArea}>
+          <h1 className="neon-text-blue" style={styles.title}>Cyber Arena</h1>
+          <p style={styles.subtext}>Compete against players around the world in live cybersecurity battles!</p>
+        </div>
+      </header>
 
       {/* Main Grid */}
       <div style={styles.mainGrid}>
         
         {/* Play & Stats Column */}
         <div style={styles.colLeft}>
-          {/* Find Match */}
+          {/* Match Options */}
           <div className="cyber-card" style={styles.playCard}>
             <h2 style={styles.sectionTitle}>⚔️ Play Now</h2>
-            <p style={styles.playDesc}>Ready to test your knowledge? Click below to search for a live opponent. The faster you answer, the more bonus points you get!</p>
-            <button 
-              onClick={handleFindMatch} 
-              className="cyber-button orange" 
-              style={styles.findBtn}
-            >
-              Find Match 🔍
-            </button>
+            <p style={styles.playDesc}>Ready to test your knowledge? Search for a random live opponent or invite a friend to battle!</p>
+            <div style={styles.matchOptionsRow}>
+              <button 
+                onClick={handleFindMatch} 
+                className="cyber-button orange" 
+                style={styles.findBtn}
+              >
+                Find Random Match 🔍
+              </button>
+              <button 
+                onClick={handleOpenInviteModal} 
+                className="cyber-button purple" 
+                style={styles.findBtn}
+              >
+                Invite Friend 👥
+              </button>
+            </div>
           </div>
 
           {/* User Stats */}
@@ -112,28 +173,6 @@ export default function BattleLobby() {
               </div>
             )}
           </div>
-
-          {/* Test Utilities */}
-          <div className="cyber-card" style={styles.testCard}>
-            <h2 style={styles.sectionTitle}>🧪 Demo Tools</h2>
-            <p style={styles.testDesc}>Simulate real-time events to see notifications and test systems.</p>
-            <div style={styles.testActions}>
-              <button 
-                onClick={() => triggerMockChallenge('Ahmed')}
-                className="cyber-button purple"
-                style={styles.testBtn}
-              >
-                Simulate Ahmed Challenge 🔔
-              </button>
-              <button 
-                onClick={() => triggerMockChallenge('Sara')}
-                className="cyber-button purple"
-                style={styles.testBtn}
-              >
-                Simulate Sara Challenge 🔔
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Leaderboard & Presence Column */}
@@ -145,24 +184,33 @@ export default function BattleLobby() {
               <div style={styles.loading}>Loading Leaderboard...</div>
             ) : (
               <div style={styles.lbList}>
-                {leaderboard.map((player, idx) => (
-                  <div key={player.id} style={styles.lbItem}>
-                    <div style={styles.lbLeft}>
-                      <span style={{
-                        ...styles.lbRank,
-                        color: idx === 0 ? 'var(--cyber-orange)' : idx === 1 ? '#e2e2e2' : idx === 2 ? '#cd7f32' : '#77728a'
-                      }}>
-                        #{idx + 1}
-                      </span>
-                      <span style={styles.lbName}>{player.username}</span>
-                      <span style={styles.lbBadge}>{getRankBadge(player.rank)}</span>
+                {leaderboard.length === 0 ? (
+                  <div style={{...styles.noPlayers, textAlign: 'center'}}>No rankings available yet.</div>
+                ) : (
+                  leaderboard.map((player, idx) => (
+                    <div key={player.id} style={styles.lbItem}>
+                      <div style={styles.lbLeft}>
+                        <span style={{
+                          ...styles.lbRank,
+                          color: idx === 0 ? 'var(--cyber-orange)' : idx === 1 ? '#e2e2e2' : idx === 2 ? '#cd7f32' : '#77728a'
+                        }}>
+                          #{idx + 1}
+                        </span>
+                        <span style={{ fontSize: '1.2rem', marginRight: '6px' }}>{player.avatar || '👦'}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={styles.lbName}>{player.username}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#8c87a5' }}>{getRankBadge(player.rank)} {player.rank}</span>
+                        </div>
+                      </div>
+                      <div style={styles.lbRight}>
+                        <span style={styles.lbXp}>{player.xp} XP</span>
+                        {player.wins !== undefined && (
+                          <span style={{ fontSize: '0.7rem', color: '#8c87a5', display: 'block', textAlign: 'right' }}>{player.wins}W</span>
+                        )}
+                      </div>
                     </div>
-                    <div style={styles.lbRight}>
-                      <span style={styles.lbXp}>{player.xp} XP</span>
-                      <span style={styles.lbWins}>{player.wins} W</span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -198,6 +246,55 @@ export default function BattleLobby() {
         </div>
 
       </div>
+
+      {/* Friends Modal */}
+      {showFriendsModal && (
+        <div style={styles.modalOverlay}>
+          <div className="cyber-card" style={styles.modalContent}>
+            <div style={styles.modalHeader}>
+              <h3 style={{ margin: 0 }}>Select Friend to Invite</h3>
+              <button onClick={() => setShowFriendsModal(false)} style={styles.closeModalBtn}>✖</button>
+            </div>
+            <div style={styles.modalBody}>
+              {loadingFriends ? (
+                <div style={styles.loading}>Loading friends...</div>
+              ) : friends.length === 0 ? (
+                <div style={styles.noPlayers}>You have no friends yet.</div>
+              ) : (
+                <div style={styles.friendsListModal}>
+                  {friends.map(f => {
+                    const onlineFriend = onlinePlayers.find(p => p.userId.toString() === f.id.toString());
+                    const liveStatus = onlineFriend ? onlineFriend.status || 'Online' : 'Offline';
+                    const isOnline = liveStatus !== 'Offline' && liveStatus !== 'InMatch' && liveStatus !== 'Battle';
+                    
+                    return (
+                      <div key={f.id} style={styles.friendRowModal}>
+                        <div style={styles.friendLeftModal}>
+                          <span style={styles.avatarModal}>{f.avatar || '👦'}</span>
+                          <div>
+                            <div style={styles.friendNameModal}>{f.username}</div>
+                            <div style={{ fontSize: '0.75rem', color: isOnline ? 'var(--cyber-green)' : '#8c87a5' }}>
+                              {liveStatus}
+                            </div>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => handleInviteFriend(f.id, f.username)}
+                          disabled={!isOnline}
+                          className={`cyber-button ${isOnline ? 'orange' : ''}`}
+                          style={{ padding: '6px 12px', fontSize: '0.8rem', opacity: isOnline ? 1 : 0.5 }}
+                        >
+                          Invite
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -212,11 +309,19 @@ const styles = {
     flexDirection: 'column',
     gap: '30px'
   },
-  pageHeader: {
+  header: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-    marginBottom: '8px'
+    alignItems: 'center',
+    gap: '30px',
+    flexWrap: 'wrap'
+  },
+  backBtn: {
+    padding: '10px 20px',
+    fontSize: '0.9rem'
+  },
+  titleArea: {
+    display: 'flex',
+    flexDirection: 'column'
   },
   title: {
     fontSize: '2.5rem',
@@ -260,10 +365,14 @@ const styles = {
     fontSize: '0.98rem',
     lineHeight: '1.5'
   },
+  matchOptionsRow: {
+    display: 'flex',
+    gap: '12px'
+  },
   findBtn: {
-    width: '100%',
-    padding: '18px',
-    fontSize: '1.25rem'
+    flex: 1,
+    padding: '16px',
+    fontSize: '1.1rem'
   },
   statsCard: {
     display: 'flex',
@@ -411,6 +520,67 @@ const styles = {
   testBtn: {
     padding: '10px 16px',
     fontSize: '0.85rem'
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    background: 'rgba(0, 0, 0, 0.7)',
+    backdropFilter: 'blur(4px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  },
+  modalContent: {
+    width: '400px',
+    maxWidth: '90%',
+    padding: '24px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px'
+  },
+  modalHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    paddingBottom: '12px'
+  },
+  closeModalBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: '#fff',
+    fontSize: '1.2rem',
+    cursor: 'pointer'
+  },
+  modalBody: {
+    maxHeight: '400px',
+    overflowY: 'auto'
+  },
+  friendsListModal: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px'
+  },
+  friendRowModal: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px',
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: '10px'
+  },
+  friendLeftModal: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  avatarModal: {
+    fontSize: '1.5rem'
+  },
+  friendNameModal: {
+    fontWeight: 'bold',
+    fontSize: '0.9rem'
   }
 };
 

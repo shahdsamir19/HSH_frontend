@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
+import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { AuthContext } from './AuthContext';
 
@@ -28,17 +28,20 @@ export const GameProvider = ({ children }) => {
 
   // Cooperative Team Mission state
   const [activeTeam, setActiveTeam] = useState(null);
+
+  // Pending lobby state (cached so Lobby.jsx can read on mount, avoiding race)
+  const [pendingLobbyState, setPendingLobbyState] = useState(null);
   const [teamChat, setTeamChat] = useState([]);
   const [teamActivity, setTeamActivity] = useState([]);
 
   // Helper for adding toast notifications
-  const addToast = (message, type = 'info') => {
+  const addToast = useCallback((message, type = 'info') => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 4000);
-  };
+  }, []);
 
   useEffect(() => {
     if (!token || !user) {
@@ -50,7 +53,7 @@ export const GameProvider = ({ children }) => {
       return;
     }
 
-    const s = io('https://hsh-backend.vercel.app', {
+    const s = io('http://localhost:5000', {
       auth: { token },
       query: { token }
     });
@@ -86,10 +89,13 @@ export const GameProvider = ({ children }) => {
       setMatchmaking(false);
       setRoomCode(data.roomCode);
       
-      const isPlayer1 = data.player1.id === user?.id;
+      const isPlayer1 = data.player1.id.toString() === user?.id?.toString();
       const matchedOpponent = isPlayer1 ? data.player2 : data.player1;
       setOpponent(matchedOpponent);
       addToast(`Match Found! Mode: ${data.gameMode}`, 'success');
+      
+      // Dispatch event to global router
+      window.dispatchEvent(new CustomEvent('global-match-found', { detail: data }));
 
       // Initialize game state with countdown active
       setActiveGame({
@@ -184,8 +190,8 @@ export const GameProvider = ({ children }) => {
     s.on('score-update', (scores) => {
       setActiveGame(prev => {
         if (!prev) return null;
-        const myScoreInfo = scores.find(s => s.userId === user?.id);
-        const oppScoreInfo = scores.find(s => s.userId !== user?.id);
+        const myScoreInfo = scores.find(s => s.userId.toString() === user?.id.toString());
+        const oppScoreInfo = scores.find(s => s.userId.toString() !== user?.id.toString());
         return {
           ...prev,
           myScore: myScoreInfo ? myScoreInfo.score : prev.myScore,
@@ -197,8 +203,8 @@ export const GameProvider = ({ children }) => {
     s.on('question-ended', (data) => {
       setActiveGame(prev => {
         if (!prev) return null;
-        const myScoreInfo = data.playerScores.find(s => s.userId === user?.id);
-        const oppScoreInfo = data.playerScores.find(s => s.userId !== user?.id);
+        const myScoreInfo = data.playerScores.find(s => s.userId.toString() === user?.id.toString());
+        const oppScoreInfo = data.playerScores.find(s => s.userId.toString() !== user?.id.toString());
         return {
           ...prev,
           correctAnswer: data.correctAnswer,
@@ -226,7 +232,7 @@ export const GameProvider = ({ children }) => {
     s.on('opponent-ready-status', (data) => {
       setActiveGame(prev => {
         if (!prev) return null;
-        if (data.userId === user?.id) {
+        if (data.userId.toString() === user?.id.toString()) {
           return { ...prev, myReady: data.ready };
         } else {
           return { ...prev, opponentReady: data.ready };
@@ -441,7 +447,7 @@ export const GameProvider = ({ children }) => {
       // Update local state
       updateUserStats(data.newTotalXP, data.newRank);
 
-      const isWinner = data.winnerId === user?.id;
+      const isWinner = data.winnerId?.toString() === user?.id.toString();
       const isDraw = data.winnerId === null;
       if (isWinner) {
         addToast('Victory! You earned XP and ranked up!', 'success');
@@ -453,7 +459,7 @@ export const GameProvider = ({ children }) => {
     });
 
     s.on('opponent-disconnected', () => {
-      addToast('Opponent disconnected! Win by default.', 'warning');
+      addToast('Your opponent has left the match.', 'warning');
     });
 
     s.on('reaction-received', (emoji) => {
@@ -515,6 +521,68 @@ export const GameProvider = ({ children }) => {
       window.dispatchEvent(new CustomEvent('friend-list-updated-event'));
     });
 
+    // --- Friend Invite & Lobby Listeners ---
+    s.on('game-invite', (data) => {
+      addToast(`🎮 ${data.inviterName} challenged you to a battle! Check notifications.`, 'info');
+      window.dispatchEvent(new CustomEvent('game-invite-event', { detail: data }));
+    });
+
+    s.on('invite-sent', (data) => {
+      window.dispatchEvent(new CustomEvent('invite-sent-event', { detail: data }));
+    });
+
+    s.on('invite-accepted', (data) => {
+      window.dispatchEvent(new CustomEvent('invite-accepted-event', { detail: data }));
+    });
+
+    // Cache lobby-state so Lobby.jsx can access it immediately on mount
+    s.on('lobby-state', (data) => {
+      setPendingLobbyState(data);
+    });
+
+    s.on('invite-declined', (data) => {
+      addToast(data.message || 'Invitation declined.', 'warning');
+      window.dispatchEvent(new CustomEvent('invite-declined-event', { detail: data }));
+    });
+
+    s.on('invite-expired', (data) => {
+      addToast(data.message || 'Invitation expired.', 'warning');
+      window.dispatchEvent(new CustomEvent('invite-expired-event', { detail: data }));
+    });
+
+    s.on('lobby-cancelled', (data) => {
+      // Only toast if we are not actively in a game, to prevent spam when transitioning
+      if (!window.location.pathname.includes('/quiz') && !window.location.pathname.includes('/waiting')) {
+        addToast(data?.message || 'Lobby was cancelled.', 'warning');
+      }
+      window.dispatchEvent(new CustomEvent('lobby-cancelled-event', { detail: data }));
+    });
+
+    // --- Quiz Mode (Friend Battles) ---
+    s.on('new-question', (data) => {
+      setActiveGame(prev => {
+        const myScore = prev ? prev.myScore : 0;
+        const opponentScore = prev ? prev.opponentScore : 0;
+        return {
+          ...prev,
+          questionIndex: data.questionIndex,
+          totalQuestions: data.totalQuestions,
+          questionText: data.questionText,
+          options: data.options || {},
+          hints: data.hints || {},
+          secondsRemaining: 15,
+          myScore,
+          opponentScore,
+          correctAnswer: null,
+          answered: false,
+          opponentAnswered: false,
+          gameFinished: false,
+          statusText: `Question ${data.questionIndex} active!`,
+          countdown: 0
+        };
+      });
+    });
+
     setSocket(s);
 
     return () => {
@@ -558,10 +626,10 @@ export const GameProvider = ({ children }) => {
     }
   };
 
-  const submitAnswer = (answer) => {
+  const submitQuizAnswer = (answer) => {
     if (socket && connected && roomCode && activeGame && !activeGame.answered) {
       setActiveGame(prev => ({ ...prev, answered: true }));
-      socket.emit('submit-answer', { roomCode, answer });
+      socket.emit('submit-quiz-answer', { roomId: roomCode, answer });
     }
   };
 
@@ -665,6 +733,32 @@ export const GameProvider = ({ children }) => {
     }
   };
 
+  // --- Friend Invite / Lobby functions ---
+  const sendGameInvite = (friendId, username) => {
+    if (socket && connected) {
+      socket.emit('invite-friend', { friendId, username });
+    }
+  };
+
+  const cancelGameInvite = (roomId) => {
+    if (socket && connected) {
+      socket.emit('cancel-lobby', { roomId });
+    }
+  };
+
+  const declineGameInvite = (roomId) => {
+    if (socket && connected) {
+      socket.emit('decline-invite', { roomId });
+    }
+  };
+
+  const acceptGameInvite = (roomId) => {
+    if (socket && connected) {
+      setRoomCode(roomId);
+      socket.emit('accept-invite', { roomId });
+    }
+  };
+
   // --- Cooperative Team Mission triggers ---
   const createTeamMission = (missionName) => {
     if (socket && connected) {
@@ -714,6 +808,7 @@ export const GameProvider = ({ children }) => {
 
   return (
     <GameContext.Provider value={{
+      socket,
       connected,
       onlinePlayers,
       matchmaking,
@@ -729,7 +824,7 @@ export const GameProvider = ({ children }) => {
       addToast,
       joinMatchmaking,
       cancelMatchmaking,
-      submitAnswer,
+      submitQuizAnswer,
       startInvestigationReady,
       submitDetectiveReport,
       notifyClueFound,
@@ -745,13 +840,19 @@ export const GameProvider = ({ children }) => {
       activatePowerup,
       sendReaction,
       leaveRoom,
+      sendGameInvite,
+      cancelGameInvite,
+      declineGameInvite,
+      acceptGameInvite,
       createTeamMission,
       joinTeamMission,
       toggleTeamReady,
       startTeamMission,
       sendTeamChat,
       completeTeamObjective,
-      leaveTeamMission
+      leaveTeamMission,
+      pendingLobbyState,
+      clearPendingLobbyState: () => setPendingLobbyState(null)
     }}>
       {children}
     </GameContext.Provider>

@@ -11,8 +11,6 @@ export default function Profile() {
 
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [friendUsername, setFriendUsername] = useState('');
-  const [friends, setFriends] = useState([]);
   const [allBadges, setAllBadges] = useState([]);
 
   // Avatar choices
@@ -20,15 +18,14 @@ export default function Profile() {
 
   useEffect(() => {
     fetchProfile();
-    fetchFriends();
     fetchBadgesList();
   }, []);
 
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -42,20 +39,7 @@ export default function Profile() {
     }
   };
 
-  const fetchFriends = async () => {
-    try {
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setFriends(data);
-      }
-    } catch (err) {
-      console.error('Error fetching friends:', err);
-    }
-  };
+
 
   const fetchBadgesList = async () => {
     // Seed initial list of all possible badges in UI
@@ -70,8 +54,8 @@ export default function Profile() {
 
   const handleUpdateAvatar = async (avatarSymbol) => {
     try {
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/avatar', {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:5000/api/profile/avatar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,32 +74,7 @@ export default function Profile() {
     }
   };
 
-  const handleSendFriendRequest = async (e) => {
-    e.preventDefault();
-    if (!friendUsername.trim()) return;
 
-    try {
-      const token = localStorage.getItem('hsh_token');
-      const res = await fetch('https://hsh-backend.vercel.app/api/profile/friends/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ username: friendUsername })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        addToast(data.message, 'success');
-        setFriendUsername('');
-        fetchFriends();
-      } else {
-        addToast(data.message || 'Failed to add friend', 'error');
-      }
-    } catch (err) {
-      console.error('Error sending friend request:', err);
-    }
-  };
 
   const getRankBadge = (rank) => {
     switch (rank) {
@@ -233,48 +192,6 @@ export default function Profile() {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Friends list panel */}
-            <div className="cyber-card" style={styles.friendsCard}>
-              <h3 style={styles.panelTitle}><Users size={20} /> Safe Friends list</h3>
-
-              <form onSubmit={handleSendFriendRequest} style={styles.friendForm}>
-                <input 
-                  type="text" 
-                  placeholder="Enter friend username..." 
-                  value={friendUsername}
-                  onChange={e => setFriendUsername(e.target.value)}
-                  className="cyber-input"
-                  style={styles.friendInput}
-                />
-                <button type="submit" className="cyber-button orange" style={styles.friendSubmitBtn}>
-                  <Plus size={16} /> Add
-                </button>
-              </form>
-
-              <div style={styles.friendsList}>
-                {friends.length === 0 ? (
-                  <div style={styles.emptyFriends}>No classmates in your network yet.</div>
-                ) : (
-                  friends.map(f => (
-                    <div key={f.id} style={styles.friendRow}>
-                      <div style={styles.friendLeft}>
-                        <span style={{
-                          ...styles.statusDot,
-                          backgroundColor: f.status === 'Searching' ? 'var(--cyber-orange)' : f.status === 'Battle' ? 'var(--cyber-red)' : f.status === 'Mission' ? 'var(--cyber-blue)' : f.status === 'Idle' ? '#a0aec0' : 'var(--cyber-green)'
-                        }}></span>
-                        <span style={styles.friendAvatar}>{f.avatar || '👦'}</span>
-                        <div style={styles.friendDetails}>
-                          <span style={styles.friendName}>{f.username}</span>
-                          <span style={styles.friendRank}>{f.rank}</span>
-                        </div>
-                      </div>
-                      <span style={styles.friendStatusText}>{f.status}</span>
-                    </div>
-                  ))
-                )}
               </div>
             </div>
 
@@ -474,71 +391,6 @@ const styles = {
     color: 'var(--cyber-green)',
     fontWeight: 'bold',
     marginTop: '2px'
-  },
-  friendsCard: {
-    padding: '24px'
-  },
-  friendForm: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '16px'
-  },
-  friendInput: {
-    flex: 1
-  },
-  friendSubmitBtn: {
-    padding: '0 16px'
-  },
-  friendsList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
-  },
-  emptyFriends: {
-    color: '#8c87a5',
-    textAlign: 'center',
-    fontSize: '0.85rem',
-    padding: '14px 0'
-  },
-  friendRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 14px',
-    background: 'rgba(0,0,0,0.15)',
-    borderRadius: '14px'
-  },
-  friendLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px'
-  },
-  statusDot: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    display: 'inline-block'
-  },
-  friendAvatar: {
-    fontSize: '1.2rem'
-  },
-  friendDetails: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  friendName: {
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    color: '#fff'
-  },
-  friendRank: {
-    fontSize: '0.7rem',
-    color: '#8c87a5'
-  },
-  friendStatusText: {
-    fontSize: '0.75rem',
-    color: '#8c87a5',
-    textTransform: 'capitalize'
   }
 };
 

@@ -9,16 +9,16 @@ import CaptureTheFlagView from './CaptureTheFlagView';
 import CityDefenseView from './CityDefenseView';
 import VirusOutbreakView from './VirusOutbreakView';
 import CyberDuelView from './CyberDuelView';
-import { motion, AnimatePresence } from 'framer-motion';
-import useGameLayout from '../hooks/useGameLayout';
+import LeaveGameButton from '../components/LeaveGameButton';
 
 export default function QuizBattle() {
-  useGameLayout();
   const { user } = useContext(AuthContext);
   const {
     activeGame,
     opponent,
-    submitAnswer,
+    roomCode,
+    socket,
+    submitQuizAnswer,
     startInvestigationReady,
     submitDetectiveReport,
     finishRecovery,
@@ -36,6 +36,8 @@ export default function QuizBattle() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [streak, setStreak] = useState(0);
   const [lastCorrect, setLastCorrect] = useState(null);
+  const [usedHints, setUsedHints] = useState(0);
+  const [showHintConfirm, setShowHintConfirm] = useState(false);
 
   // Reaction emojis
   const emojis = ['😄', '😎', '😮', '😢', '😠', '👑', '🔥', '🛡️'];
@@ -51,6 +53,8 @@ export default function QuizBattle() {
     // Reset local selection when a new question starts
     if (activeGame && !activeGame.correctAnswer) {
       setSelectedOption(null);
+      setUsedHints(0);
+      setShowHintConfirm(false);
     }
   }, [activeGame?.questionIndex, activeGame?.correctAnswer]);
 
@@ -94,7 +98,7 @@ export default function QuizBattle() {
   const handleSelectOption = (optionKey) => {
     if (activeGame.answered || activeGame.correctAnswer !== null) return;
     setSelectedOption(optionKey);
-    submitAnswer(optionKey);
+    submitQuizAnswer(optionKey);
   };
 
   const getOptionStyle = (key) => {
@@ -157,6 +161,23 @@ export default function QuizBattle() {
     }
   };
 
+  const handleUseHint = () => {
+    if (usedHints >= 3) return;
+    if (!showHintConfirm) {
+      setShowHintConfirm(true);
+      return;
+    }
+    
+    // Confirmed
+    setShowHintConfirm(false);
+    setUsedHints(prev => prev + 1);
+    
+    // Notify server about hint usage for XP penalty
+    if (socket && roomCode) {
+      socket.emit('use-hint', { roomId: roomCode, questionIndex: activeGame.questionIndex, hintLevel: usedHints + 1 });
+    }
+  };
+
   // Rendering countdown overlay if battle is preparing (non-detective modes only)
   if (activeGame.countdown > 0) {
     return (
@@ -193,6 +214,7 @@ export default function QuizBattle() {
 
   return (
     <div style={styles.container}>
+      <LeaveGameButton />
       {/* Floating Emojis Reaction Overlay */}
       <div style={styles.reactionsOverlay}>
         {floatingReactions.map(r => (
@@ -271,8 +293,39 @@ export default function QuizBattle() {
           {!activeGame.gameMode && (
             <>
               <div className="cyber-card" style={styles.questionCard}>
-                <span style={styles.categoryBadge}>Digital Safety Trivia</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={styles.categoryBadge}>Digital Safety Trivia</span>
+                  
+                  {/* Hint System */}
+                  <div style={styles.hintContainer}>
+                    {usedHints < 3 && !activeGame.answered && !activeGame.correctAnswer && (
+                      showHintConfirm ? (
+                        <div style={styles.hintConfirmBox}>
+                          <span style={styles.hintWarning}>Using a hint will reduce your earned XP. Continue?</span>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button onClick={handleUseHint} style={styles.hintConfirmBtn}>Yes</button>
+                            <button onClick={() => setShowHintConfirm(false)} style={styles.hintCancelBtn}>No</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button onClick={handleUseHint} className="cyber-button" style={styles.hintBtn}>
+                          🤖 Hint {usedHints > 0 ? `(${usedHints}/3)` : ''}
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+
                 <h2 style={styles.questionText}>{activeGame.questionText || "Booting cybersecurity challenge..."}</h2>
+                
+                {/* Show Used Hints */}
+                {usedHints > 0 && activeGame.hints && (
+                  <div style={styles.hintsDisplay}>
+                    {usedHints >= 1 && <div style={styles.hintItem}><strong>Hint 1:</strong> {activeGame.hints.hint1}</div>}
+                    {usedHints >= 2 && <div style={styles.hintItem}><strong>Hint 2:</strong> {activeGame.hints.hint2}</div>}
+                    {usedHints >= 3 && <div style={styles.hintItem}><strong>Hint 3:</strong> {activeGame.hints.hint3}</div>}
+                  </div>
+                )}
               </div>
 
               <div style={styles.optionsGrid}>
@@ -581,6 +634,66 @@ const styles = {
     letterSpacing: '1px',
     color: 'var(--cyber-orange)',
     fontWeight: 'bold'
+  },
+  hintContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
+  },
+  hintBtn: {
+    padding: '6px 12px',
+    fontSize: '0.85rem',
+    background: 'rgba(255, 255, 255, 0.1)',
+    color: 'var(--cyber-blue)',
+    border: '1px solid var(--cyber-blue)'
+  },
+  hintConfirmBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    background: 'rgba(255, 0, 0, 0.1)',
+    padding: '6px 12px',
+    borderRadius: '8px',
+    border: '1px solid var(--cyber-red)'
+  },
+  hintWarning: {
+    fontSize: '0.75rem',
+    color: 'var(--cyber-orange)'
+  },
+  hintConfirmBtn: {
+    background: 'var(--cyber-red)',
+    color: '#fff',
+    border: 'none',
+    padding: '4px 10px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontSize: '0.75rem'
+  },
+  hintCancelBtn: {
+    background: 'rgba(255,255,255,0.1)',
+    color: '#fff',
+    border: 'none',
+    padding: '4px 10px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.75rem'
+  },
+  hintsDisplay: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginTop: '15px',
+    paddingTop: '15px',
+    borderTop: '1px solid rgba(255,255,255,0.1)'
+  },
+  hintItem: {
+    fontSize: '0.9rem',
+    color: 'var(--cyber-blue)',
+    background: 'rgba(0, 240, 255, 0.05)',
+    padding: '10px',
+    borderRadius: '8px',
+    borderLeft: '4px solid var(--cyber-blue)'
   },
   questionText: {
     fontSize: '1.8rem',
