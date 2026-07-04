@@ -9,8 +9,11 @@ import CaptureTheFlagView from './CaptureTheFlagView';
 import CityDefenseView from './CityDefenseView';
 import VirusOutbreakView from './VirusOutbreakView';
 import CyberDuelView from './CyberDuelView';
+import { motion, AnimatePresence } from 'framer-motion';
+import useGameLayout from '../hooks/useGameLayout';
 
 export default function QuizBattle() {
+  useGameLayout();
   const { user } = useContext(AuthContext);
   const {
     activeGame,

@@ -29,7 +29,7 @@ export default function CyberClub() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/community', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -49,7 +49,7 @@ export default function CyberClub() {
     if (!newPostContent.trim()) return;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/community', {
         method: 'POST',
         headers: {
@@ -79,7 +79,7 @@ export default function CyberClub() {
 
   const handleLikePost = async (postId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch(`http://localhost:5000/api/community/${postId}/like`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
@@ -100,7 +100,7 @@ export default function CyberClub() {
     if (!newCommentText.trim()) return;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch(`http://localhost:5000/api/community/${postId}/comment`, {
         method: 'POST',
         headers: {
@@ -130,7 +130,7 @@ export default function CyberClub() {
     if (reason === null) return; // cancelled
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch(`http://localhost:5000/api/community/${postId}/report`, {
         method: 'POST',
         headers: {
@@ -166,15 +166,10 @@ export default function CyberClub() {
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <button onClick={() => navigate('/')} className="cyber-button purple" style={styles.backBtn}>
-          ← Back to Dashboard
-        </button>
-        <div style={styles.titleArea}>
-          <h1 className="neon-text-blue" style={styles.title}>Cyber Club Community</h1>
-          <p style={styles.subtext}>A safe moderated social area to share security tips, ask questions, and celebrate badges!</p>
-        </div>
-      </header>
+      <div style={styles.pageHeader}>
+        <h1 className="neon-text-blue" style={styles.title}>Cyber Club Community</h1>
+        <p style={styles.subtext}>A safe moderated social area to share security tips, ask questions, and celebrate badges!</p>
+      </div>
 
       {/* Control bar */}
       <div style={styles.controlBar}>
@@ -336,19 +331,11 @@ const styles = {
     flexDirection: 'column',
     gap: '24px'
   },
-  header: {
+  pageHeader: {
     display: 'flex',
-    alignItems: 'center',
-    gap: '30px',
-    flexWrap: 'wrap'
-  },
-  backBtn: {
-    padding: '10px 20px',
-    fontSize: '0.9rem'
-  },
-  titleArea: {
-    display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    gap: '4px',
+    marginBottom: '8px'
   },
   title: {
     fontSize: '2.5rem',

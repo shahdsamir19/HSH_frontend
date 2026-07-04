@@ -63,16 +63,10 @@ export default function BattleLobby() {
 
   return (
     <div style={styles.container}>
-      {/* Header */}
-      <header style={styles.header}>
-        <button onClick={() => navigate('/')} className="cyber-button purple" style={styles.backBtn}>
-          ← Back to Dashboard
-        </button>
-        <div style={styles.titleArea}>
-          <h1 className="neon-text-blue" style={styles.title}>Cyber Arena</h1>
-          <p style={styles.subtext}>Compete against players around the world in live cybersecurity battles!</p>
-        </div>
-      </header>
+      <div style={styles.pageHeader}>
+        <h1 className="neon-text-blue" style={styles.title}>Cyber Arena</h1>
+        <p style={styles.subtext}>Compete against players around the world in live cybersecurity battles!</p>
+      </div>
 
       {/* Main Grid */}
       <div style={styles.mainGrid}>
@@ -218,19 +212,11 @@ const styles = {
     flexDirection: 'column',
     gap: '30px'
   },
-  header: {
+  pageHeader: {
     display: 'flex',
-    alignItems: 'center',
-    gap: '30px',
-    flexWrap: 'wrap'
-  },
-  backBtn: {
-    padding: '10px 20px',
-    fontSize: '0.9rem'
-  },
-  titleArea: {
-    display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    gap: '4px',
+    marginBottom: '8px'
   },
   title: {
     fontSize: '2.5rem',

@@ -29,6 +29,15 @@ export default function TeamMissions() {
   const [puzzleError, setPuzzleError] = useState('');
   const chatEndRef = useRef(null);
 
+  useEffect(() => {
+    if (activeTeam?.status === 'mission_started') {
+      document.body.classList.add('game-mode');
+    } else {
+      document.body.classList.remove('game-mode');
+    }
+    return () => document.body.classList.remove('game-mode');
+  }, [activeTeam?.status]);
+
   const missionsInfo = {
     'Save Cyber City': {
       desc: 'A cyber attack is targeting the city infrastructure! Crack the hacker code, restore power grid nodes, and secure the mainframe database.',

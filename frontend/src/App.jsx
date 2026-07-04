@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { GameProvider, GameContext } from './context/GameContext';
-import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import BattleLobby from './pages/BattleLobby';
 import WaitingRoom from './pages/WaitingRoom';
@@ -10,13 +9,17 @@ import QuizBattle from './pages/QuizBattle';
 import Results from './pages/Results';
 import TeamMissions from './pages/TeamMissions';
 import CyberClub from './pages/CyberClub';
-import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
+import Friends from './pages/Friends';
+import Lobby from './pages/Lobby';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
   if (loading) return <div style={styles.loading}>Booting Security Systems...</div>;
-  if (!user) return <Auth />;
+  if (!user) {
+    window.location.href = '../signin-signup/index.html';
+    return null;
+  }
   return children;
 };
 
@@ -44,8 +47,9 @@ const MainApp = () => {
         <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
         <Route path="/missions" element={<ProtectedRoute><TeamMissions /></ProtectedRoute>} />
         <Route path="/club" element={<ProtectedRoute><CyberClub /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+        <Route path="/lobby/:roomId" element={<ProtectedRoute><Lobby /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

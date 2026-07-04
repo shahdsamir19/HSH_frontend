@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [token, setToken] = useState(localStorage.getItem('hsh_token') || null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       throw new Error(data.message || 'Login failed');
     }
 
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('hsh_token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data.user;
@@ -71,14 +71,14 @@ export const AuthProvider = ({ children }) => {
       throw new Error(data.message || 'Registration failed');
     }
 
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('hsh_token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data.user;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('hsh_token');
     setToken(null);
     setUser(null);
   };

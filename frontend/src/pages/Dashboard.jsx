@@ -2,40 +2,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { GameContext } from '../context/GameContext';
-import { Shield, Trophy, Users, MessageSquare, Award, Settings, Bell, Sun, Moon, LogOut, Swords, Users2 } from 'lucide-react';
+import { Shield, Trophy, Users, MessageSquare, Award, Settings, Bell, Swords, Users2 } from 'lucide-react';
 
 export default function Dashboard() {
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { onlinePlayers, toasts, addToast } = useContext(GameContext);
   const navigate = useNavigate();
 
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [notifications, setNotifications] = useState([]);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [friends, setFriends] = useState([]);
   const [loadingFriends, setLoadingFriends] = useState(true);
 
-  // RPG Level Progress calculations
-  const xp = user?.xp || 0;
-  const level = Math.floor(xp / 100) + 1;
-  const currentLevelXP = xp % 100;
-  const progressPercent = currentLevelXP; // since 100 XP per level
-
-  const getRankBadge = (rank) => {
-    switch (rank) {
-      case 'Digital Safety Hero': return '🏆';
-      case 'Cyber Guardian': return '🛡️';
-      case 'Firewall Defender': return '🔥';
-      case 'Phishing Hunter': return '🕵️';
-      case 'Password Protector': return '🔑';
-      default: return '👶';
-    }
-  };
-
-  useEffect(() => {
-    document.body.className = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
 
   useEffect(() => {
     if (user) {
@@ -64,7 +42,7 @@ export default function Dashboard() {
 
   const handleRespondFriendRequest = async (notificationId, action) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile/friends/respond', {
         method: 'POST',
         headers: {
@@ -89,7 +67,7 @@ export default function Dashboard() {
 
   const fetchNotifications = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile/notifications', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -105,7 +83,7 @@ export default function Dashboard() {
   const fetchFriends = async () => {
     try {
       setLoadingFriends(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile/friends', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -122,7 +100,7 @@ export default function Dashboard() {
 
   const handleMarkNotifRead = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       await fetch('http://localhost:5000/api/profile/notifications/read', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
@@ -141,147 +119,7 @@ export default function Dashboard() {
 
   return (
     <div style={styles.container}>
-      {/* Top Navigation Header */}
-      <header style={styles.header}>
-        <div style={styles.logoContainer} onClick={() => navigate('/')}>
-          <span style={styles.logoIcon}>🛡️</span>
-          <h1 style={styles.logoText}>Digital Safety Heroes</h1>
-        </div>
-
-        <div style={styles.headerActions}>
-          {/* Theme Toggle */}
-          <button onClick={toggleTheme} style={styles.iconBtn} title="Toggle Theme">
-            {theme === 'dark' ? <Sun size={20} color="var(--cyber-blue)" /> : <Moon size={20} color="var(--cyber-purple)" />}
-          </button>
-
-          {/* Notifications Dropdown Container */}
-          <div style={{ position: 'relative' }}>
-            <button 
-              onClick={() => {
-                setShowNotifDropdown(!showNotifDropdown);
-                if (!showNotifDropdown && unreadCount > 0) handleMarkNotifRead();
-              }} 
-              style={styles.iconBtn}
-            >
-              <Bell size={20} color="var(--cyber-orange)" />
-              {unreadCount > 0 && <span style={styles.badgeCount}>{unreadCount}</span>}
-            </button>
-
-            {showNotifDropdown && (
-              <div style={styles.dropdown}>
-                <div style={styles.dropdownHeader}>Notifications</div>
-                <div style={styles.dropdownList}>
-                  {notifications.length === 0 ? (
-                    <div style={styles.dropdownEmpty}>No notifications yet!</div>
-                  ) : (
-                    notifications.map(n => (
-                      <div key={n.id} style={{
-                        ...styles.dropdownItem,
-                        backgroundColor: n.isRead ? 'transparent' : 'rgba(255, 157, 0, 0.05)'
-                      }}>
-                        <span style={styles.dropdownIcon}>{n.icon || '🔔'}</span>
-                        <div style={styles.dropdownTextCol}>
-                          <span style={styles.dropdownTitle}>{n.title}</span>
-                          <span style={styles.dropdownMessage}>{n.message}</span>
-                          {n.type === 'friend_request' && (
-                            <div style={styles.notifActions}>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRespondFriendRequest(n.id, 'accept');
-                                }} 
-                                style={styles.notifAcceptBtn}
-                              >
-                                ✅ Accept
-                              </button>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRespondFriendRequest(n.id, 'decline');
-                                }} 
-                                style={styles.notifDeclineBtn}
-                              >
-                                ❌ Decline
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* User Brief */}
-          {user && (
-            <div style={styles.userProfileBtn} onClick={() => navigate('/profile')}>
-              <div style={styles.avatar}>
-                {user.avatar || '👦'}
-              </div>
-              <span style={styles.headerUsername}>{user.username}</span>
-            </div>
-          )}
-
-          {/* Logout */}
-          <button onClick={logout} style={styles.logoutBtn} title="Logout">
-            <LogOut size={20} color="var(--cyber-red)" />
-          </button>
-        </div>
-      </header>
-
-      {/* Outer Layout wrapper */}
-      <div style={styles.layoutBody}>
-        {/* Navigation Sidebar */}
-        <aside style={styles.sidebar}>
-          <div style={styles.sidebarTitle}>Navigation</div>
-          
-          <button style={{ ...styles.sideLink, ...styles.activeSideLink }} onClick={() => navigate('/')}>
-            <Shield size={18} /> Dashboard Home
-          </button>
-          
-          <button style={styles.sideLink} onClick={() => navigate('/battle')}>
-            <Swords size={18} /> Cyber Arena
-          </button>
-          
-          <button style={styles.sideLink} onClick={() => navigate('/missions')}>
-            <Users2 size={18} /> Team Missions
-          </button>
-          
-          <button style={styles.sideLink} onClick={() => navigate('/club')}>
-            <MessageSquare size={18} /> Cyber Club
-          </button>
-
-          <button style={styles.sideLink} onClick={() => navigate('/profile')}>
-            <Award size={18} /> My Profile
-          </button>
-
-          {(user?.username.toLowerCase() === 'ahmed' || user?.username.toLowerCase() === 'ali') && (
-            <button style={{ ...styles.sideLink, color: 'var(--cyber-red)' }} onClick={() => navigate('/admin')}>
-              <Settings size={18} /> Admin Dashboard
-            </button>
-          )}
-
-          {/* Level Progress Widget */}
-          {user && (
-            <div className="cyber-card" style={styles.levelCard}>
-              <div style={styles.levelRow}>
-                <span style={styles.levelNum}>LVL {level}</span>
-                <span style={styles.levelXP}>{xp} / {level * 100} XP</span>
-              </div>
-              <div style={styles.progressBarContainer}>
-                <div style={{ ...styles.progressBar, width: `${progressPercent}%` }}></div>
-              </div>
-              <div style={styles.progressSub}>
-                {getRankBadge(user.rank)} <b>{user.rank}</b>
-              </div>
-            </div>
-          )}
-        </aside>
-
-        {/* Main Dashboard Area */}
-        <main style={styles.main}>
+      <main style={styles.main}>
           <div style={styles.welcomeSection}>
             <h2>Welcome back, <span className="neon-text-blue">{user?.username}</span>!</h2>
             <p>Ready to protect the digital net today? Choose a mission below!</p>
@@ -361,7 +199,7 @@ export default function Dashboard() {
                 ) : friends.length === 0 ? (
                   <div style={styles.emptyFriends}>
                     <p>No friends added yet!</p>
-                    <button className="cyber-button purple" style={styles.friendBtn} onClick={() => navigate('/profile')}>
+                    <button className="cyber-button purple" style={styles.friendBtn} onClick={() => window.location.href = '../profile.html'}>
                       Find Friends 👥
                     </button>
                   </div>
@@ -395,17 +233,13 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-      </div>
     </div>
   );
 }
 
 const styles = {
   container: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'var(--bg-gradient)',
+    width: '100%',
     color: '#f5f5fa',
     fontFamily: 'var(--font-body)'
   },

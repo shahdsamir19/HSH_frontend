@@ -8,4 +8,13 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  build: {
+    // Raise warning threshold — chunks contain game assets
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      // navbar.js is a plain IIFE loaded separately — don't bundle it
+      external: []
+    }
+  }
 })
+

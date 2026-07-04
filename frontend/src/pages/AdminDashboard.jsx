@@ -29,7 +29,7 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       
       // Fetch analytics
       const resAnal = await fetch('http://localhost:5000/api/admin/analytics', {
@@ -66,7 +66,7 @@ export default function AdminDashboard() {
 
   const handleResolveReport = async (reportId, action) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch(`http://localhost:5000/api/admin/reports/${reportId}/resolve`, {
         method: 'POST',
         headers: {
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Are you sure you want to permanently delete/ban this user?")) return;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch(`http://localhost:5000/api/admin/users/${targetUserId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }

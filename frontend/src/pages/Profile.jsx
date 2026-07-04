@@ -27,7 +27,7 @@ export default function Profile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -44,7 +44,7 @@ export default function Profile() {
 
   const fetchFriends = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile/friends', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -70,7 +70,7 @@ export default function Profile() {
 
   const handleUpdateAvatar = async (avatarSymbol) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile/avatar', {
         method: 'POST',
         headers: {
@@ -95,7 +95,7 @@ export default function Profile() {
     if (!friendUsername.trim()) return;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('hsh_token');
       const res = await fetch('http://localhost:5000/api/profile/friends/add', {
         method: 'POST',
         headers: {
