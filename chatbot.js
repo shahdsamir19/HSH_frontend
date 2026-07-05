@@ -29,7 +29,7 @@
   /* ── CONFIG ────────────────────────────────────────────── */
   const CB_CONFIG = {
     // ⚙️  Backend API endpoint — will be implemented by the backend team
-    apiEndpoint: 'https://hsh-backend.vercel.app/api/chat/message',
+    apiEndpoint: 'https://obstruct-husband-deluge.ngrok-free.dev/chat',
 
     // Storage key for chat history
     storageKey: 'hackshield_chat_history',
